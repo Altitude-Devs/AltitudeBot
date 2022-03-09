@@ -24,28 +24,16 @@ public class PermissionManager {
         this.privateEnabledCommands = privateEnabledCommands;
     }
 
-    public boolean hasPermission(TextChannel textChannel, User user, String permission) {
+    public boolean hasPermission(TextChannel textChannel, long userId, List<Long> groupIds, String permission) {
         permission = permission.toLowerCase();
         if (textChannel instanceof PrivateChannel) {
             if (isDisabled(privateEnabledCommands, permission))
                 return false;
-            return hasPermission(user.getIdLong(), null, permission);
         } else {
-            Logger.warning("Using user for Guild channel % ", textChannel.getAsMention());
-            return false;
+            if (isDisabled(channelEnabledCommands.get(textChannel.getIdLong()), permission.toLowerCase()))
+                return false;
         }
-    }
-
-    public boolean hasPermission(TextChannel textChannel, Member member, String permission) {
-        permission = permission.toLowerCase();
-        if (isDisabled(channelEnabledCommands.get(textChannel.getIdLong()), permission.toLowerCase()))
-            return false;
-        return hasPermission(
-                member.getIdLong(),
-                member.getRoles().stream()
-                        .map(Role::getIdLong)
-                        .collect(Collectors.toList()),
-                permission);
+        return hasPermission(userId, groupIds, permission);
     }
 
     private boolean isDisabled(List<String> enabledCommandList, String permission) {

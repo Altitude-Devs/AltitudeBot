@@ -21,4 +21,10 @@ public class MessagesConfig extends AbstractConfig {
         HELP_MESSAGE_TEMPLATE = messagesConfig.getString("help.message-template", HELP_MESSAGE_TEMPLATE);
     }
 
+    public static String INVALID_COMMAND = "<command> is not a valid command.";
+    public static String INVALID_COMMAND_ARGS = "`<args>` is/are not valid argument(s) for `<command>`.\nFor more info see <prefix>help <command>";
+    private static void loadInvalidCommands() {
+
+    }
+
 }

@@ -27,4 +27,11 @@ public class CommandManager extends ListenerAdapter {
         String[] args = Arrays.copyOfRange(s, 1, s.length);
     }
 
+    public List<DiscordCommand> getCommands() {
+        return commands;
+    }
+
+    public String getPrefix(long guildId) {
+        return commandPrefixes.getOrDefault(guildId, "!");
+    }
 }
