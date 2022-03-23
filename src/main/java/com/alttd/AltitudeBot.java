@@ -57,4 +57,8 @@ public class AltitudeBot {
     public PermissionManager getPermissionManager() {
         return permissionManager;
     }
+
+    public JDA getJDA() {
+        return jda;
+    }
 }
