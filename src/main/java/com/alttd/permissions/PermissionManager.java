@@ -1,6 +1,7 @@
 package com.alttd.permissions;
 
 import com.alttd.util.Logger;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
 
 public class PermissionManager {
 
+    private static PermissionManager instance = null;
     HashMap<Long, List<String>> userPermissions;
     HashMap<Long, List<String>> groupPermissions;
     HashMap<Long, List<String>> channelEnabledCommands;
@@ -22,6 +24,14 @@ public class PermissionManager {
         this.groupPermissions = groupPermissions;
         this.channelEnabledCommands = channelEnabledCommands;
         this.privateEnabledCommands = privateEnabledCommands;
+        instance = this;
+    }
+
+    public boolean hasPermission(TextChannel textChannel, Member member, String permission) {
+        return hasPermission(textChannel,
+                member.getIdLong(),
+                member.getRoles().stream().map(ISnowflake::getIdLong).collect(Collectors.toList()),
+                permission);
     }
 
     public boolean hasPermission(TextChannel textChannel, long userId, List<Long> groupIds, String permission) {
@@ -58,6 +68,10 @@ public class PermissionManager {
         if (permission == null || permission.isEmpty())
             return false;
         return permissions.contains(permission);
+    }
+
+    public static PermissionManager getInstance() {
+        return instance;
     }
 
 }

@@ -1,5 +1,7 @@
 package com.alttd.config;
 
+import net.dv8tion.jda.api.entities.MessageEmbed;
+
 public class MessagesConfig extends AbstractConfig {
 
     static MessagesConfig messagesConfig;
@@ -21,10 +23,22 @@ public class MessagesConfig extends AbstractConfig {
         HELP_MESSAGE_TEMPLATE = messagesConfig.getString("help.message-template", HELP_MESSAGE_TEMPLATE);
     }
 
+
+    private static void loadPollHelp() {
+
+    }
+
     public static String INVALID_COMMAND = "<command> is not a valid command.";
     public static String INVALID_COMMAND_ARGS = "`<args>` is/are not valid argument(s) for `<command>`.\nFor more info see <prefix>help <command>";
+    public static String GUILD_ONLY_MESSAGE = "Sorry, <command> can only be executed from within a guild.";
+    public static String NO_PERMISSION_MESSAGE = "Sorry, <command> can only be executed from within a guild.";
+    public static String INVALID_COMMAND_ARGUMENTS = "Some of the arguments in your command were invalid: <error>";
     private static void loadInvalidCommands() {
-
+        INVALID_COMMAND = messagesConfig.getString("messages.invalid_command", INVALID_COMMAND);
+        INVALID_COMMAND_ARGS = messagesConfig.getString("messages.invalid_command_args", INVALID_COMMAND_ARGS);
+        GUILD_ONLY_MESSAGE = messagesConfig.getString("messages.guild_only_message", GUILD_ONLY_MESSAGE);
+        NO_PERMISSION_MESSAGE = messagesConfig.getString("messages.no_permission_message", NO_PERMISSION_MESSAGE);
+        INVALID_COMMAND_ARGUMENTS = messagesConfig.getString("messages.invalid_command_arguments", INVALID_COMMAND_ARGUMENTS);
     }
 
 }
