@@ -16,13 +16,12 @@ public class MessagesConfig extends AbstractConfig {
         messagesConfig.readConfig(MessagesConfig.class, null);
     }
 
-    public static String HELP_HELP = "`<prefix>help`: Shows help menu";
+    public static String HELP_HELP = "`/help`: Shows help menu";
     public static String HELP_MESSAGE_TEMPLATE = "<commands>";
     private static void loadHelp() {
         HELP_HELP = messagesConfig.getString("help.help", HELP_HELP);
         HELP_MESSAGE_TEMPLATE = messagesConfig.getString("help.message-template", HELP_MESSAGE_TEMPLATE);
     }
-
 
     private static void loadPollHelp() {
 

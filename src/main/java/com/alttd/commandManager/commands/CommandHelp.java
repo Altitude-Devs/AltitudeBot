@@ -1,81 +1,121 @@
-//package com.alttd.commandManager.commands;
-//
-//import com.alttd.AltitudeBot;
-//import com.alttd.commandManager.CommandManager;
-//import com.alttd.commandManager.DiscordCommand;
-//import com.alttd.config.MessagesConfig;
-//import com.alttd.permissions.PermissionManager;
-//import com.alttd.templates.Parser;
-//import com.alttd.templates.Template;
-//import com.alttd.util.Logger;
-//import com.alttd.util.Util;
-//import net.dv8tion.jda.api.entities.Member;
-//import net.dv8tion.jda.api.entities.PrivateChannel;
-//import net.dv8tion.jda.api.entities.TextChannel;
-//import net.dv8tion.jda.api.entities.User;
-//
-//import java.util.List;
-//import java.util.Optional;
-//
-//public class CommandHelp extends DiscordCommand {
-//
-//    private final CommandManager commandManager;
-//
-//    public CommandHelp(CommandManager commandManager) {
-//        this.commandManager = commandManager;
-//    }
-//
-//    @Override
-//    public String getName() {
-//        return "help";
-//    }
-//
-//    @Override
-//    public String execute(String[] args, Member commandSource, TextChannel textChannel) {
-//        return execute(args, textChannel, commandSource.getIdLong(), textChannel.getGuild().getIdLong(), Util.getGroupIds(commandSource));
-//    }
-//
-//    @Override
-//    public String execute(String[] args, User commandSource, TextChannel textChannel) {
-//        if (!(textChannel instanceof PrivateChannel))
-//            Logger.warning("Using User when executing command on Member: % Command: %", commandSource.getAsMention(), getName());
-//        return execute(args, textChannel, commandSource.getIdLong(), 0, null);
-//    }
-//
-//    public String execute(String[] args, TextChannel textChannel, long userId, long guildId, List<Long> groupIds) {
-//        PermissionManager permissionManager = AltitudeBot.getInstance().getPermissionManager();
-//        StringBuilder helpMessage = new StringBuilder();
-//        if (args.length == 0) {
-//            commandManager.getCommands().stream()
-//                    .filter(command -> permissionManager.hasPermission(
-//                            textChannel,
-//                            userId,
-//                            groupIds,
-//                            command.getPermission()))
-//                    .forEach(command -> helpMessage.append(command.getHelpMessage()));
-//        } else {
-//            String arg = args[0].toLowerCase();
-//            Optional<DiscordCommand> first = commandManager.getCommands().stream()
-//                    .filter(command -> command.getName().equals(arg)
-//                            || command.getAliases().contains(arg)).findFirst();
-//            if (first.isEmpty())
-//                return Parser.parse(MessagesConfig.INVALID_COMMAND_ARGS,
-//                        Template.of("args", arg),
-//                        Template.of("command", getName()),
-//                        Template.of("prefix", commandManager.getPrefix(guildId)));
-//            DiscordCommand discordCommand = first.get();
-//            helpMessage.append(discordCommand.getExtendedHelpMessage());
-//        }
-//        return Parser.parse(MessagesConfig.HELP_MESSAGE_TEMPLATE, Template.of("commands", helpMessage.toString()));
-//    }
-//
-//    @Override
-//    public String getHelpMessage() {
-//        return MessagesConfig.HELP_HELP;
-//    }
-//
-//    @Override
-//    public List<String> getAliases() {
-//        return null;
-//    }
-//}
+package com.alttd.commandManager.commands;
+
+import com.alttd.commandManager.CommandManager;
+import com.alttd.commandManager.DiscordCommand;
+import com.alttd.config.MessagesConfig;
+import com.alttd.permissions.PermissionManager;
+import com.alttd.templates.Parser;
+import com.alttd.templates.Template;
+import com.alttd.util.Util;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+
+import java.awt.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+public class CommandHelp extends DiscordCommand {
+
+    private final CommandManager commandManager;
+
+    public CommandHelp(JDA jda, CommandManager commandManager) {
+        this.commandManager = commandManager;
+
+        SlashCommandData slashCommandData = Commands.slash(getName(), "Show info about all commands or a specific command.")
+                .addOption(OptionType.STRING, "command", "Command to get more info about", true , true);
+
+        Util.registerCommand(commandManager, jda, slashCommandData, getName());
+    }
+
+    @Override
+    public String getName() {
+        return "help";
+    }
+
+    @Override
+    public void execute(SlashCommandInteractionEvent event) {
+        PermissionManager permissionManager = PermissionManager.getInstance();
+
+        if (permissionManager.hasPermission(event.getTextChannel(), event.getIdLong(), Util.getGroupIds(event.getMember()), getPermission())) {
+            event.replyEmbeds(Util.noPermission(getName())).setEphemeral(true).queue();
+            return;
+        }
+
+        StringBuilder helpMessage = new StringBuilder();
+        List<OptionMapping> options = event.getOptions();
+        TextChannel textChannel = event.getTextChannel();
+        if (options.size() == 0) {
+            commandManager.getCommands(textChannel).stream()
+                    .filter(command -> permissionManager.hasPermission(
+                            textChannel,
+                            event.getUser().getIdLong(),
+                            Util.getGroupIds(event.getMember()),
+                            command.getPermission()))
+                    .forEach(command -> helpMessage.append(command.getHelpMessage()));
+        } else {
+            OptionMapping optionMapping = event.getOption("command");
+            if (optionMapping == null) {
+                event.replyEmbeds(new EmbedBuilder()
+                                .setTitle("Error")
+                                .setDescription("Missing command option")
+                                .setColor(Color.RED)
+                                .build())
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+            String command = optionMapping.getAsString();
+            Optional<DiscordCommand> first = commandManager.getCommands().stream()
+                    .filter(discordCommand -> discordCommand.getName().equals(command)).findFirst();
+            if (first.isEmpty())
+            {
+                event.replyEmbeds(new EmbedBuilder()
+                                .setTitle("Command Not Found")
+                                .setDescription("Unable to find the `" + command + "` command.")
+                                .setColor(Color.RED)
+                                .build())
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+            helpMessage.append(first.get().getExtendedHelpMessage());
+        }
+        event.replyEmbeds(new EmbedBuilder()
+                        .setTitle("Help")
+                        .setDescription(Parser.parse(MessagesConfig.HELP_MESSAGE_TEMPLATE, Template.of("commands", helpMessage.toString())))
+                        .setColor(Color.GREEN)
+                        .build())
+                .setEphemeral(true)
+                .queue();
+    }
+
+    @Override
+    public void suggest(CommandAutoCompleteInteractionEvent event) {
+        AutoCompleteQuery focusedOption = event.getFocusedOption();
+        if (!focusedOption.getType().equals(OptionType.STRING) || !focusedOption.getName().equals("command"))
+            return;
+        String value = focusedOption.getValue().toLowerCase();
+        List<String> collect = commandManager.getCommands().stream()
+                .map(DiscordCommand::getName)
+                .filter(name -> name.toLowerCase().startsWith(value))
+                .collect(Collectors.toList());
+
+        for (int i = collect.size(); i > 25; i--) //Can only have 25 options
+            collect.remove(i - 1);
+        event.replyChoiceStrings(collect).queue();
+    }
+
+    @Override
+    public String getHelpMessage() {
+        return MessagesConfig.HELP_HELP;
+    }
+}

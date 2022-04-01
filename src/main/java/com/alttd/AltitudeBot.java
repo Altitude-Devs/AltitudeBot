@@ -15,14 +15,13 @@ import java.net.URISyntaxException;
 public class AltitudeBot {
 
     private JDA jda;
-    private PermissionManager permissionManager;
     private static AltitudeBot instance;
 
     public static AltitudeBot getInstance() {
         return instance;
     }
 
-    public void main(String args[]) {
+    public void main(String[] args) {
         instance = this;
         Logger.info("Starting bot...");
         initConfigs();
@@ -36,7 +35,7 @@ public class AltitudeBot {
     }
 
     private void initListeners() {
-        jda.addEventListener(new CommandManager());
+        jda.addEventListener(new CommandManager(jda));
     }
 
     private void initConfigs() {
@@ -52,10 +51,6 @@ public class AltitudeBot {
             e.printStackTrace();
         }
         return (null);
-    }
-
-    public PermissionManager getPermissionManager() {
-        return permissionManager;
     }
 
     public JDA getJDA() {
