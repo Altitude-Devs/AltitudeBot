@@ -54,7 +54,9 @@ public class CommandPoll extends DiscordCommand {
                         new SubcommandData("results", "Get the results for a poll")
                                 .addOption(OptionType.CHANNEL, "channel", "Channel this poll is in", true, true)
                                 .addOption(OptionType.INTEGER, "message_id", "Id of the poll you want the results for", true));
-        Util.registerSubcommands(subCommandMap, new SubCommandAdd(this),
+        slashCommandData.setDefaultEnabled(true);
+        Util.registerSubcommands(subCommandMap,
+                new SubCommandAdd(this),
                 new SubCommandAddButton(this),
                 new SubCommandClose(this),
                 new SubCommandEditDescription(this),
@@ -89,11 +91,7 @@ public class CommandPoll extends DiscordCommand {
 
         SubCommand subCommand = subCommandMap.get(subcommandName);
         if (subCommand == null) {
-            event.replyEmbeds(new EmbedBuilder()
-                    .setTitle("Subcommand not found")
-                    .setDescription("Unable to find subcommand `" + subcommandName + "`")
-                    .setColor(Color.RED)
-                    .build())
+            event.replyEmbeds(Util.invalidSubcommand(subcommandName))
                     .setEphemeral(true)
                     .queue();
             return;

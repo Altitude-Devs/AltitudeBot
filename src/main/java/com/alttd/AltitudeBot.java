@@ -12,6 +12,8 @@ import javax.security.auth.login.LoginException;
 import java.io.File;
 import java.net.URISyntaxException;
 
+import static java.lang.System.exit;
+
 public class AltitudeBot {
 
     private JDA jda;
@@ -21,14 +23,20 @@ public class AltitudeBot {
         return instance;
     }
 
-    public void main(String[] args) {
-        instance = this;
+    public static void main(String[] args) {
+        instance = new AltitudeBot();
+        instance.start();
+    }
+
+    private void start() {
         Logger.info("Starting bot...");
         initConfigs();
         try {
             jda = JDABuilder.createDefault(SettingsConfig.TOKEN).build();
         } catch (LoginException e) {
-            e.printStackTrace();
+            Logger.info("Unable to log in, shutting down (check token in settings.yml).");
+            exit(1);
+            Logger.exception(e);
         }
         initListeners();
         //TODO init permissionManager

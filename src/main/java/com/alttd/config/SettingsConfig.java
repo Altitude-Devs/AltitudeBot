@@ -11,7 +11,7 @@ public class SettingsConfig extends AbstractConfig {
     public static void reload() {
         settingsConfig = new SettingsConfig();
 
-        settingsConfig.readConfig(SettingsConfig.class, null);
+        settingsConfig.readConfig(SettingsConfig.class, settingsConfig);
     }
 
     public static String TOKEN = "token";

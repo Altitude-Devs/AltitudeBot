@@ -18,16 +18,11 @@ public class Logger { //TODO make this log to a file
     private static final java.util.logging.Logger sql;
 
     static {
-        File logDir = new File(AltitudeBot.getInstance().getDataFolder() + File.pathSeparator +  "logs");
+        File logDir = new File(new File(AltitudeBot.getInstance().getDataFolder()).getParent() + File.separator +  "logs");
         if (!logDir.exists())
         {
-            try {
-                if (!logDir.createNewFile() || !logDir.mkdir()) {
-                    System.out.println("UNABLE TO CREATE LOGGING DIRECTORY");
-                    System.exit(1);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (!logDir.mkdir()) {
+                System.out.println("UNABLE TO CREATE LOGGING DIRECTORY");
                 System.exit(1);
             }
         }
@@ -44,11 +39,11 @@ public class Logger { //TODO make this log to a file
         String formattedTime = dateFormat.format(date.getTime());
 
         try {
-            info.addHandler(new FileHandler(logDir.getAbsolutePath() + File.pathSeparator +
+            info.addHandler(new FileHandler(logDir.getAbsolutePath() + File.separator +
                     formattedTime + "info.log"));
-            error.addHandler(new FileHandler(logDir.getAbsolutePath() + File.pathSeparator +
+            error.addHandler(new FileHandler(logDir.getAbsolutePath() + File.separator +
                     formattedTime + "error.log"));
-            sql.addHandler(new FileHandler(logDir.getAbsolutePath() + File.pathSeparator +
+            sql.addHandler(new FileHandler(logDir.getAbsolutePath() + File.separator +
                     formattedTime + "sql.log"));
         } catch (IOException e) {
             e.printStackTrace();

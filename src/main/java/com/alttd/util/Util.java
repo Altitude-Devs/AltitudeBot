@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -62,6 +63,15 @@ public class Util {
             embedBuilder.addField(option.getName(), option.getAsString(), false);
         }
         return embedBuilder.build();
+    }
+
+    public static MessageEmbed invalidSubcommand(String subcommandName) {
+        return new EmbedBuilder()
+                .setTitle(MessagesConfig.INVALID_SUBCOMMAND)
+                .setDescription(Parser.parse(MessagesConfig.INVALID_SUBCOMMAND_DESC,
+                        Template.of("subcommand", subcommandName)))
+                .setColor(Color.RED)
+                .build();
     }
 
     public static void registerCommand(CommandManager commandManager, JDA jda, SlashCommandData slashCommandData, String commandName) {

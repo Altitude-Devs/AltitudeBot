@@ -30,7 +30,7 @@ abstract class AbstractConfig {
     private ConfigurationNode config;
 
     AbstractConfig(String filename) {
-        init(new File(AltitudeBot.getInstance().getDataFolder(), filename), filename);
+        init(new File(new File(AltitudeBot.getInstance().getDataFolder()).getParentFile(), filename), filename);
     }
 
     private void init(File file, String filename) {
