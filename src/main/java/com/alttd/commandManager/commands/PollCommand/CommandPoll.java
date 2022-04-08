@@ -6,7 +6,6 @@ import com.alttd.commandManager.SubCommand;
 import com.alttd.permissions.PermissionManager;
 import com.alttd.util.Logger;
 import com.alttd.util.Util;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -15,7 +14,6 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
-import java.awt.*;
 import java.util.HashMap;
 
 public class CommandPoll extends DiscordCommand {
