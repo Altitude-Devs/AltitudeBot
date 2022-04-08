@@ -33,6 +33,17 @@ tasks {
         options.encoding = Charsets.UTF_8.name()
     }
 
+    withType<Jar> {
+        manifest {
+            attributes["Main-Class"] = "${rootProject.group}.${project.name}"
+        }
+    }
+
+    create<ConfigureShadowRelocation>("relocateJars") {
+        target = shadowJar.get()
+        prefix = "${project.name}.lib"
+    }
+
     shadowJar {
         dependsOn(getByName("relocateJars") as ConfigureShadowRelocation)
         archiveFileName.set("${project.name}-${project.version}.jar")
@@ -44,10 +55,6 @@ tasks {
         dependsOn(shadowJar)
     }
 
-    create<ConfigureShadowRelocation>("relocateJars") {
-        target = shadowJar.get()
-        prefix = "${project.name}.lib"
-    }
 }
 
 dependencies {
