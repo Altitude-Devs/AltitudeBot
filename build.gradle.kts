@@ -64,7 +64,11 @@ dependencies {
             exclude("opus-java") // exclude audio
         }
         // MySQL
-        runtimeOnly("mysql:mysql-connector-java:8.0.23")
+//        runtimeOnly("mysql:mysql-connector-java:8.0.23")
+    }
+
+    implementation("org.mariadb.jdbc:mariadb-java-client:2.1.2") {
+        shadow("org.mariadb.jdbc:mariadb-java-client:2.1.2")
     }
 
     tasks {
