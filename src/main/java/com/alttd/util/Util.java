@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
-import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.NotNull;
 
@@ -96,20 +96,19 @@ public class Util {
                 .build();
     }
 
-    public static void registerCommand(CommandManager commandManager, JDA jda, SlashCommandData slashCommandData, String commandName) {
+    public static void registerCommand(CommandManager commandManager, JDA jda, CommandData commandData, String commandName) {
         for (ScopeInfo info : commandManager.getActiveLocations(commandName)) {
             switch (info.getScope()) {
-                case GLOBAL -> jda.updateCommands().addCommands(slashCommandData).queue();
-                case GUILD -> {
+                case GLOBAL -> jda.updateCommands().addCommands(commandData).queue();
+                case GUILD, USER -> {
                     Guild guildById = jda.getGuildById(info.getId());
                     if (guildById == null)
                     {
                         Logger.warning("Tried to add command % to invalid guild %.", commandName, String.valueOf(info.getId()));
                         continue;
                     }
-                    guildById.updateCommands().addCommands(slashCommandData).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+                    guildById.updateCommands().addCommands(commandData).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
                 }
-                case USER -> Logger.warning("Tried to add command % to user, this is not implemented yet since I don't know how this should work.");
             }
         }
     }
