@@ -3,10 +3,14 @@ package com.alttd;
 import com.alttd.commandManager.CommandManager;
 import com.alttd.config.SettingsConfig;
 import com.alttd.config.MessagesConfig;
+import com.alttd.console.ConsoleCommandManager;
 import com.alttd.permissions.PermissionManager;
 import com.alttd.util.Logger;
+import com.mysql.cj.log.Log;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.Activity;
 
 import javax.security.auth.login.LoginException;
 import java.io.File;
@@ -36,6 +40,14 @@ public class AltitudeBot {
         } catch (LoginException e) {
             Logger.info("Unable to log in, shutting down (check token in settings.yml).");
             exit(1);
+            Logger.exception(e);
+        }
+        ConsoleCommandManager.startConsoleCommands(jda);
+        try {
+            jda.getPresence().setPresence(
+                    OnlineStatus.valueOf(SettingsConfig.STATUS),
+                    Activity.listening(SettingsConfig.ACTIVITY));
+        } catch (IllegalArgumentException e) {
             Logger.exception(e);
         }
         initListeners();
