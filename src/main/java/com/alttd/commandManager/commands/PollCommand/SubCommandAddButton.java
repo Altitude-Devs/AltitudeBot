@@ -2,6 +2,7 @@ package com.alttd.commandManager.commands.PollCommand;
 
 import com.alttd.commandManager.DiscordCommand;
 import com.alttd.commandManager.SubCommand;
+import com.alttd.commandManager.SubCommandGroup;
 import com.alttd.templates.Parser;
 import com.alttd.templates.Template;
 import com.alttd.util.Logger;
@@ -12,12 +13,13 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 
 public class SubCommandAddButton extends SubCommand {
-    protected SubCommandAddButton(DiscordCommand parent) {
-        super(parent);
+    protected SubCommandAddButton(SubCommandGroup parentGroup, DiscordCommand parent) {
+        super(parentGroup, parent);
     }
 
     @Override
@@ -75,6 +77,11 @@ public class SubCommandAddButton extends SubCommand {
                 channel.retrieveMessageById(messageId).queue(
                         message -> updatePoll(channel, rowId, buttonName, message, hook),
                         throwable -> failedToGetMessage(throwable, hook)));
+    }
+
+    @Override
+    public void suggest(CommandAutoCompleteInteractionEvent event) {
+
     }
 
     private void failedToGetMessage(Throwable throwable, InteractionHook hook) {

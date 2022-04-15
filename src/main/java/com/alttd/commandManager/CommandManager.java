@@ -1,5 +1,6 @@
 package com.alttd.commandManager;
 
+import com.alttd.commandManager.commands.AddCommand.CommandAdd;
 import com.alttd.commandManager.commands.CommandHelp;
 import com.alttd.commandManager.commands.PollCommand.CommandPoll;
 import com.alttd.database.Database;
@@ -29,7 +30,8 @@ public class CommandManager extends ListenerAdapter {
 
     public CommandManager(JDA jda) {
         commands = List.of(new CommandHelp(jda, this),
-                new CommandPoll(jda, this));
+                new CommandPoll(jda, this),
+                new CommandAdd(jda, this));
         loadCommands();
     }
 
@@ -85,9 +87,10 @@ public class CommandManager extends ListenerAdapter {
 
     private void loadCommands() {
         String sql = "SELECT * FROM commands";
+        PreparedStatement statement = null;
 
         try {
-            PreparedStatement statement = Database.getDatabase().getConnection().prepareStatement(sql);
+            statement = Database.getDatabase().getConnection().prepareStatement(sql);
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
@@ -100,6 +103,13 @@ public class CommandManager extends ListenerAdapter {
             }
         } catch (SQLException exception) {
             Logger.sql(exception);
+        } finally {
+            try {
+                if (statement != null)
+                    statement.close();
+            } catch (SQLException exception) {
+                Logger.sql(exception);
+            }
         }
     }
 

@@ -1,31 +1,25 @@
-package com.alttd.commandManager.commands.PollCommand;
+package com.alttd.commandManager.commands.AddCommand;
 
 import com.alttd.commandManager.DiscordCommand;
 import com.alttd.commandManager.SubCommand;
 import com.alttd.commandManager.SubCommandGroup;
-import com.alttd.util.OptionMappingParsing;
-import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-public class SubCommandOpen extends SubCommand {
-    protected SubCommandOpen(SubCommandGroup parentGroup, DiscordCommand parent) {
+public class SubCommandSetUser extends SubCommand {
+
+    protected SubCommandSetUser(SubCommandGroup parentGroup, DiscordCommand parent) {
         super(parentGroup, parent);
     }
 
     @Override
     public String getName() {
-        return "open";
+        return "user";
     }
 
     @Override
     public void execute(SlashCommandInteractionEvent event) {
-        GuildMessageChannel channel = OptionMappingParsing.getGuildChannel("channel", event, getName());
-        if (channel == null)
-            return;
-        Long messageId = OptionMappingParsing.getLong("message_id", event, getName());
-        if (messageId == null)
-            return;
+
     }
 
     @Override

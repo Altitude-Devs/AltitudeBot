@@ -2,6 +2,7 @@ package com.alttd.commandManager.commands.PollCommand;
 
 import com.alttd.commandManager.DiscordCommand;
 import com.alttd.commandManager.SubCommand;
+import com.alttd.commandManager.SubCommandGroup;
 import com.alttd.config.MessagesConfig;
 import com.alttd.templates.Parser;
 import com.alttd.templates.Template;
@@ -10,6 +11,7 @@ import com.alttd.util.OptionMappingParsing;
 import com.alttd.util.Util;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 
@@ -17,8 +19,8 @@ import java.awt.*;
 
 public class SubCommandAdd extends SubCommand {
 
-    protected SubCommandAdd(DiscordCommand parent) {
-        super(parent);
+    protected SubCommandAdd(SubCommandGroup parentGroup, DiscordCommand parent) {
+        super(parentGroup, parent);
     }
 
     @Override
@@ -55,6 +57,11 @@ public class SubCommandAdd extends SubCommand {
         event.replyEmbeds(Util.genericWaitingEmbed("Creating Poll...", null))
                 .setEphemeral(true)
                 .queue(result -> createPoll(channel, title, result));
+    }
+
+    @Override
+    public void suggest(CommandAutoCompleteInteractionEvent event) {
+
     }
 
     private void createPoll(GuildMessageChannel channel, String title, InteractionHook hook) {

@@ -44,7 +44,22 @@ public class DatabaseTables {
                     "active BIT DEFAULT b'0', " +
                     "poll_title VARCHAR(256) NOT NULL, " +
                     "embed_type VARCHAR(32) DEFAULT 'ABSTRACT_EMBED', " +
-                    "PRIMARY KEY (UUID, villager_type)" +
+                    "PRIMARY KEY (poll_id)" +
+                    ")";
+            connection.prepareStatement(sql).executeUpdate();
+        } catch (SQLException e) {
+            Logger.sql(e);
+            Logger.severe("Unable to create polls table, shutting down...");
+        }
+    }
+
+    private void createCommandsTable() {
+        try {
+            String sql = "CREATE TABLE IF NOT EXISTS commands(" +
+                    "command_name VARCHAR(64) NOT NULL, " +
+                    "scope VARCHAR(16) NOT NULL, " +
+                    "location_id BIGINT NOT NULL, " +
+                    "PRIMARY KEY (command_name, scope, location_id)" +
                     ")";
             connection.prepareStatement(sql).executeUpdate();
         } catch (SQLException e) {
