@@ -17,10 +17,10 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
 import java.util.HashMap;
 
-public class CommandAdd extends DiscordCommand {
+public class CommandManage extends DiscordCommand {
     private final HashMap<String, SubOption> subOptionsMap = new HashMap<>();
 
-    public CommandAdd(JDA jda, CommandManager commandManager) {
+    public CommandManage(JDA jda, CommandManager commandManager) {
         SlashCommandData slashCommandData = Commands.slash(getName(), "Enable commands and assign permissions")
                 .addSubcommandGroups(
                         new SubcommandGroupData("set", "Set a permission for a user")
@@ -61,7 +61,7 @@ public class CommandAdd extends DiscordCommand {
 
     @Override
     public String getName() {
-        return "add";
+        return "manage";
     }
 
     @Override

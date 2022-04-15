@@ -1,6 +1,6 @@
 package com.alttd.commandManager;
 
-import com.alttd.commandManager.commands.AddCommand.CommandAdd;
+import com.alttd.commandManager.commands.AddCommand.CommandManage;
 import com.alttd.commandManager.commands.CommandHelp;
 import com.alttd.commandManager.commands.PollCommand.CommandPoll;
 import com.alttd.database.Database;
@@ -31,7 +31,7 @@ public class CommandManager extends ListenerAdapter {
     public CommandManager(JDA jda) {
         commands = List.of(new CommandHelp(jda, this),
                 new CommandPoll(jda, this),
-                new CommandAdd(jda, this));
+                new CommandManage(jda, this));
         loadCommands();
     }
 
