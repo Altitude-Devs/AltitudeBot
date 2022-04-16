@@ -1,4 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
 
 plugins {
     id("java")
@@ -39,18 +38,18 @@ tasks {
         }
     }
 
-    create<ConfigureShadowRelocation>("relocateJars") {
-        target = shadowJar.get()
-        prefix = "${project.name}.lib"
-    }
-
-    shadowJar {
-        dependsOn(getByName("relocateJars") as ConfigureShadowRelocation)
-        archiveFileName.set("${project.name}-${project.version}.jar")
-        minimize()
-        configurations = listOf(project.configurations.shadow.get())
-    }
-
+//    create<ConfigureShadowRelocation>("relocateJars") {
+//        target = shadowJar.get()
+//        prefix = "${project.name}.lib"
+//    }
+//
+//    shadowJar {
+//        dependsOn(getByName("relocateJars") as ConfigureShadowRelocation)
+//        archiveFileName.set("${project.name}-${project.version}.jar")
+//        minimize()
+//        configurations = listOf(project.configurations.shadow.get())
+//    }
+//
     build {
         dependsOn(shadowJar)
     }
@@ -59,13 +58,13 @@ tasks {
 
 dependencies {
 // JDA
-    shadow("net.dv8tion:JDA:5.0.0-alpha.9") {
+    implementation("net.dv8tion:JDA:5.0.0-alpha.9") {
         exclude("opus-java") // exclude audio
     }
     // MySQL
-    shadow("mysql:mysql-connector-java:8.0.28")
+    implementation("mysql:mysql-connector-java:8.0.28")
 //    implementation("org.mariadb.jdbc:mariadb-java-client:2.1.2")
 
     // Configurate
-    shadow("org.spongepowered:configurate-yaml:4.1.2")
+    implementation("org.spongepowered:configurate-yaml:4.1.2")
 }
