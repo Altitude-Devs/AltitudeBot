@@ -29,10 +29,10 @@ public class CommandManager extends ListenerAdapter {
     private final HashMap<String, List<ScopeInfo>> commandList = new HashMap<>();
 
     public CommandManager(JDA jda) {
+        loadCommands();
         commands = List.of(new CommandHelp(jda, this),
                 new CommandPoll(jda, this),
                 new CommandManage(jda, this));
-        loadCommands();
     }
 
     @Override
