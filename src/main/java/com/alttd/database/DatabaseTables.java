@@ -10,6 +10,7 @@ import java.sql.SQLException;
 
 public class DatabaseTables {
 
+    private static DatabaseTables instance = null;
     private Connection connection;
 
     protected DatabaseTables (Connection connection) {
@@ -66,6 +67,11 @@ public class DatabaseTables {
             Logger.sql(e);
             Logger.severe("Unable to create polls table, shutting down...");
         }
+    }
+
+    public static void createTables(Connection connection) {
+        if (instance == null)
+            instance = new DatabaseTables(connection);
     }
 
 }
