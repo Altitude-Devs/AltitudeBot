@@ -4,6 +4,8 @@ import com.alttd.commandManager.CommandManager;
 import com.alttd.config.SettingsConfig;
 import com.alttd.config.MessagesConfig;
 import com.alttd.console.ConsoleCommandManager;
+import com.alttd.database.Database;
+import com.alttd.database.DatabaseTables;
 import com.alttd.permissions.PermissionManager;
 import com.alttd.util.Logger;
 import com.mysql.cj.log.Log;
@@ -42,6 +44,7 @@ public class AltitudeBot {
             exit(1);
             Logger.exception(e);
         }
+        DatabaseTables.createTables(Database.getDatabase().getConnection());
         ConsoleCommandManager.startConsoleCommands(jda);
         try {
             jda.getPresence().setPresence(
