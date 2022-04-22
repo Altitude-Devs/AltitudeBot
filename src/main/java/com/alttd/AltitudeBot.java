@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import javax.security.auth.login.LoginException;
 import java.io.File;
 import java.net.URISyntaxException;
+import java.util.Scanner;
 
 import static java.lang.System.exit;
 
@@ -54,6 +55,18 @@ public class AltitudeBot {
             Logger.exception(e);
         }
         initListeners();
+        new Thread("Console Thread") { // to gracefully shutdown if using intellij
+            @Override
+            public void run() {
+                Scanner scanner = new Scanner(System.in);
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+                    if (line.equalsIgnoreCase("exit")) {
+                        System.exit(0);
+                    }
+                }
+            }
+        }.start();
         //TODO init permissionManager
     }
 
