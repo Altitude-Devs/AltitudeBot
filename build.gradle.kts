@@ -58,7 +58,7 @@ tasks {
 
 dependencies {
 // JDA
-    implementation("net.dv8tion:JDA:5.0.0-alpha.9") {
+    implementation("net.dv8tion:JDA:5.0.0-alpha.10") {
         exclude("opus-java") // exclude audio
     }
     // MySQL
