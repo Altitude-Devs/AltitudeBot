@@ -1,6 +1,7 @@
 package com.alttd;
 
 import com.alttd.commandManager.CommandManager;
+import com.alttd.commandManager.listeners.JDAListener;
 import com.alttd.config.SettingsConfig;
 import com.alttd.config.MessagesConfig;
 import com.alttd.console.ConsoleCommandManager;
@@ -59,7 +60,7 @@ public class AltitudeBot {
     }
 
     private void initListeners() {
-        jda.addEventListener(new CommandManager(jda));
+        jda.addEventListener(new JDAListener(jda));
     }
 
     private void initConfigs() {
