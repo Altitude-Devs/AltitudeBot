@@ -1,27 +1,33 @@
 package com.alttd.commandManager;
 
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 
-public abstract class SubCommand {
+public abstract class SubCommand extends SubOption{
 
-    private final DiscordCommand parent;
+    private final SubCommandGroup parentGroup;
+    private final boolean inSubGroup;
 
-    protected SubCommand(DiscordCommand parent) {
-        this.parent = parent;
+    protected SubCommand(SubCommandGroup parentGroup, DiscordCommand parent) {
+        super(parent);
+        this.parentGroup = parentGroup;
+        this.inSubGroup = parentGroup != null;
     }
 
-    public DiscordCommand getParent() {
-        return parent;
+    public SubCommandGroup getParentGroup() {
+        return parentGroup;
     }
 
-    public abstract String getName();
+    public boolean isInSubGroup() {
+        return inSubGroup;
+    }
 
+    @Override
     public String getPermission() {
-        return getParent().getPermission() + "." +  getName();
+        if (isInSubGroup())
+            return getParentGroup().getPermission() + "." + getName();
+        else
+            return getParent().getPermission() + "." + getName();
     }
 
-    public abstract void execute(SlashCommandInteractionEvent event);
-
-    public abstract String getHelpMessage();
-
+    public abstract void suggest(CommandAutoCompleteInteractionEvent event);
 }

@@ -27,6 +27,15 @@ public class PermissionManager {
         instance = this;
     }
 
+    /**
+     * Check if a user has a certain permission and if that permission is enabled in the specified channel
+     *
+     * @param   textChannel Text channel command was executed in
+     * @param   member      Member to check permission for
+     * @param   permission  Permission to check for
+     *
+     * @return  True if the member has permission or is owner, false if not
+     */
     public boolean hasPermission(TextChannel textChannel, Member member, String permission) {
         return hasPermission(textChannel,
                 member.getIdLong(),
@@ -34,12 +43,24 @@ public class PermissionManager {
                 permission);
     }
 
+    /**
+     * Check if a user has a certain permission and if that permission is enabled in the specified channel
+     *
+     * @param   textChannel Text channel command was executed in
+     * @param   userId      ID of the user to check for
+     * @param   groupIds    List of group id's a user has (can be null or empty)
+     * @param   permission  Permission to check for
+     *
+     * @return  True if the user has permission or is owner, false if not
+     */
     public boolean hasPermission(TextChannel textChannel, long userId, List<Long> groupIds, String permission) {
         permission = permission.toLowerCase();
         if (textChannel instanceof PrivateChannel) {
             if (isDisabled(privateEnabledCommands, permission))
                 return false;
         } else {
+            if (textChannel.getGuild().getOwnerIdLong() == userId)
+                return true;
             if (isDisabled(channelEnabledCommands.get(textChannel.getIdLong()), permission.toLowerCase()))
                 return false;
         }
@@ -70,6 +91,11 @@ public class PermissionManager {
         return permissions.contains(permission);
     }
 
+    /**
+     * Get the permission manager instance
+     *
+     * @return  Permission manager instance
+     */
     public static PermissionManager getInstance() {
         return instance;
     }

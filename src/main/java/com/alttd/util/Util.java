@@ -2,7 +2,7 @@ package com.alttd.util;
 
 import com.alttd.commandManager.CommandManager;
 import com.alttd.commandManager.ScopeInfo;
-import com.alttd.commandManager.SubCommand;
+import com.alttd.commandManager.SubOption;
 import com.alttd.config.MessagesConfig;
 import com.alttd.templates.Parser;
 import com.alttd.templates.Template;
@@ -113,9 +113,9 @@ public class Util {
         }
     }
 
-    public static void registerSubcommands(HashMap<String, SubCommand> subCommandMap, SubCommand... subCommands) {
-        for (SubCommand subCommand : subCommands)
-            subCommandMap.put(subCommand.getName(), subCommand);
+    public static void registerSubOptions(HashMap<String, SubOption> subCommandMap, SubOption... subOptions) {
+        for (SubOption subOption : subOptions)
+            subCommandMap.put(subOption.getName(), subOption);
     }
 
     public static boolean validateGuildMessageChannel(SlashCommandInteraction interaction, GuildMessageChannel channel, ChannelType channelType, @NotNull Member member) {

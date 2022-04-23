@@ -1,3 +1,7 @@
 .gradle/
 .idea/
 gradle/
+gradlew
+run
+build
+run.sh

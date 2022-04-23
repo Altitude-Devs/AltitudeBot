@@ -3,6 +3,7 @@ package com.alttd.commandManager.commands.PollCommand;
 import com.alttd.commandManager.CommandManager;
 import com.alttd.commandManager.DiscordCommand;
 import com.alttd.commandManager.SubCommand;
+import com.alttd.commandManager.SubOption;
 import com.alttd.permissions.PermissionManager;
 import com.alttd.util.Logger;
 import com.alttd.util.Util;
@@ -18,7 +19,7 @@ import java.util.HashMap;
 
 public class CommandPoll extends DiscordCommand {
 
-    private final HashMap<String, SubCommand> subCommandMap = new HashMap<>();
+    private final HashMap<String, SubOption> subOptionsMap = new HashMap<>();
 
     public CommandPoll(JDA jda, CommandManager commandManager) {
         SlashCommandData slashCommandData = Commands.slash(getName(), "Create, edit, and manage polls")
@@ -53,15 +54,15 @@ public class CommandPoll extends DiscordCommand {
                                 .addOption(OptionType.CHANNEL, "channel", "Channel this poll is in", true)
                                 .addOption(OptionType.INTEGER, "message_id", "Id of the poll you want the results for", true));
         slashCommandData.setDefaultEnabled(true);
-        Util.registerSubcommands(subCommandMap,
-                new SubCommandAdd(this),
-                new SubCommandAddButton(this),
-                new SubCommandClose(this),
-                new SubCommandEditDescription(this),
-                new SubCommandEditTitle(this),
-                new SubCommandOpen(this),
-                new SubCommandRemoveButton(this),
-                new SubCommandResults(this));
+        Util.registerSubOptions(subOptionsMap,
+                new SubCommandAdd(null,this),
+                new SubCommandAddButton(null, this),
+                new SubCommandClose(null,this),
+                new SubCommandEditDescription(null, this),
+                new SubCommandEditTitle(null, this),
+                new SubCommandOpen(null, this),
+                new SubCommandRemoveButton(null, this),
+                new SubCommandResults(null,this));
         Util.registerCommand(commandManager, jda, slashCommandData, getName());
     }
 
@@ -81,21 +82,22 @@ public class CommandPoll extends DiscordCommand {
             return;
         }
 
-        String subcommandName = event.getInteraction().getSubcommandName();
+        String subcommandName = event.getInteraction().getSubcommandGroup();
+        subcommandName = subcommandName == null ? event.getInteraction().getSubcommandName() : subcommandName;
         if (subcommandName == null) {
             Logger.severe("No subcommand found for %", getName());
             return;
         }
 
-        SubCommand subCommand = subCommandMap.get(subcommandName);
-        if (subCommand == null) {
+        SubOption subOption = subOptionsMap.get(subcommandName);
+        if (subOption == null) {
             event.replyEmbeds(Util.invalidSubcommand(subcommandName))
                     .setEphemeral(true)
                     .queue();
             return;
         }
 
-        subCommand.execute(event);
+        subOption.execute(event);
     }
 
     @Override

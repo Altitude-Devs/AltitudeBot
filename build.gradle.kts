@@ -1,4 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
 
 plugins {
     id("java")
@@ -39,18 +38,18 @@ tasks {
         }
     }
 
-    create<ConfigureShadowRelocation>("relocateJars") {
-        target = shadowJar.get()
-        prefix = "${project.name}.lib"
-    }
-
-    shadowJar {
-        dependsOn(getByName("relocateJars") as ConfigureShadowRelocation)
-        archiveFileName.set("${project.name}-${project.version}.jar")
-        minimize()
-        configurations = listOf(project.configurations.shadow.get())
-    }
-
+//    create<ConfigureShadowRelocation>("relocateJars") {
+//        target = shadowJar.get()
+//        prefix = "${project.name}.lib"
+//    }
+//
+//    shadowJar {
+//        dependsOn(getByName("relocateJars") as ConfigureShadowRelocation)
+//        archiveFileName.set("${project.name}-${project.version}.jar")
+//        minimize()
+//        configurations = listOf(project.configurations.shadow.get())
+//    }
+//
     build {
         dependsOn(shadowJar)
     }
@@ -59,30 +58,13 @@ tasks {
 
 dependencies {
 // JDA
-    implementation("net.dv8tion:JDA:5.0.0-alpha.9") {
-        shadow("net.dv8tion:JDA:5.0.0-alpha.9") {
-            exclude("opus-java") // exclude audio
-        }
-        // MySQL
-//        runtimeOnly("mysql:mysql-connector-java:8.0.23")
+    implementation("net.dv8tion:JDA:5.0.0-alpha.10") {
+        exclude("opus-java") // exclude audio
     }
+    // MySQL
+    implementation("mysql:mysql-connector-java:8.0.28")
+//    implementation("org.mariadb.jdbc:mariadb-java-client:2.1.2")
 
-    implementation("org.mariadb.jdbc:mariadb-java-client:2.1.2") {
-        shadow("org.mariadb.jdbc:mariadb-java-client:2.1.2")
-    }
-
-    tasks {
-
-        shadowJar {
-            listOf(
-                    "net.dv8tion.jda"
-            ).forEach { relocate(it, "${rootProject.group}.lib.$it") }
-        }
-
-        build {
-            dependsOn(shadowJar)
-        }
-    }
     // Configurate
-    shadow("org.spongepowered:configurate-yaml:4.1.2")
+    implementation("org.spongepowered:configurate-yaml:4.1.2")
 }

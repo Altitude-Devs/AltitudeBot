@@ -2,17 +2,19 @@ package com.alttd.commandManager.commands.PollCommand;
 
 import com.alttd.commandManager.DiscordCommand;
 import com.alttd.commandManager.SubCommand;
+import com.alttd.commandManager.SubCommandGroup;
 import com.alttd.util.OptionMappingParsing;
 import com.alttd.util.Util;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 
 public class SubCommandEditDescription extends SubCommand {
-    protected SubCommandEditDescription(DiscordCommand parent) {
-        super(parent);
+    protected SubCommandEditDescription(SubCommandGroup parentGroup, DiscordCommand parent) {
+        super(parentGroup, parent);
     }
 
     @Override
@@ -31,6 +33,11 @@ public class SubCommandEditDescription extends SubCommand {
         String description = OptionMappingParsing.getString("description", event, getName());
         if (description == null)
             return;
+    }
+
+    @Override
+    public void suggest(CommandAutoCompleteInteractionEvent event) {
+
     }
 
     //Copied over while working on add button

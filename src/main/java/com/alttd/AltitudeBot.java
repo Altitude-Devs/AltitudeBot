@@ -1,17 +1,24 @@
 package com.alttd;
 
 import com.alttd.commandManager.CommandManager;
+import com.alttd.commandManager.listeners.JDAListener;
 import com.alttd.config.SettingsConfig;
 import com.alttd.config.MessagesConfig;
+import com.alttd.console.ConsoleCommandManager;
+import com.alttd.database.Database;
+import com.alttd.database.DatabaseTables;
 import com.alttd.permissions.PermissionManager;
 import com.alttd.util.Logger;
+import com.mysql.cj.log.Log;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.Activity;
 
 import javax.security.auth.login.LoginException;
 import java.io.File;
 import java.net.URISyntaxException;
+import java.util.Scanner;
 
 import static java.lang.System.exit;
 
@@ -33,21 +40,19 @@ public class AltitudeBot {
         Logger.info("Starting bot...");
         initConfigs();
         try {
-            jda = JDABuilder.createDefault(SettingsConfig.TOKEN,
-                    GatewayIntent.DIRECT_MESSAGE_REACTIONS,
-                    GatewayIntent.DIRECT_MESSAGE_TYPING,
-                    GatewayIntent.DIRECT_MESSAGES,
-                    GatewayIntent.GUILD_BANS,
-                    GatewayIntent.GUILD_EMOJIS,
-                    GatewayIntent.GUILD_MEMBERS,
-                    GatewayIntent.GUILD_MESSAGE_REACTIONS,
-                    GatewayIntent.GUILD_MESSAGE_TYPING,
-                    GatewayIntent.GUILD_MESSAGES,
-                    GatewayIntent.GUILD_PRESENCES,
-                    GatewayIntent.GUILD_WEBHOOKS).build();
+            jda = JDABuilder.createDefault(SettingsConfig.TOKEN).build();
         } catch (LoginException e) {
             Logger.info("Unable to log in, shutting down (check token in settings.yml).");
             exit(1);
+            Logger.exception(e);
+        }
+        DatabaseTables.createTables(Database.getDatabase().getConnection());
+        ConsoleCommandManager.startConsoleCommands(jda);
+        try {
+            jda.getPresence().setPresence(
+                    OnlineStatus.valueOf(SettingsConfig.STATUS),
+                    Activity.listening(SettingsConfig.ACTIVITY));
+        } catch (IllegalArgumentException e) {
             Logger.exception(e);
         }
         initListeners();
@@ -55,7 +60,7 @@ public class AltitudeBot {
     }
 
     private void initListeners() {
-        jda.addEventListener(new CommandManager(jda));
+        jda.addEventListener(new JDAListener(jda));
     }
 
     private void initConfigs() {

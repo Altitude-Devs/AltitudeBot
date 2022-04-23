@@ -22,7 +22,7 @@ public class Logger { //TODO make this log to a file
         if (!logDir.exists())
         {
             if (!logDir.mkdir()) {
-                System.out.println("UNABLE TO CREATE LOGGING DIRECTORY");
+                Logger.info("UNABLE TO CREATE LOGGING DIRECTORY");
                 System.exit(1);
             }
         }
