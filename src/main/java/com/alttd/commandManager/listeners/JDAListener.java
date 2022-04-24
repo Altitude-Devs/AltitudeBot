@@ -17,7 +17,7 @@ public class JDAListener extends ListenerAdapter {
 
     @Override
     public void onReady(@NotNull ReadyEvent event) {
-        Logger.info("JDA ready registering commands.");
+        Logger.info("JDA ready to register commands.");
         jda.addEventListener(new CommandManager(jda));
     }
 

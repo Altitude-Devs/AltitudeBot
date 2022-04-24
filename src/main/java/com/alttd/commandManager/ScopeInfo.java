@@ -17,4 +17,6 @@ public class ScopeInfo {
     public long getId() {
         return id;
     }
+
+    //TODO check if equals needs to be overwritten for it to work as expected
 }

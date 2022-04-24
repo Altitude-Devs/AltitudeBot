@@ -63,6 +63,14 @@ public class CommandManager extends ListenerAdapter {
         first.get().suggest(event);
     }
 
+    public DiscordCommand getCommand(String name) {
+        for (DiscordCommand command : commands) {
+            if (command.getName().equalsIgnoreCase(name))
+                return command;
+        }
+        return null;
+    }
+
     public List<DiscordCommand> getCommands() {
         return commands;
     }
@@ -83,6 +91,25 @@ public class CommandManager extends ListenerAdapter {
             }
             return false;
         }).collect(Collectors.toList());
+    }
+
+    public boolean enableCommand(String commandName, ScopeInfo scopeInfo) {
+        List<ScopeInfo> scopeInfoList = commandList.getOrDefault(commandName, new ArrayList<>());
+        scopeInfoList.add(scopeInfo);
+        commandList.put(commandName, scopeInfoList);
+        return true;
+    }
+
+    public boolean disableCommand(String commandName, ScopeInfo scopeInfo) {
+        List<ScopeInfo> scopeInfoList = commandList.get(commandName);
+        if (scopeInfoList == null)
+            return false;
+        if (!scopeInfoList.contains(scopeInfo))
+            return false;
+        scopeInfoList.remove(scopeInfo);
+        if (scopeInfoList.isEmpty())
+            commandList.remove(commandName);
+        return true;
     }
 
     private void loadCommands() {

@@ -46,10 +46,8 @@ public class CommandManage extends DiscordCommand {
                 )
                 .addSubcommands(
                         new SubcommandData("enable", "Enable a command in a channel")
-                                .addOption(OptionType.CHANNEL, "channel", "Channel to enable this command in", true)
                                 .addOption(OptionType.STRING, "command", "Name of the command to enable", true, true),
                         new SubcommandData("disable", "Disable a command")
-                                .addOption(OptionType.CHANNEL, "channel", "Channel to disable this command in", true)
                                 .addOption(OptionType.STRING, "command", "Name of the command to disable", true, true)
                         );
         slashCommandData.setDefaultEnabled(true);
