@@ -8,6 +8,7 @@ import com.alttd.console.ConsoleCommandManager;
 import com.alttd.database.Database;
 import com.alttd.database.DatabaseTables;
 import com.alttd.permissions.PermissionManager;
+import com.alttd.request.RequestManager;
 import com.alttd.util.Logger;
 import com.mysql.cj.log.Log;
 import net.dv8tion.jda.api.JDA;
@@ -40,11 +41,13 @@ public class AltitudeBot {
         Logger.info("Starting bot...");
         initConfigs();
         try {
-            jda = JDABuilder.createDefault(SettingsConfig.TOKEN).build();
+            jda = JDABuilder.createDefault(SettingsConfig.TOKEN).build().awaitReady();
         } catch (LoginException e) {
             Logger.info("Unable to log in, shutting down (check token in settings.yml).");
             exit(1);
             Logger.exception(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
         DatabaseTables.createTables(Database.getDatabase().getConnection());
         ConsoleCommandManager.startConsoleCommands(jda);
@@ -55,6 +58,7 @@ public class AltitudeBot {
         } catch (IllegalArgumentException e) {
             Logger.exception(e);
         }
+        RequestManager.init();
         initListeners();
         //TODO init permissionManager
     }
