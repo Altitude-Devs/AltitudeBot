@@ -28,7 +28,7 @@ public class SubCommandGroupSet extends SubCommandGroup {
 
     @Override
     public void execute(SlashCommandInteractionEvent event) {
-        if (PermissionManager.getInstance().hasPermission(event.getTextChannel(), event.getIdLong(), Util.getGroupIds(event.getMember()), getPermission())) {
+        if (PermissionManager.getInstance().hasPermission(event.getChannel().asTextChannel(), event.getIdLong(), Util.getGroupIds(event.getMember()), getPermission())) {
             event.replyEmbeds(Util.noPermission(getName())).setEphemeral(true).queue();
             return;
         }

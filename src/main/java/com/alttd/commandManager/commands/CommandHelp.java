@@ -45,14 +45,14 @@ public class CommandHelp extends DiscordCommand {
     public void execute(SlashCommandInteractionEvent event) {
         PermissionManager permissionManager = PermissionManager.getInstance();
 
-        if (permissionManager.hasPermission(event.getTextChannel(), event.getIdLong(), Util.getGroupIds(event.getMember()), getPermission())) {
+        if (permissionManager.hasPermission(event.getChannel().asTextChannel(), event.getIdLong(), Util.getGroupIds(event.getMember()), getPermission())) {
             event.replyEmbeds(Util.noPermission(getName())).setEphemeral(true).queue();
             return;
         }
 
         StringBuilder helpMessage = new StringBuilder();
         List<OptionMapping> options = event.getOptions();
-        TextChannel textChannel = event.getTextChannel();
+        TextChannel textChannel = event.getChannel().asTextChannel();
         if (options.size() == 0) {
             commandManager.getCommands(textChannel).stream()
                     .filter(command -> permissionManager.hasPermission(

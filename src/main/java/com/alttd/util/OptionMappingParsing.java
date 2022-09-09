@@ -16,7 +16,7 @@ public class OptionMappingParsing {
 
     public static  GuildMessageChannel getGuildChannel(String optionName, SlashCommandInteractionEvent event, String commandName) {
         OptionMapping optionMappingChannel = event.getInteraction().getOption(optionName);
-        GuildMessageChannel messageChannel = optionMappingChannel == null ? null : optionMappingChannel.getAsMessageChannel();
+        GuildMessageChannel messageChannel = optionMappingChannel == null ? null : optionMappingChannel.getAsChannel().asGuildMessageChannel();
         if (messageChannel == null)
             event.replyEmbeds(Util.invalidCommand(commandName, "Not a valid text channel or didn't give input for " + optionName, event.getInteraction())).setEphemeral(true).queue();
         return messageChannel;

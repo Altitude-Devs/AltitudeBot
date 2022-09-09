@@ -52,7 +52,7 @@ public class CommandManage extends DiscordCommand {
                                 .addOption(OptionType.CHANNEL, "channel", "Channel to disable this command in", true)
                                 .addOption(OptionType.STRING, "command", "Name of the command to disable", true, true)
                         );
-        slashCommandData.setDefaultEnabled(true);
+//        slashCommandData.setDefaultEnabled(true);
         Util.registerSubOptions(subOptionsMap,
                 new SubCommandDisable(commandManager, null, this),
                 new SubCommandEnable(commandManager, null, this));
@@ -70,7 +70,7 @@ public class CommandManage extends DiscordCommand {
             event.replyEmbeds(Util.guildOnlyCommand(getName())).setEphemeral(true).queue();
             return;
         }
-        if (PermissionManager.getInstance().hasPermission(event.getTextChannel(), event.getIdLong(), Util.getGroupIds(event.getMember()), getPermission())) {
+        if (PermissionManager.getInstance().hasPermission(event.getChannel().asTextChannel(), event.getIdLong(), Util.getGroupIds(event.getMember()), getPermission())) {
             event.replyEmbeds(Util.noPermission(getName())).setEphemeral(true).queue();
             return;
         }

@@ -53,7 +53,7 @@ public class CommandPoll extends DiscordCommand {
                         new SubcommandData("results", "Get the results for a poll")
                                 .addOption(OptionType.CHANNEL, "channel", "Channel this poll is in", true)
                                 .addOption(OptionType.INTEGER, "message_id", "Id of the poll you want the results for", true));
-        slashCommandData.setDefaultEnabled(true);
+//        slashCommandData.setDefaultEnabled(true);
         Util.registerSubOptions(subOptionsMap,
                 new SubCommandAdd(null,this),
                 new SubCommandAddButton(null, this),
@@ -77,7 +77,7 @@ public class CommandPoll extends DiscordCommand {
             event.replyEmbeds(Util.guildOnlyCommand(getName())).setEphemeral(true).queue();
             return;
         }
-        if (PermissionManager.getInstance().hasPermission(event.getTextChannel(), event.getIdLong(), Util.getGroupIds(event.getMember()), getPermission())) {
+        if (PermissionManager.getInstance().hasPermission(event.getChannel().asTextChannel(), event.getIdLong(), Util.getGroupIds(event.getMember()), getPermission())) {
             event.replyEmbeds(Util.noPermission(getName())).setEphemeral(true).queue();
             return;
         }
