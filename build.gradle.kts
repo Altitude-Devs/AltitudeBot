@@ -63,4 +63,7 @@ dependencies {
 
     // Configurate
     implementation("org.spongepowered:configurate-yaml:4.1.2")
+
+    compileOnly("org.projectlombok:lombok:1.18.24")
+    annotationProcessor("org.projectlombok:lombok:1.18.24")
 }
