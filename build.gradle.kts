@@ -38,20 +38,16 @@ tasks {
         }
     }
 
-//    create<ConfigureShadowRelocation>("relocateJars") {
-//        target = shadowJar.get()
-//        prefix = "${project.name}.lib"
-//    }
-//
-//    shadowJar {
-//        dependsOn(getByName("relocateJars") as ConfigureShadowRelocation)
-//        archiveFileName.set("${project.name}-${project.version}.jar")
-//        minimize()
-//        configurations = listOf(project.configurations.shadow.get())
-//    }
-//
+    shadowJar {
+        archiveFileName.set(rootProject.name + ".jar")
+    }
+
     build {
         dependsOn(shadowJar)
+    }
+
+    jar {
+        enabled = false
     }
 
 }
