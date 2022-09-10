@@ -40,16 +40,14 @@ public class SubCommandAddButton extends SubCommand {
         if (!Util.validateGuildMessageChannel(event.getInteraction(), channel, ChannelType.TEXT, member))
             return;
 
-        Long messageId = OptionMappingParsing.getLong("message_id", event, getName());
+        Long messageId = Util.parseLong(OptionMappingParsing.getString("message_id", event, getName()));
         if (messageId == null) {
-            event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to retrieve message id."))
-                    .setEphemeral(true)
-                    .queue();
+            event.replyEmbeds(Util.genericErrorEmbed("Error", "Invalid message id")).setEphemeral(true).queue();
             return;
         }
         //TODO verify that message id is in database
 
-        Long rowLong = OptionMappingParsing.getLong("button_row", event, getName());
+        Long rowLong = Util.parseLong(OptionMappingParsing.getString("button_row", event, getName()));
         if (rowLong == null) {
             event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to retrieve button row."))
                     .setEphemeral(true)

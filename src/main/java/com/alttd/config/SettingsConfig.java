@@ -16,12 +16,16 @@ public class SettingsConfig extends AbstractConfig {
         settingsConfig.readConfig(SettingsConfig.class, settingsConfig);
     }
 
+    // SETTINGS
     public static String TOKEN = "token";
+    public static boolean DEBUG = false;
 
     private void loadSettings() {
         TOKEN = settingsConfig.getString("settings.token", TOKEN);
+        DEBUG = settingsConfig.getBoolean("settings.debug", DEBUG);
     }
 
+    // DATABASE
     public static String DATABASE_DRIVER = "mysql";
     public static String DATABASE_IP = "localhost";
     public static String DATABASE_PORT = "3306";
@@ -38,9 +42,10 @@ public class SettingsConfig extends AbstractConfig {
         DATABASE_PASSWORD = settingsConfig.getString("settings.database_password", DATABASE_PASSWORD);
     }
 
-
+    // ACTIVITY
     public static String STATUS = "ONLINE";
     public static String ACTIVITY = "Testing";
+
     private void loadActivity() {
         STATUS = settingsConfig.getString("settings.status", STATUS);
         ACTIVITY = settingsConfig.getString("settings.activity", ACTIVITY);

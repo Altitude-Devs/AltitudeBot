@@ -38,36 +38,36 @@ public class SubCommandEnable extends SubCommand {
     public void execute(SlashCommandInteractionEvent event) {
         Guild guild = event.getGuild();
         if (guild == null) {
-            event.replyEmbeds(Util.genericErrorEmbed("Error", "This command can only be used within guilds")).queue();
+            event.replyEmbeds(Util.genericErrorEmbed("Error", "This command can only be used within guilds")).setEphemeral(true).queue();
             return;
         }
 
         OptionMapping option = event.getOption("command");
         if (option == null) {
-            event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to find command parameter.")).queue();
+            event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to find command parameter.")).setEphemeral(true).queue();
             return;
         }
 
         String commandName = option.getAsString();
         DiscordCommand command = commandManager.getCommand(commandName);
         if (command == null) {
-            event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to find a command with that name.")).queue();
+            event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to find a command called [" + commandName + "].")).setEphemeral(true).queue();
             return;
         }
 
         if (enableCommand(command, guild.getIdLong())) {
+            Util.registerCommand(guild, command.getCommandData(), command.getName());
             event.replyEmbeds(Util.genericSuccessEmbed("Enabled command",
                     Parser.parse("Successfully enabled <command> in <guild>!",
                             Template.of("command", commandName.toLowerCase()),
                             Template.of("guild", guild.getName())
-                    ))).queue();
-
+                    ))).setEphemeral(true).queue();
         } else {
             event.replyEmbeds(Util.genericErrorEmbed("Failed to enable command",
-                    Parser.parse("Unable to enabled <command> in <guild>, is it already enabled?",
+                    Parser.parse("Unable to enable <command> in <guild>, is it already enabled?",
                             Template.of("command", commandName.toLowerCase()),
                             Template.of("guild", guild.getName())
-                    ))).queue();
+                    ))).setEphemeral(true).queue();
         }
     }
 
@@ -82,7 +82,7 @@ public class SubCommandEnable extends SubCommand {
             statement.setString(1, command.getName());
             statement.setString(2, "GUILD");
             statement.setLong(3, guildId);
-            if (!statement.execute()) {
+            if (statement.executeUpdate() == 0) {
                 Logger.warning("Unable to enable command: % for guild: %", command.getName(), String.valueOf(guildId));
                 return false;
             }

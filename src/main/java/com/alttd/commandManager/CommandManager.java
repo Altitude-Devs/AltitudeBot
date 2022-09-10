@@ -7,6 +7,7 @@ import com.alttd.database.Database;
 import com.alttd.util.Logger;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -17,10 +18,8 @@ import java.awt.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CommandManager extends ListenerAdapter {
@@ -29,21 +28,25 @@ public class CommandManager extends ListenerAdapter {
     private final HashMap<String, List<ScopeInfo>> commandList = new HashMap<>();
 
     public CommandManager(JDA jda) {
+        commandList.put("manage", new ArrayList<>(List.of(new ScopeInfo(CommandScope.GLOBAL, 0))));
         loadCommands();
-        commands = List.of(new CommandHelp(jda, this),
-                new CommandPoll(jda, this),
-                new CommandManage(jda, this));
+        Logger.info("Loading commands...");
+        commands = List.of(
+                new CommandManage(jda, this),
+                new CommandHelp(jda, this),
+                new CommandPoll(jda, this));
     }
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
+        String commandName = event.getName();
         Optional<DiscordCommand> first = commands.stream()
-                .filter(discordCommand -> discordCommand.getName().equalsIgnoreCase(event.getCommandString()))
+                .filter(discordCommand -> discordCommand.getName().equalsIgnoreCase(commandName))
                 .findFirst();
         if (first.isEmpty()) {
             event.replyEmbeds(new EmbedBuilder()
                             .setTitle("Invalid command")
-                            .setDescription("We couldn't find this command, please report this issue to a Teri")
+                            .setDescription("We couldn't find a command called [" + commandName + "], please report this issue to a Teri")
                             .setColor(Color.RED)
                             .build())
                     .setEphemeral(true)
@@ -56,7 +59,7 @@ public class CommandManager extends ListenerAdapter {
     @Override
     public void onCommandAutoCompleteInteraction(@NotNull CommandAutoCompleteInteractionEvent event) {
         Optional<DiscordCommand> first = commands.stream()
-                .filter(discordCommand -> discordCommand.getName().equalsIgnoreCase(event.getCommandString()))
+                .filter(discordCommand -> discordCommand.getName().equalsIgnoreCase(event.getName()))
                 .findFirst();
         if (first.isEmpty())
             return;
@@ -75,7 +78,7 @@ public class CommandManager extends ListenerAdapter {
         return commands;
     }
 
-    public List<DiscordCommand> getCommands(TextChannel textChannel) {
+    public List<DiscordCommand> getCommands(Guild guild) {
         return commands.stream().filter(command -> {
             List<ScopeInfo> scopeInfoList = commandList.get(command.getName());
             for (ScopeInfo scopeInfo : scopeInfoList) {
@@ -84,7 +87,7 @@ public class CommandManager extends ListenerAdapter {
                         return true;
                     }
                     case GUILD -> {
-                        if (textChannel.getGuild().getIdLong() == scopeInfo.getId())
+                        if (guild.getIdLong() == scopeInfo.getId())
                             return true;
                     }
                 }
@@ -112,7 +115,7 @@ public class CommandManager extends ListenerAdapter {
         return true;
     }
 
-    private void loadCommands() {
+    synchronized private void loadCommands() {
         String sql = "SELECT * FROM commands";
         PreparedStatement statement = null;
 
@@ -140,7 +143,7 @@ public class CommandManager extends ListenerAdapter {
         }
     }
 
-    public List<ScopeInfo> getActiveLocations(String command) {
+    synchronized public List<ScopeInfo> getActiveLocations(String command) {
         return commandList.getOrDefault(command, new ArrayList<>());
     }
 }

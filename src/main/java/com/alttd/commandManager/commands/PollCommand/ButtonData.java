@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class ButtonData {
+public class ButtonData { //TODO add a feature that updates a total votes count on polls while they're active
     private final UUID buttonId;
     private final long pollId;
     List<Long> votes;

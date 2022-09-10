@@ -4,6 +4,7 @@ import com.alttd.commandManager.DiscordCommand;
 import com.alttd.commandManager.SubCommand;
 import com.alttd.commandManager.SubCommandGroup;
 import com.alttd.util.OptionMappingParsing;
+import com.alttd.util.Util;
 import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -21,11 +22,16 @@ public class SubCommandClose extends SubCommand {
     @Override
     public void execute(SlashCommandInteractionEvent event) {
         GuildMessageChannel channel = OptionMappingParsing.getGuildChannel("channel", event, getName());
-        if (channel == null)
+        if (channel == null) {
+            event.replyEmbeds(Util.genericErrorEmbed("Error", "Invalid channel")).setEphemeral(true).queue();
             return;
-        Long messageId = OptionMappingParsing.getLong("message_id", event, getName());
-        if (messageId == null)
+        }
+
+        Long messageId = Util.parseLong(OptionMappingParsing.getString("message_id", event, getName()));
+        if (messageId == null) {
+            event.replyEmbeds(Util.genericErrorEmbed("Error", "Invalid message id")).setEphemeral(true).queue();
             return;
+        }
     }
 
     @Override

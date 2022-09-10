@@ -4,11 +4,13 @@ import com.alttd.commandManager.CommandManager;
 import com.alttd.commandManager.ScopeInfo;
 import com.alttd.commandManager.SubOption;
 import com.alttd.config.MessagesConfig;
+import com.alttd.config.SettingsConfig;
 import com.alttd.templates.Parser;
 import com.alttd.templates.Template;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -20,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Util {
     public static List<Long> getGroupIds(Member member) {
@@ -99,18 +102,36 @@ public class Util {
     public static void registerCommand(CommandManager commandManager, JDA jda, CommandData commandData, String commandName) {
         for (ScopeInfo info : commandManager.getActiveLocations(commandName)) {
             switch (info.getScope()) {
-                case GLOBAL -> jda.updateCommands().addCommands(commandData).queue();
-                case GUILD, USER -> {
+                case GLOBAL -> {
+                    if (SettingsConfig.DEBUG)
+                        Logger.info("Loading command [" + commandName + "] on global.");
+                    jda.upsertCommand(commandData).queue();
+//                    jda.updateCommands().addCommands(commandData).queue();
+                }
+                case GUILD -> {
                     Guild guildById = jda.getGuildById(info.getId());
                     if (guildById == null)
                     {
                         Logger.warning("Tried to add command % to invalid guild %.", commandName, String.valueOf(info.getId()));
                         continue;
                     }
-                    guildById.updateCommands().addCommands(commandData).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+                    registerCommand(guildById, commandData, commandName);
                 }
             }
         }
+    }
+
+    public static void registerCommand(Guild guild, CommandData commandData, String commandName) {
+        if (SettingsConfig.DEBUG)
+            Logger.info("Loading command [" + commandName + "] on guild [" + guild.getName() + "].");
+//        guild.upsertCommand(commandData).queue();
+        guild.upsertCommand(commandData).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+    }
+
+    public static void deleteCommand(Guild guild, long id, String commandName) {
+        if (SettingsConfig.DEBUG)
+            Logger.info("Deleting command [" + commandName + "] on guild [" + guild.getName() + "].");
+        guild.deleteCommandById(id).queue();
     }
 
     public static void registerSubOptions(HashMap<String, SubOption> subCommandMap, SubOption... subOptions) {
@@ -150,5 +171,15 @@ public class Util {
             return null;
         MessageEmbed messageEmbed = message.getEmbeds().get(0);
         return new EmbedBuilder(messageEmbed);
+    }
+
+    public static Long parseLong(String message_id) {
+        long l;
+        try {
+            l = Long.parseLong(message_id);
+        } catch (NumberFormatException ignored) {
+            return null;
+        }
+        return l;
     }
 }

@@ -3,20 +3,18 @@ package com.alttd.commandManager.commands;
 import com.alttd.commandManager.CommandManager;
 import com.alttd.commandManager.DiscordCommand;
 import com.alttd.config.MessagesConfig;
-import com.alttd.permissions.PermissionManager;
 import com.alttd.templates.Parser;
 import com.alttd.templates.Template;
 import com.alttd.util.Util;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 import java.awt.*;
 import java.util.List;
@@ -26,14 +24,15 @@ import java.util.stream.Collectors;
 public class CommandHelp extends DiscordCommand {
 
     private final CommandManager commandManager;
+    private final CommandData commandData;
 
     public CommandHelp(JDA jda, CommandManager commandManager) {
         this.commandManager = commandManager;
 
-        SlashCommandData slashCommandData = Commands.slash(getName(), "Show info about all commands or a specific command.")
+        commandData = Commands.slash(getName(), "Show info about all commands or a specific command.")
                 .addOption(OptionType.STRING, "command", "Command to get more info about", true , true);
 
-        Util.registerCommand(commandManager, jda, slashCommandData, getName());
+        Util.registerCommand(commandManager, jda, commandData, getName());
     }
 
     @Override
@@ -43,24 +42,11 @@ public class CommandHelp extends DiscordCommand {
 
     @Override
     public void execute(SlashCommandInteractionEvent event) {
-        PermissionManager permissionManager = PermissionManager.getInstance();
-
-        if (permissionManager.hasPermission(event.getTextChannel(), event.getIdLong(), Util.getGroupIds(event.getMember()), getPermission())) {
-            event.replyEmbeds(Util.noPermission(getName())).setEphemeral(true).queue();
-            return;
-        }
 
         StringBuilder helpMessage = new StringBuilder();
         List<OptionMapping> options = event.getOptions();
-        TextChannel textChannel = event.getTextChannel();
         if (options.size() == 0) {
-            commandManager.getCommands(textChannel).stream()
-                    .filter(command -> permissionManager.hasPermission(
-                            textChannel,
-                            event.getUser().getIdLong(),
-                            Util.getGroupIds(event.getMember()),
-                            command.getPermission()))
-                    .forEach(command -> helpMessage.append(command.getHelpMessage()));
+            commandManager.getCommands(event.getGuild()).forEach(command -> helpMessage.append(command.getHelpMessage()));
         } else {
             OptionMapping optionMapping = event.getOption("command");
             if (optionMapping == null) {
@@ -117,5 +103,10 @@ public class CommandHelp extends DiscordCommand {
     @Override
     public String getHelpMessage() {
         return MessagesConfig.HELP_HELP;
+    }
+
+    @Override
+    public CommandData getCommandData() {
+        return commandData;
     }
 }

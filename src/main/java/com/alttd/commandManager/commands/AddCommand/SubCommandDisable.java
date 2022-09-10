@@ -34,36 +34,37 @@ public class SubCommandDisable extends SubCommand {
     public void execute(SlashCommandInteractionEvent event) {
         Guild guild = event.getGuild();
         if (guild == null) {
-            event.replyEmbeds(Util.genericErrorEmbed("Error", "This command can only be used within guilds")).queue();
+            event.replyEmbeds(Util.genericErrorEmbed("Error", "This command can only be used within guilds")).setEphemeral(true).queue();
             return;
         }
 
         OptionMapping option = event.getOption("command");
         if (option == null) {
-            event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to find command parameter.")).queue();
+            event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to find command parameter.")).setEphemeral(true).queue();
             return;
         }
 
         String commandName = option.getAsString();
         DiscordCommand command = commandManager.getCommand(commandName);
         if (command == null) {
-            event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to find a command with that name.")).queue();
+            event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to find a command with that name.")).setEphemeral(true).queue();
             return;
         }
 
         if (disableCommand(command, guild.getIdLong())) {
+//            Util.deleteCommand(guild, guild.retri, command.getName()); //TODO add a way to disable commands?
             event.replyEmbeds(Util.genericSuccessEmbed("Disabled command",
                     Parser.parse("Successfully disabled <command> in <guild>!",
                             Template.of("command", commandName.toLowerCase()),
                             Template.of("guild", guild.getName())
-                    ))).queue();
+                    ))).setEphemeral(true).queue();
 
         } else {
             event.replyEmbeds(Util.genericErrorEmbed("Failed to disable command",
                     Parser.parse("Unable to disable <command> in <guild>, is it already disabled?",
                             Template.of("command", commandName.toLowerCase()),
                             Template.of("guild", guild.getName())
-                    ))).queue();
+                    ))).setEphemeral(true).queue();
         }
     }
 

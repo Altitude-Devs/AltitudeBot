@@ -7,6 +7,7 @@ import com.alttd.console.ConsoleCommandManager;
 import com.alttd.database.Database;
 import com.alttd.database.DatabaseTables;
 import com.alttd.util.Logger;
+import com.alttd.util.Util;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
