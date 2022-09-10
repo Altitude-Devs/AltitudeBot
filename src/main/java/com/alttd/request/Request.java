@@ -19,17 +19,19 @@ import java.awt.*;
 
 @AllArgsConstructor
 public class Request {
-
+    // TODO check if all labels on the modal are max 45 in length
     @Getter
     private String id, category, channel, name, title, description, message;
 
     public Modal modal(Member member) {
         TextInput requestTitle = TextInput
-                .create("title", title, TextInputStyle.PARAGRAPH)
+                .create("title", title, TextInputStyle.SHORT)
+                .setPlaceholder(id)
+                .setRequired(false)
                 .build();
 
         TextInput requestMessage = TextInput
-                .create("request", message.replaceAll("%member%", member.getEffectiveName()).subSequence(0, 45).toString(), TextInputStyle.PARAGRAPH)
+                .create("request", message, TextInputStyle.PARAGRAPH)
                 .build();
 
         return Modal.create("request:" + id, name)
@@ -40,10 +42,12 @@ public class Request {
 
     public void createThread(Member member, String title, String request) {
         TextChannel channel = AltitudeBot.getInstance().getJDA().getGuildById(RequestConfig.REQUEST_GUILD_ID).getTextChannelById(getChannel());
-        ThreadChannelAction threadChannelAction = channel.createThreadChannel(title);
+        if (title == null || title.isEmpty()) title = id;
+        String finalTitle = title;
+        ThreadChannelAction threadChannelAction = channel.createThreadChannel(finalTitle);
         threadChannelAction.queue(threadChannel -> {
             threadChannel.addThreadMember(member).queue();
-            sendEmbed(threadChannel, title, request);
+            sendEmbed(threadChannel, finalTitle, request);
             channel.deleteMessageById(threadChannel.getId()).queue();
             // TODO store the request somewhere so it can be grabbed later
         });
@@ -53,7 +57,7 @@ public class Request {
 //        Pair<EmbedBuilder, ActionRow> pair = getRequestEmbed(channel.getId(), title, request);
         // pairs are not really possible here :(
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("title")
+        embedBuilder.setTitle(title)
                 .addField(getName(), request, false)
                 .setColor(new Color(41, 43, 47));
         channel.sendMessageEmbeds(embedBuilder.build()).queue(message1 ->
