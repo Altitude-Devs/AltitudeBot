@@ -2,13 +2,14 @@ package com.alttd.commandManager;
 
 import com.alttd.commandManager.commands.AddCommand.CommandManage;
 import com.alttd.commandManager.commands.CommandHelp;
+import com.alttd.commandManager.commands.CommandSuggestion;
 import com.alttd.commandManager.commands.PollCommand.CommandPoll;
 import com.alttd.database.Database;
+import com.alttd.modalManager.ModalManager;
 import com.alttd.util.Logger;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -27,14 +28,15 @@ public class CommandManager extends ListenerAdapter {
     private final List<DiscordCommand> commands;
     private final HashMap<String, List<ScopeInfo>> commandList = new HashMap<>();
 
-    public CommandManager(JDA jda) {
+    public CommandManager(JDA jda, ModalManager modalManager) {
         commandList.put("manage", new ArrayList<>(List.of(new ScopeInfo(CommandScope.GLOBAL, 0))));
         loadCommands();
         Logger.info("Loading commands...");
         commands = List.of(
                 new CommandManage(jda, this),
                 new CommandHelp(jda, this),
-                new CommandPoll(jda, this));
+                new CommandPoll(jda, this),
+                new CommandSuggestion(jda, modalManager, this));
     }
 
     @Override

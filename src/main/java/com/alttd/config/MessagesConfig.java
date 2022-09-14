@@ -15,9 +15,11 @@ public class MessagesConfig extends AbstractConfig {
 
 
     public static String HELP_HELP = "`/help`: Shows help menu";
+    public static String HELP_SUGGESTION = "`/suggestion`: Opens suggestion form";
     public static String HELP_MESSAGE_TEMPLATE = "<commands>";
     private static void loadHelp() {
         HELP_HELP = messagesConfig.getString("help.help", HELP_HELP);
+        HELP_SUGGESTION = messagesConfig.getString("help.suggestion", HELP_SUGGESTION);
         HELP_MESSAGE_TEMPLATE = messagesConfig.getString("help.message-template", HELP_MESSAGE_TEMPLATE);
     }
     private static void loadPollHelp() {

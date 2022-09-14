@@ -1,6 +1,7 @@
-package com.alttd.commandManager.listeners;
+package com.alttd.listeners;
 
 import com.alttd.commandManager.CommandManager;
+import com.alttd.modalManager.ModalManager;
 import com.alttd.util.Logger;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -18,7 +19,7 @@ public class JDAListener extends ListenerAdapter {
     @Override
     public void onReady(@NotNull ReadyEvent event) {
         Logger.info("JDA ready to register commands.");
-        jda.addEventListener(new CommandManager(jda));
+        jda.addEventListener(new CommandManager(jda, new ModalManager()));
     }
 
 }
