@@ -1,23 +1,19 @@
 package com.alttd;
 
-import com.alttd.commandManager.listeners.JDAListener;
 import com.alttd.config.MessagesConfig;
 import com.alttd.config.SettingsConfig;
 import com.alttd.console.ConsoleCommandManager;
 import com.alttd.database.Database;
 import com.alttd.database.DatabaseTables;
+import com.alttd.listeners.JDAListener;
 import com.alttd.util.Logger;
-import com.alttd.util.Util;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 
-import javax.security.auth.login.LoginException;
 import java.io.File;
 import java.net.URISyntaxException;
-
-import static java.lang.System.exit;
 
 public class AltitudeBot {
 
@@ -36,13 +32,7 @@ public class AltitudeBot {
     private void start() {
         Logger.info("Starting bot...");
         initConfigs();
-        try {
-            jda = JDABuilder.createDefault(SettingsConfig.TOKEN).build();
-        } catch (LoginException e) {
-            Logger.info("Unable to log in, shutting down (check token in settings.yml).");
-            Logger.exception(e);
-            exit(1);
-        }
+        jda = JDABuilder.createDefault(SettingsConfig.TOKEN).build();
         DatabaseTables.createTables(Database.getDatabase().getConnection());
         ConsoleCommandManager.startConsoleCommands(jda);
         try {

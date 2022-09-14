@@ -8,10 +8,10 @@ import com.alttd.util.Util;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 import java.util.HashMap;
@@ -53,7 +53,7 @@ public class CommandPoll extends DiscordCommand {
                         new SubcommandData("results", "Get the results for a poll")
                                 .addOption(OptionType.CHANNEL, "channel", "Channel this poll is in", true)
                                 .addOption(OptionType.STRING, "message_id", "Id of the poll you want the results for", true));
-        commandData.setDefaultEnabled(true);
+        commandData.setDefaultPermissions(DefaultMemberPermissions.ENABLED);
         Util.registerSubOptions(subOptionsMap,
                 new SubCommandAdd(null,this),
                 new SubCommandAddButton(null, this),
