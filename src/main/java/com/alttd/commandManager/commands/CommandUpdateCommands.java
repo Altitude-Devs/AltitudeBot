@@ -3,6 +3,7 @@ package com.alttd.commandManager.commands;
 import com.alttd.commandManager.CommandManager;
 import com.alttd.commandManager.DiscordCommand;
 import com.alttd.util.Util;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -22,10 +23,11 @@ public class CommandUpdateCommands extends DiscordCommand {
     private final CommandData commandData;
     private final CommandManager commandManager;
 
-    public CommandUpdateCommands(CommandManager commandManager) {
+    public CommandUpdateCommands(JDA jda, CommandManager commandManager) {
         this.commandManager = commandManager;
         this.commandData = Commands.slash(getName(), "Updates all commands for this bot in this guild")
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
+        Util.registerCommand(commandManager, jda, commandData, getName());
     }
 
     @Override

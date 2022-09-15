@@ -1,9 +1,11 @@
 package com.alttd.commandManager.commands;
 
+import com.alttd.commandManager.CommandManager;
 import com.alttd.commandManager.DiscordCommand;
 import com.alttd.database.queries.commandOutputChannels.CommandOutputChannels;
 import com.alttd.database.queries.commandOutputChannels.OutputType;
 import com.alttd.util.Util;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
@@ -26,11 +28,12 @@ public class CommandSetOutputChannel extends DiscordCommand {
 
     private final CommandData commandData;
 
-    public CommandSetOutputChannel() {
+    public CommandSetOutputChannel(JDA jda, CommandManager commandManager) {
         commandData = Commands.slash(getName(), "Set up output channels")
                 .addOption(OptionType.STRING, "type", "The type of output channel", true, true)
                 .addOption(OptionType.CHANNEL, "channel", "The channel the specified output should go into", true)
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
+        Util.registerCommand(commandManager, jda, commandData, getName());
     }
 
     @Override

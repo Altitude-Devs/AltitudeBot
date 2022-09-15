@@ -41,8 +41,8 @@ public class CommandManager extends ListenerAdapter {
                 new CommandHelp(jda, this),
                 new CommandPoll(jda, this),
                 new CommandSuggestion(jda, modalManager, this),
-                new CommandSetOutputChannel(),
-                new CommandUpdateCommands(this));
+                new CommandSetOutputChannel(jda, this),
+                new CommandUpdateCommands(jda, this));
     }
 
     @Override
