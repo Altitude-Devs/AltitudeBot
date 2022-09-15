@@ -82,6 +82,6 @@ public class ButtonSuggestionReviewAccept extends DiscordButton {
 
     @Override
     public Button getButton() {
-        return Button.primary(getButtonId(), "Accept Suggestion");
+        return Button.success(getButtonId(), "Accept Suggestion");
     }
 }

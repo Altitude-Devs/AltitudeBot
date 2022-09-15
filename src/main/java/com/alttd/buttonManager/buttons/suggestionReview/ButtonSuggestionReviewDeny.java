@@ -68,6 +68,6 @@ public class ButtonSuggestionReviewDeny extends DiscordButton {
 
     @Override
     public Button getButton() {
-        return Button.primary(getButtonId(), "Deny Suggestion");
+        return Button.danger(getButtonId(), "Deny Suggestion");
     }
 }
