@@ -1,6 +1,7 @@
 package com.alttd.modalManager;
 
 import com.alttd.buttonManager.ButtonManager;
+import com.alttd.modalManager.modals.ModalEvidence;
 import com.alttd.modalManager.modals.ModalSuggestion;
 import com.alttd.util.Util;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -21,7 +22,8 @@ public class ModalManager extends ListenerAdapter {
 
     public ModalManager(ButtonManager buttonManager) {
         modals = List.of(
-                new ModalSuggestion(buttonManager));
+                new ModalSuggestion(buttonManager),
+                new ModalEvidence());
     }
 
     @Override

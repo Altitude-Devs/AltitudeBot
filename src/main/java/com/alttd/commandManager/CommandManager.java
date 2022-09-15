@@ -1,10 +1,7 @@
 package com.alttd.commandManager;
 
 import com.alttd.commandManager.commands.AddCommand.CommandManage;
-import com.alttd.commandManager.commands.CommandHelp;
-import com.alttd.commandManager.commands.CommandSetOutputChannel;
-import com.alttd.commandManager.commands.CommandSuggestion;
-import com.alttd.commandManager.commands.CommandUpdateCommands;
+import com.alttd.commandManager.commands.*;
 import com.alttd.commandManager.commands.PollCommand.CommandPoll;
 import com.alttd.database.Database;
 import com.alttd.modalManager.ModalManager;
@@ -42,7 +39,8 @@ public class CommandManager extends ListenerAdapter {
                 new CommandPoll(jda, this),
                 new CommandSuggestion(jda, modalManager, this),
                 new CommandSetOutputChannel(jda, this),
-                new CommandUpdateCommands(jda, this));
+                new CommandUpdateCommands(jda, this),
+                new CommandEvidence(jda, modalManager, this));
     }
 
     @Override
