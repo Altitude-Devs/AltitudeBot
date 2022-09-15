@@ -1,10 +1,13 @@
 package com.alttd.modalManager;
 
+import com.alttd.buttonManager.ButtonManager;
 import com.alttd.modalManager.modals.ModalSuggestion;
+import com.alttd.util.Util;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.Modal;
+import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,9 +19,9 @@ public class ModalManager extends ListenerAdapter {
 
     private final List<DiscordModal> modals;
 
-    public ModalManager() {
+    public ModalManager(ButtonManager buttonManager) {
         modals = List.of(
-                new ModalSuggestion());
+                new ModalSuggestion(buttonManager));
     }
 
     @Override
@@ -34,7 +37,7 @@ public class ModalManager extends ListenerAdapter {
                             .setColor(Color.RED)
                             .build())
                     .setEphemeral(true)
-                    .queue();
+                    .queue(RestAction.getDefaultSuccess(), Util::handleFailure);
             return;
         }
         first.get().execute(event);

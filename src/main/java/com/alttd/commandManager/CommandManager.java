@@ -2,7 +2,9 @@ package com.alttd.commandManager;
 
 import com.alttd.commandManager.commands.AddCommand.CommandManage;
 import com.alttd.commandManager.commands.CommandHelp;
+import com.alttd.commandManager.commands.CommandSetOutputChannel;
 import com.alttd.commandManager.commands.CommandSuggestion;
+import com.alttd.commandManager.commands.CommandUpdateCommands;
 import com.alttd.commandManager.commands.PollCommand.CommandPoll;
 import com.alttd.database.Database;
 import com.alttd.modalManager.ModalManager;
@@ -19,8 +21,10 @@ import java.awt.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CommandManager extends ListenerAdapter {
@@ -36,7 +40,9 @@ public class CommandManager extends ListenerAdapter {
                 new CommandManage(jda, this),
                 new CommandHelp(jda, this),
                 new CommandPoll(jda, this),
-                new CommandSuggestion(jda, modalManager, this));
+                new CommandSuggestion(jda, modalManager, this),
+                new CommandSetOutputChannel(),
+                new CommandUpdateCommands(this));
     }
 
     @Override
@@ -83,6 +89,8 @@ public class CommandManager extends ListenerAdapter {
     public List<DiscordCommand> getCommands(Guild guild) {
         return commands.stream().filter(command -> {
             List<ScopeInfo> scopeInfoList = commandList.get(command.getName());
+            if (scopeInfoList == null)
+                return false;
             for (ScopeInfo scopeInfo : scopeInfoList) {
                 switch (scopeInfo.getScope()) {
                     case GLOBAL -> {

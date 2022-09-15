@@ -2,5 +2,6 @@ package com.alttd.database.queries.commandOutputChannels;
 
 public enum OutputType {
     SUGGESTION,
-    SUGGESTION_REVIEW
+    SUGGESTION_REVIEW,
+    MOD_LOG
 }

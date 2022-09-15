@@ -26,7 +26,7 @@ public class CommandHelp extends DiscordCommand {
     private final CommandManager commandManager;
     private final CommandData commandData;
 
-    public CommandHelp(JDA jda, CommandManager commandManager) {
+    public CommandHelp(JDA jda, CommandManager commandManager) { //TODO make this work without specifying a command...
         this.commandManager = commandManager;
 
         commandData = Commands.slash(getName(), "Show info about all commands or a specific command.")

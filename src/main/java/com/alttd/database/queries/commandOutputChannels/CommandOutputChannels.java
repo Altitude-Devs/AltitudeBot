@@ -10,7 +10,7 @@ import java.sql.SQLException;
 public class CommandOutputChannels {
 
     public static boolean setOutputChannel(long guildId, OutputType outputType, long channelId) {
-        String sql = "INSERT INTO output_channel (guild, output_type, channel) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO output_channels (guild, output_type, channel) VALUES (?, ?, ?)";
         try {
             PreparedStatement preparedStatement = Database.getDatabase().getConnection().prepareStatement(sql);
             preparedStatement.setLong(1, guildId);
@@ -31,7 +31,7 @@ public class CommandOutputChannels {
      * @return long channel id or 0 if it errors or can't be found
      */
     public static long getOutputChannel(long guildId, OutputType outputType) {
-        String sql = "SELECT channel FROM output_channel WHERE guild = ? AND output_type = ?";
+        String sql = "SELECT channel FROM output_channels WHERE guild = ? AND output_type = ?";
         try {
             PreparedStatement preparedStatement = Database.getDatabase().getConnection().prepareStatement(sql);
             preparedStatement.setLong(1, guildId);

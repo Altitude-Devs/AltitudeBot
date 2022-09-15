@@ -1,5 +1,6 @@
 package com.alttd.listeners;
 
+import com.alttd.buttonManager.ButtonManager;
 import com.alttd.commandManager.CommandManager;
 import com.alttd.modalManager.ModalManager;
 import com.alttd.util.Logger;
@@ -19,7 +20,7 @@ public class JDAListener extends ListenerAdapter {
     @Override
     public void onReady(@NotNull ReadyEvent event) {
         Logger.info("JDA ready to register commands.");
-        jda.addEventListener(new CommandManager(jda, new ModalManager()));
+        jda.addEventListener(new CommandManager(jda, new ModalManager(new ButtonManager())));
     }
 
 }

@@ -70,7 +70,7 @@ public class SubCommandAddButton extends SubCommand {
                     .queue();
             return;
         }
-        event.deferReply().queue(hook ->
+        event.deferReply(true).queue(hook ->
                 channel.retrieveMessageById(messageId).queue(
                         message -> updatePoll(channel, rowId, buttonName, message, hook),
                         throwable -> failedToGetMessage(throwable, hook)));

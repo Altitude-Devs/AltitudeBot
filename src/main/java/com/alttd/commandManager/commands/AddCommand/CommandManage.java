@@ -7,8 +7,10 @@ import com.alttd.commandManager.SubOption;
 import com.alttd.util.Logger;
 import com.alttd.util.Util;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -29,7 +31,7 @@ public class CommandManage extends DiscordCommand {
                         new SubcommandData("disable", "Disable a command")
                                 .addOption(OptionType.STRING, "command", "Name of the command to disable", true, true)
                         );
-        commandData.setDefaultEnabled(true);
+        commandData.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
         Util.registerSubOptions(subOptionsMap,
                 new SubCommandEnable(commandManager, null, this),
                 new SubCommandEnable(commandManager, null, this)

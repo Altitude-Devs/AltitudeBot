@@ -33,8 +33,12 @@ public class Util {
                 .collect(Collectors.toList());
     }
 
+    public static void ignoreSuccess(Object o) {
+        // IDK I thought this looked nicer in the .queue call
+    }
+
     public static void handleFailure(Throwable failure) {
-        Logger.warning(failure.getMessage());
+        Logger.severe(failure.getMessage());
     }
 
     public static MessageEmbed guildOnlyCommand(String commandName) {

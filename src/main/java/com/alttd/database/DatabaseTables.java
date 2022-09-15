@@ -37,16 +37,16 @@ public class DatabaseTables {
     }
 
     private void createPollsTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS polls(" +
+                "poll_id BIGINT NOT NULL, " +
+                "channel_id BIGINT NOT NULL, " +
+                "guild_id BIGINT NOT NULL, " +
+                "active BIT DEFAULT b'0', " +
+                "poll_title VARCHAR(256) NOT NULL, " +
+                "embed_type VARCHAR(32) DEFAULT 'ABSTRACT_EMBED', " +
+                "PRIMARY KEY (poll_id)" +
+                ")";
         try {
-            String sql = "CREATE TABLE IF NOT EXISTS polls(" +
-                    "poll_id BIGINT NOT NULL, " +
-                    "channel_id BIGINT NOT NULL, " +
-                    "guild_id BIGINT NOT NULL, " +
-                    "active BIT DEFAULT b'0', " +
-                    "poll_title VARCHAR(256) NOT NULL, " +
-                    "embed_type VARCHAR(32) DEFAULT 'ABSTRACT_EMBED', " +
-                    "PRIMARY KEY (poll_id)" +
-                    ")";
             connection.prepareStatement(sql).executeUpdate();
         } catch (SQLException e) {
             Logger.sql(e);
@@ -55,13 +55,28 @@ public class DatabaseTables {
     }
 
     private void createCommandsTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS commands(" +
+                "command_name VARCHAR(64) NOT NULL, " +
+                "scope VARCHAR(16) NOT NULL, " +
+                "location_id BIGINT NOT NULL, " +
+                "PRIMARY KEY (command_name, scope, location_id)" +
+                ")";
         try {
-            String sql = "CREATE TABLE IF NOT EXISTS commands(" +
-                    "command_name VARCHAR(64) NOT NULL, " +
-                    "scope VARCHAR(16) NOT NULL, " +
-                    "location_id BIGINT NOT NULL, " +
-                    "PRIMARY KEY (command_name, scope, location_id)" +
-                    ")";
+            connection.prepareStatement(sql).executeUpdate();
+        } catch (SQLException e) {
+            Logger.sql(e);
+            Logger.severe("Unable to create polls table, shutting down...");
+        }
+    }
+
+    private void createOutputChannelsTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS output_channels(" +
+                "guild BIGINT NOT NULL, " +
+                "output_type VARCHAR(64) NOT NULL, " +
+                "channel BIGINT NOT NULL, " +
+                "PRIMARY KEY (guild, output_type, channel)" +
+                ")";
+        try {
             connection.prepareStatement(sql).executeUpdate();
         } catch (SQLException e) {
             Logger.sql(e);
