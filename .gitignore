@@ -5,3 +5,4 @@ gradlew
 run
 build
 run.sh
+*.bat
