@@ -20,7 +20,10 @@ public class JDAListener extends ListenerAdapter {
     @Override
     public void onReady(@NotNull ReadyEvent event) {
         Logger.info("JDA ready to register commands.");
-        jda.addEventListener(new CommandManager(jda, new ModalManager(new ButtonManager())));
+        ButtonManager buttonManager = new ButtonManager();
+        ModalManager modalManager = new ModalManager(buttonManager);
+        CommandManager commandManager = new CommandManager(jda, modalManager);
+        jda.addEventListener(buttonManager, modalManager, commandManager);
     }
 
 }
