@@ -63,17 +63,17 @@ public class ModalEvidence extends DiscordModal {
         }
 
         MessageEmbed evidenceEmbed = new EmbedBuilder()
-                .setAuthor(member.getEffectiveName(), null, member.getAvatarUrl())
-                .setTitle("Evidence by " + member.getEffectiveName())
+                .setDescription("Evidence by " + member.getAsMention())
                 .addField("`" + user + "`", "", false)
                 .addField(punishmentType, reason, false)
-                .setDescription(evidence)
+                .addField("", evidence, false)
                 .setFooter(member.getIdLong() + "")
                 .build();
 
         ReplyCallbackAction replyCallbackAction = event.deferReply(true);
         channel.sendMessageEmbeds(evidenceEmbed)
-                .queue(success -> replyCallbackAction.setEmbeds(Util.genericSuccessEmbed("Success", "Your evidence was submitted to the evidence channel!"), evidenceEmbed),
+                .queue(success -> replyCallbackAction.setEmbeds(Util.genericSuccessEmbed("Success", "Your evidence was submitted to the evidence channel!"), evidenceEmbed)
+                                .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure),
                         Util::handleFailure);
     }
 
@@ -81,25 +81,25 @@ public class ModalEvidence extends DiscordModal {
     public Modal getModal() {
         TextInput user = TextInput.create("user", "User", TextInputStyle.SHORT)
                 .setPlaceholder("username/id")
-                .setMinLength(1)
+                .setRequiredRange(1, 256)
                 .setRequired(true)
                 .build();
 
         TextInput punishmentType = TextInput.create("punishment-type", "Punishment Type", TextInputStyle.SHORT)
                 .setPlaceholder("punishment type")
-                .setMinLength(3)
+                .setRequiredRange(3, 256)
                 .setRequired(true)
                 .build();
 
         TextInput reason = TextInput.create("reason", "Reason", TextInputStyle.SHORT)
                 .setPlaceholder("punishment reason")
-                .setMinLength(10)
+                .setRequiredRange(10, 256)
                 .setRequired(true)
                 .build();
 
         TextInput evidence = TextInput.create("evidence", "Evidence", TextInputStyle.PARAGRAPH)
                 .setPlaceholder("evidence")
-                .setRequiredRange(10, 1000)
+                .setRequiredRange(10, 1024)
                 .setRequired(true)
                 .build();
 
