@@ -10,12 +10,13 @@ import java.sql.SQLException;
 public class CommandOutputChannels {
 
     public static boolean setOutputChannel(long guildId, OutputType outputType, long channelId) {
-        String sql = "INSERT INTO output_channels (guild, output_type, channel) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO output_channels (guild, output_type, channel) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE channel = ?";
         try {
             PreparedStatement preparedStatement = Database.getDatabase().getConnection().prepareStatement(sql);
             preparedStatement.setLong(1, guildId);
             preparedStatement.setString(2, outputType.name());
             preparedStatement.setLong(3, channelId);
+            preparedStatement.setLong(4, channelId);
 
             return preparedStatement.executeUpdate() == 1;
         } catch (SQLException e) {
