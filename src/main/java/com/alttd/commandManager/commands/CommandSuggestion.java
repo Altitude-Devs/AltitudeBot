@@ -39,7 +39,8 @@ public class CommandSuggestion extends DiscordCommand {
         Modal modal = modalManager.getModalFor("suggestion");
         if (modal == null) {
             event.replyEmbeds(Util.genericErrorEmbed("Error",
-                    "Unable to find suggestion modal, please report this issue to Teri")).queue();
+                    "Unable to find suggestion modal."))
+                    .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
             return;
         }
         event.replyModal(modal).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
@@ -47,7 +48,8 @@ public class CommandSuggestion extends DiscordCommand {
 
     @Override
     public void suggest(CommandAutoCompleteInteractionEvent event) {
-        event.replyChoices(Collections.emptyList()).queue();
+        event.replyChoices(Collections.emptyList())
+                .queue(RestAction.getDefaultSuccess(), Util::handleFailure);
     }
 
     @Override
