@@ -45,8 +45,8 @@ public class ModalSuggestion extends DiscordModal {
                     .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
             return;
         }
-        String title = modalMappings.get(0).getAsString();
-        String desc = modalMappings.get(1).getAsString();
+        String title = modalMappings.get(0).getAsString().replaceAll("\u200B", "");
+        String desc = modalMappings.get(1).getAsString().replaceAll("\u200B", "");
 
         Guild guild = event.getGuild();
         if (guild == null) {
