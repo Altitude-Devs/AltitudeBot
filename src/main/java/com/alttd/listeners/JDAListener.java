@@ -10,7 +10,6 @@ import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,6 +28,7 @@ public class JDAListener extends ListenerAdapter {
         ModalManager modalManager = new ModalManager(buttonManager);
         CommandManager commandManager = new CommandManager(jda, modalManager);
         jda.addEventListener(buttonManager, modalManager, commandManager);
+//        RequestManager.init();
     }
 
     @Override
