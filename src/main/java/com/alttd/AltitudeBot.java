@@ -32,7 +32,25 @@ public class AltitudeBot {
         initConfigs();
         ConsoleCommandManager.startConsoleCommands(jda);
         jda = JDABuilder.createDefault(SettingsConfig.TOKEN).build();
+        try {
+            jda = JDABuilder.createDefault(SettingsConfig.TOKEN).build().awaitReady();
+        } catch (LoginException e) {
+            Logger.info("Unable to log in, shutting down (check token in settings.yml).");
+            exit(1);
+            Logger.exception(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         DatabaseTables.createTables(Database.getDatabase().getConnection());
+        ConsoleCommandManager.startConsoleCommands(jda);
+        try {
+            jda.getPresence().setPresence(
+                    OnlineStatus.valueOf(SettingsConfig.STATUS),
+                    Activity.listening(SettingsConfig.ACTIVITY));
+        } catch (IllegalArgumentException e) {
+            Logger.exception(e);
+        }
+        RequestManager.init();
 //        try {
 //            jda.getPresence().setPresence(
 //                    OnlineStatus.valueOf(SettingsConfig.STATUS),
