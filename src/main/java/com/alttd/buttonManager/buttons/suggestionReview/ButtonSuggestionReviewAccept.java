@@ -65,15 +65,23 @@ public class ButtonSuggestionReviewAccept extends DiscordButton {
             return;
         }
 
+        String mentionMember = reviewMessage.getDescription();
+        if (mentionMember == null) {
+            event.replyEmbeds(Util.genericErrorEmbed("Error", "This message contains no description, can't be a suggestion"))
+                    .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+            return;
+        }
+
         MessageEmbed suggestionMessage = new EmbedBuilder(reviewMessage)
                 .clearFields()
                 .setColor(Color.GRAY)
                 .setTitle(fields.get(0).getName())
                 .setDescription(fields.get(0).getValue())
+                .addField("Suggestion by", mentionMember, false)
                 .build();
 
         if (suggestionGuildChannel instanceof ForumChannel forumChannel) {
-            sendSuggestionInForum(forumChannel, modLogChannel, fields.get(0), suggestionMessage, event);
+            sendSuggestionInForum(forumChannel, modLogChannel, fields.get(0), suggestionMessage, mentionMember, event);
         } else if (suggestionGuildChannel instanceof TextChannel forumChannel) {
             sendSuggestionEmbed(forumChannel, modLogChannel, suggestionMessage, event);
         } else {
@@ -106,8 +114,8 @@ public class ButtonSuggestionReviewAccept extends DiscordButton {
                 .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure));
     }
 
-    public void sendSuggestionInForum(ForumChannel forumChannel, TextChannel modLog, MessageEmbed.Field field, MessageEmbed suggestionMessage, ButtonInteractionEvent event) {
-        MessageCreateData messageCreateData = new MessageCreateBuilder().addContent(field.getValue() + "\u200B").build();
+    public void sendSuggestionInForum(ForumChannel forumChannel, TextChannel modLog, MessageEmbed.Field field, MessageEmbed suggestionMessage, String mentionMember, ButtonInteractionEvent event) {
+        MessageCreateData messageCreateData = new MessageCreateBuilder().addContent("**Suggestion by: " + mentionMember + "**\n\n" + field.getValue() + "\u200B").build();
 
         forumChannel.createForumPost(field.getName(), messageCreateData).queue(success -> {
             event.getMessage().delete().queue(RestAction.getDefaultSuccess(), Util::handleFailure);
