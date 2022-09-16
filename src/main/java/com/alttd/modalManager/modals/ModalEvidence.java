@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -48,9 +49,15 @@ public class ModalEvidence extends DiscordModal {
             return;
         }
 
-        GuildMessageChannel channel = guild.getChannelById(GuildMessageChannel.class, CommandOutputChannels.getOutputChannel(guild.getIdLong(), OutputType.EVIDENCE));
-        if (channel == null) {
-            event.replyEmbeds(Util.genericErrorEmbed("Error", "This guild does not have a suggestion review channel or it's not the right channel type"))
+        GuildChannel outputChannel = CommandOutputChannels.getOutputChannel(guild, OutputType.EVIDENCE);
+        if (outputChannel == null) {
+            event.replyEmbeds(Util.genericErrorEmbed("Error", "This guild does not have an evidence channel or it's not the right channel type"))
+                    .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+            return;
+        }
+
+        if (!(outputChannel instanceof GuildMessageChannel channel)) {
+            event.replyEmbeds(Util.genericErrorEmbed("Error", "Invalid Evidence channel type: " + outputChannel.getType()))
                     .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
             return;
         }

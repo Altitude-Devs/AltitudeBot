@@ -74,6 +74,7 @@ public class DatabaseTables {
                 "guild BIGINT NOT NULL, " +
                 "output_type VARCHAR(64) NOT NULL, " +
                 "channel BIGINT NOT NULL, " +
+                "channel_type VARCHAR(64) NOT NULL, " +
                 "PRIMARY KEY (guild, output_type, channel)" +
                 ")";
         try {
