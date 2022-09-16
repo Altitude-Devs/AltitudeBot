@@ -34,6 +34,7 @@ public class CommandManager extends ListenerAdapter {
         commandList.put("manage", new ArrayList<>(List.of(new ScopeInfo(CommandScope.GLOBAL, 0))));
         loadCommands();
         Logger.info("Loading commands...");
+        CommandSetToggleableRoles commandSetToggleableRoles = new CommandSetToggleableRoles(jda, this);
         commands = List.of(
                 new CommandManage(jda, this, contextMenuManager),
                 new CommandHelp(jda, this),
@@ -43,7 +44,9 @@ public class CommandManager extends ListenerAdapter {
                 new CommandUpdateCommands(jda, this),
                 new CommandEvidence(jda, modalManager, this),
                 new CommandFlag(jda, this),
-                new CommandHistory(jda, this));
+                new CommandHistory(jda, this),
+                commandSetToggleableRoles,
+                new CommandToggleRole(commandSetToggleableRoles, jda, this));
     }
 
     @Override

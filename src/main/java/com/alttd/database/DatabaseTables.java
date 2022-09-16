@@ -65,7 +65,7 @@ public class DatabaseTables {
             connection.prepareStatement(sql).executeUpdate();
         } catch (SQLException e) {
             Logger.sql(e);
-            Logger.severe("Unable to create polls table, shutting down...");
+            Logger.severe("Unable to create commands table, shutting down...");
         }
     }
 
@@ -81,7 +81,21 @@ public class DatabaseTables {
             connection.prepareStatement(sql).executeUpdate();
         } catch (SQLException e) {
             Logger.sql(e);
-            Logger.severe("Unable to create polls table, shutting down...");
+            Logger.severe("Unable to create output channel table, shutting down...");
+        }
+    }
+
+    private void createToggleableRolesTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS toggleable_roles(" +
+                "guild BIGINT NOT NULL, " +
+                "role BIGINT NOT NULL, " +
+                "PRIMARY KEY (guild, role)" +
+                ")";
+        try {
+            connection.prepareStatement(sql).executeUpdate();
+        } catch (SQLException e) {
+            Logger.sql(e);
+            Logger.severe("Unable to create toggleable roles table, shutting down...");
         }
     }
 
