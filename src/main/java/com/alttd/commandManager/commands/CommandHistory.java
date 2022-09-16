@@ -117,7 +117,7 @@ public class CommandHistory extends DiscordCommand {
     private void sendHistEmbed(SlashCommandInteractionEvent event, List<History> historyList, String username) {
         EmbedBuilder embedBuilder = new EmbedBuilder()
                 .setColor(Color.ORANGE)
-                .setTitle("Flaglist for: " + username);
+                .setTitle("History for: " + username);
 
         int i = 0;
         for (History history : historyList) {
