@@ -6,12 +6,18 @@ import com.alttd.console.ConsoleCommandManager;
 import com.alttd.database.Database;
 import com.alttd.database.DatabaseTables;
 import com.alttd.listeners.JDAListener;
+import com.alttd.request.RequestManager;
 import com.alttd.util.Logger;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.Activity;
 
+import javax.security.auth.login.LoginException;
 import java.io.File;
 import java.net.URISyntaxException;
+
+import static java.lang.System.exit;
 
 public class AltitudeBot {
 
@@ -34,10 +40,6 @@ public class AltitudeBot {
         jda = JDABuilder.createDefault(SettingsConfig.TOKEN).build();
         try {
             jda = JDABuilder.createDefault(SettingsConfig.TOKEN).build().awaitReady();
-        } catch (LoginException e) {
-            Logger.info("Unable to log in, shutting down (check token in settings.yml).");
-            exit(1);
-            Logger.exception(e);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
