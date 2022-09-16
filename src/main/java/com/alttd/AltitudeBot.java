@@ -9,8 +9,6 @@ import com.alttd.listeners.JDAListener;
 import com.alttd.util.Logger;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.entities.Activity;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -32,16 +30,16 @@ public class AltitudeBot {
     private void start() {
         Logger.info("Starting bot...");
         initConfigs();
+        ConsoleCommandManager.startConsoleCommands(jda);
         jda = JDABuilder.createDefault(SettingsConfig.TOKEN).build();
         DatabaseTables.createTables(Database.getDatabase().getConnection());
-        ConsoleCommandManager.startConsoleCommands(jda);
-        try {
-            jda.getPresence().setPresence(
-                    OnlineStatus.valueOf(SettingsConfig.STATUS),
-                    Activity.listening(SettingsConfig.ACTIVITY));
-        } catch (IllegalArgumentException e) {
-            Logger.exception(e);
-        }
+//        try {
+//            jda.getPresence().setPresence(
+//                    OnlineStatus.valueOf(SettingsConfig.STATUS),
+//                    Activity.listening(SettingsConfig.ACTIVITY));
+//        } catch (IllegalArgumentException e) {
+//            Logger.exception(e);
+//        }
         initListeners();
         //TODO init permissionManager
     }
