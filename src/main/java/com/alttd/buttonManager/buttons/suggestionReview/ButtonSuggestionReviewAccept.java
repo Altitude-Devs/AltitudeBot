@@ -107,7 +107,7 @@ public class ButtonSuggestionReviewAccept extends DiscordButton {
     }
 
     public void sendSuggestionInForum(ForumChannel forumChannel, TextChannel modLog, MessageEmbed.Field field, MessageEmbed suggestionMessage, ButtonInteractionEvent event) {
-        MessageCreateData messageCreateData = new MessageCreateBuilder().addContent(field.getValue()).build();
+        MessageCreateData messageCreateData = new MessageCreateBuilder().addContent(field.getValue() + "\u200B").build();
 
         forumChannel.createForumPost(field.getName(), messageCreateData).queue(success -> {
             event.getMessage().delete().queue(RestAction.getDefaultSuccess(), Util::handleFailure);

@@ -2,6 +2,7 @@ package com.alttd.listeners;
 
 import com.alttd.buttonManager.ButtonManager;
 import com.alttd.commandManager.CommandManager;
+import com.alttd.contextMenuManager.ContextMenuManager;
 import com.alttd.modalManager.ModalManager;
 import com.alttd.request.RequestManager;
 import com.alttd.util.Logger;
@@ -26,8 +27,9 @@ public class JDAListener extends ListenerAdapter {
         Logger.info("JDA ready to register commands.");
         ButtonManager buttonManager = new ButtonManager();
         ModalManager modalManager = new ModalManager(buttonManager);
-        CommandManager commandManager = new CommandManager(jda, modalManager);
-        jda.addEventListener(buttonManager, modalManager, commandManager);
+        ContextMenuManager contextMenuManager = new ContextMenuManager(modalManager);
+        CommandManager commandManager = new CommandManager(jda, modalManager, contextMenuManager);
+        jda.addEventListener(buttonManager, modalManager, commandManager, contextMenuManager);
 //        RequestManager.init();
     }
 

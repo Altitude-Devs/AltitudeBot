@@ -4,6 +4,7 @@ import com.alttd.commandManager.CommandManager;
 import com.alttd.commandManager.DiscordCommand;
 import com.alttd.commandManager.SubCommand;
 import com.alttd.commandManager.SubOption;
+import com.alttd.contextMenuManager.ContextMenuManager;
 import com.alttd.util.Logger;
 import com.alttd.util.Util;
 import net.dv8tion.jda.api.JDA;
@@ -23,7 +24,7 @@ public class CommandManage extends DiscordCommand {
     private final HashMap<String, SubOption> subOptionsMap = new HashMap<>();
     private final CommandData commandData;
 
-    public CommandManage(JDA jda, CommandManager commandManager) {
+    public CommandManage(JDA jda, CommandManager commandManager, ContextMenuManager contextMenuManager) {
         commandData = Commands.slash(getName(), "Enable commands and assign permissions")
                 .addSubcommands(
                         new SubcommandData("enable", "Enable a command in a channel")
@@ -33,8 +34,8 @@ public class CommandManage extends DiscordCommand {
                         );
         commandData.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
         Util.registerSubOptions(subOptionsMap,
-                new SubCommandEnable(commandManager, null, this),
-                new SubCommandEnable(commandManager, null, this)
+                new SubCommandEnable(commandManager, contextMenuManager, null, this),
+                new SubCommandDisable(commandManager, null, this)
         );
         Util.registerCommand(commandManager, jda, commandData, getName());
     }
