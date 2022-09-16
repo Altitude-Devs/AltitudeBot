@@ -54,30 +54,86 @@ public class CommandHistory extends DiscordCommand {
 
         String username = option.getAsString();
 
-        if (username.length() == 36)
-            histUUID(username, event);
+        option = event.getInteraction().getOption("type");
+        if (option != null) {
+            String type = option.getAsString();
+            HistoryType historyType;
+            try {
+                historyType = HistoryType.valueOf(type);
+            } catch (IllegalArgumentException e) {
+                event.replyEmbeds(Util.genericErrorEmbed("Error", "Invalid history type"))
+                        .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+                return;
+            }
+
+            if (username.length() == 36) {
+                UUID uuid = uuidFromName(username, event);
+                if (uuid == null)
+                    return;
+                histUUID(uuid, event, historyType);
+            }
+            else
+                histName(username, event, historyType);
+            return;
+        }
+
+        if (username.length() == 36) {
+            UUID uuid = uuidFromName(username, event);
+            if (uuid == null)
+                return;
+            histUUID(uuid, event);
+        }
         else
             histName(username, event);
     }
 
-    private void histUUID(String username, SlashCommandInteractionEvent event) {
-        UUID uuid;
+    private UUID uuidFromName(String username, SlashCommandInteractionEvent event) {
         try {
-            uuid = UUID.fromString(username);
+            return UUID.fromString(username);
         } catch (IllegalArgumentException e) {
             event.replyEmbeds(Util.genericErrorEmbed("Error", "Invalid UUID"))
                     .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
-            return;
         }
+        return null;
+    }
 
-        List<History> historyList = QueriesHistory.getHistory(uuid);
-
-        if (historyList == null) {
-            event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to retrieve history for user"))
+    private void histName(String username, SlashCommandInteractionEvent event, HistoryType historyType) {
+        if (!username.matches("^[a-zA-Z0-9_]{2,16}$")) {
+            event.replyEmbeds(Util.genericErrorEmbed("Error", "Invalid username"))
                     .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
             return;
         }
-        sendHistEmbed(event, historyList, uuid);
+
+        UUID uuid = QueriesUserUUID.getUUIDByUsername(username);
+        if (uuid == null) {
+            event.replyEmbeds(Util.genericErrorEmbed("Error", "Could not find uuid for username"))
+                    .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+            return;
+        }
+
+        hist(username, uuid, historyType, event);
+    }
+
+    private void histUUID(UUID uuid, SlashCommandInteractionEvent event, HistoryType historyType) {
+        String username = QueriesUserUUID.getUsernameByUUID(uuid);
+        if (username == null) {
+            event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to retrieve username for uuid"))
+                    .setEphemeral(true).queue();
+            return;
+        }
+
+        hist(username, uuid, historyType, event);
+    }
+
+    private void histUUID(UUID uuid, SlashCommandInteractionEvent event) {
+        String username = QueriesUserUUID.getUsernameByUUID(uuid);
+        if (username == null) {
+            event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to retrieve username for uuid"))
+                    .setEphemeral(true).queue();
+            return;
+        }
+
+        hist(username, uuid, event);
     }
 
     private void histName(String username, SlashCommandInteractionEvent event) {
@@ -94,6 +150,10 @@ public class CommandHistory extends DiscordCommand {
             return;
         }
 
+        hist(username, uuid, event);
+    }
+
+    private void hist(String username, UUID uuid, SlashCommandInteractionEvent event) {
         List<History> history = QueriesHistory.getHistory(uuid);
 
         if (history == null) {
@@ -104,13 +164,26 @@ public class CommandHistory extends DiscordCommand {
         sendHistEmbed(event, history, username);
     }
 
-    private void sendHistEmbed(SlashCommandInteractionEvent event, List<History> historyList, UUID uuid) {
-        String username = QueriesUserUUID.getUsernameByUUID(uuid);
-        if (username == null) {
-            event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to retrieve username for uuid"))
-                    .setEphemeral(true).queue();
+    private void hist(String username, UUID uuid, HistoryType historyType, SlashCommandInteractionEvent event) {
+        List<History> historyList;
+        switch (historyType) {
+            case BAN -> historyList = QueriesHistory.getBans(uuid);
+            case MUTE -> historyList = QueriesHistory.getMutes(uuid);
+            case KICK -> historyList = QueriesHistory.getKicks(uuid);
+            case WARN -> historyList = QueriesHistory.getWarns(uuid);
+            default -> {
+                event.replyEmbeds(Util.genericErrorEmbed("Error", "Invalid history type"))
+                        .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+                return;
+            }
+        }
+
+        if (historyList == null) {
+            event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to retrieve history for user"))
+                    .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
             return;
         }
+
         sendHistEmbed(event, historyList, username);
     }
 
@@ -155,8 +228,12 @@ public class CommandHistory extends DiscordCommand {
             event.replyChoiceStrings(new ArrayList<>()).queue();
             return;
         }
-        String type = option.getAsString().toUpperCase();
-        event.replyChoiceStrings(Arrays.stream(HistoryType.values()).map(HistoryType::name).collect(Collectors.toList()))
+
+        String type = option.getAsString();
+        event.replyChoiceStrings(Arrays.stream(HistoryType.values())
+                        .map(HistoryType::name)
+                        .filter(value -> value.toUpperCase().startsWith(type.toUpperCase()))
+                        .collect(Collectors.toList()))
                 .queue(RestAction.getDefaultSuccess(), Util::handleFailure);
     }
 
