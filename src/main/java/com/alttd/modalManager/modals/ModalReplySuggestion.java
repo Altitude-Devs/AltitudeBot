@@ -68,7 +68,7 @@ public class ModalReplySuggestion extends DiscordModal {
             return;
         }
 
-        event.editMessage(split[0] + "\u200B\n\n" + "Response by: " + member.getAsMention() + response)
+        message.editMessage(split[0] + "\u200B\n\n" + "**Response by: " + member.getAsMention() + "**\n" + response.replaceAll("\u200B", ""))
                 .queue(success -> event.replyEmbeds(Util.genericSuccessEmbed("Success", "Responded to the suggestion!"))
                                 .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure),
                         failure -> event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to edit the suggestion"))
