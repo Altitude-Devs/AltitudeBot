@@ -30,10 +30,9 @@ public class AltitudeBot {
     private void start() {
         Logger.info("Starting bot...");
         initConfigs();
-        ConsoleCommandManager.startConsoleCommands(jda);
         jda = JDABuilder.createDefault(SettingsConfig.TOKEN).build();
-        DatabaseTables.createTables(Database.getDatabase().getConnection());
         ConsoleCommandManager.startConsoleCommands(jda);
+        DatabaseTables.createTables(Database.getDatabase().getConnection());
 //        try {
 //            jda.getPresence().setPresence(
 //                    OnlineStatus.valueOf(SettingsConfig.STATUS),
