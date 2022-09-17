@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -121,6 +122,8 @@ public class ButtonSuggestionReviewAccept extends DiscordButton {
             event.getMessage().delete().queue(RestAction.getDefaultSuccess(), Util::handleFailure);
             event.replyEmbeds(Util.genericSuccessEmbed("Success", "The suggestion was accepted and posted in the suggestion channel")).setEphemeral(true).queue();
             sendModLog(modLog, suggestionMessage, event);
+            success.getMessage().addReaction(Emoji.fromUnicode("\uD83D\uDC4D")).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+            success.getMessage().addReaction(Emoji.fromUnicode("\uD83D\uDC4E")).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
         }, failure -> event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to send suggestion to the suggestion channel"))
                 .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure));
     }
