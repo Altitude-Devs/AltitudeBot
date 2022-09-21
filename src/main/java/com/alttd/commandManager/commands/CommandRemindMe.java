@@ -162,12 +162,12 @@ public class CommandRemindMe extends DiscordCommand {
 
         String value = focusedOption.getValue();
         if (value.isBlank()) {
-            event.replyChoiceStrings(List.of("1h", "1d", "1w", "1y", "t:" + new Date().getTime())).queue();
+            event.replyChoiceStrings(List.of("1h", "1d", "1m", "1y", "t:" + new Date().getTime())).queue();
             return;
         }
 
         if (value.matches("[0-9]+"))
-            event.replyChoiceStrings(List.of(value + "h", value + "d", value + "w", value + "y")).queue();
+            event.replyChoiceStrings(List.of(value + "h", value + "d", value + "m", value + "y")).queue();
         else if (value.startsWith("t:"))
             event.replyChoiceStrings(List.of(value)).queue();
         else
