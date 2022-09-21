@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.utils.TimeUtil;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 public class ModalRemindMe extends DiscordModal {
 
@@ -46,13 +47,13 @@ public class ModalRemindMe extends DiscordModal {
 
     @Override
     public void execute(ModalInteractionEvent event) {
-        String title = getValidString(event.getValue("title"), event);
+        String title = getValidString(event.getValue("title"), event, true);
         if (title == null)
             return;
 
-        String desc = getValidString(event.getValue("description"), event);
+        String desc = getValidString(event.getValue("description"), event, false);
         if (desc == null)
-            return;
+            desc = "";
 
         long userId = event.getUser().getIdLong();
         RemindMeData remindMeData = pullData(userId);
@@ -82,19 +83,20 @@ public class ModalRemindMe extends DiscordModal {
             return;
         }
 
-        long discordTimestamp = TimeUtil.getDiscordTimestamp(reminder.creationDate());
         MessageEmbed messageEmbed = new EmbedBuilder()
                 .setTitle(reminder.title())
                 .setDescription(reminder.description())
-                .setFooter("Requested <t:" + discordTimestamp + ":R>")
+                .appendDescription("\n\nWill remind <t:" + TimeUnit.MILLISECONDS.toSeconds(reminder.remindDate()) + ":R>")
                 .build();
-        ButtonRemindMeConfirm.putReminder(userId, reminder);
-        event.replyEmbeds(messageEmbed).queue(message ->
-                message.editOriginalComponents().setActionRow(remindMeConfirm, remindMeCancel)
-                        .queue(RestAction.getDefaultSuccess(), Util::handleFailure));
+        event.deferReply().setEphemeral(true).queue(defer -> {
+            ButtonRemindMeConfirm.putReminder(userId, defer, reminder);
+            defer.editOriginalEmbeds(messageEmbed).queue(message ->
+                    defer.editOriginalComponents().setActionRow(remindMeConfirm, remindMeCancel)
+                            .queue(RestAction.getDefaultSuccess(), Util::handleFailure));
+        });
     }
 
-    public String getValidString(ModalMapping modalMapping, ModalInteractionEvent event) {
+    public String getValidString(ModalMapping modalMapping, ModalInteractionEvent event, boolean required) {
         if (modalMapping == null) {
             event.replyEmbeds(Util.genericErrorEmbed("Error", "Couldn't find modal"))
                     .setEphemeral(true).queue();
@@ -103,8 +105,9 @@ public class ModalRemindMe extends DiscordModal {
 
         String string = modalMapping.getAsString();
         if (string.isEmpty()) {
-            event.replyEmbeds(Util.genericErrorEmbed("Error", "Couldn't find contents of modal"))
-                    .setEphemeral(true).queue();
+            if (required)
+                event.replyEmbeds(Util.genericErrorEmbed("Error", "Couldn't find contents of modal"))
+                        .setEphemeral(true).queue();
             return null;
         }
 
@@ -114,14 +117,14 @@ public class ModalRemindMe extends DiscordModal {
     @Override
     public Modal getModal() {
         TextInput title = TextInput.create("title", "Title", TextInputStyle.SHORT)
-                .setPlaceholder("reminder title:")
+                .setPlaceholder("reminder title")
                 .setRequiredRange(1, 256)
                 .setRequired(true)
                 .build();
 
         TextInput desc = TextInput.create("description", "Description", TextInputStyle.PARAGRAPH)
-                .setPlaceholder("optional reminder description:")
-                .setRequiredRange(1, 4096)
+                .setPlaceholder("optional reminder description")
+                .setRequiredRange(1, 4000)
                 .setRequired(false)
                 .build();
 

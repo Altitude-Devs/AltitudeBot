@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -18,7 +19,9 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.components.Modal;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class CommandRemindMe extends DiscordCommand {
@@ -60,7 +63,7 @@ public class CommandRemindMe extends DiscordCommand {
             return;
         }
 
-        ModalRemindMe.putData(event.getIdLong(), channel, fromNow);
+        ModalRemindMe.putData(event.getUser().getIdLong(), channel, fromNow);
         event.replyModal(modal).queue();
     }
 
@@ -92,7 +95,7 @@ public class CommandRemindMe extends DiscordCommand {
             return null;
         }
 
-        if (!fromNow.matches("[1-9][0-9]*[dmy]")) {
+        if (!fromNow.matches("[1-9][0-9]*[hdmy]")) {
             return fromNowTimestamp(fromNow, event);
         }
 
@@ -106,6 +109,9 @@ public class CommandRemindMe extends DiscordCommand {
         }
 
         switch (fromNow.substring(fromNow.length() - 1)) {
+            case "h" -> {
+                return TimeUnit.HOURS.toMillis(i) + new Date().getTime();
+            }
             case "d" -> {
                 return TimeUnit.DAYS.toMillis(i) + new Date().getTime();
             }
@@ -148,7 +154,24 @@ public class CommandRemindMe extends DiscordCommand {
 
     @Override
     public void suggest(CommandAutoCompleteInteractionEvent event) {
-        //TODO implement suggest
+        AutoCompleteQuery focusedOption = event.getFocusedOption();
+        if (!focusedOption.getName().equals("fromnow")) {
+            event.replyChoices(Collections.emptyList()).queue();
+            return;
+        }
+
+        String value = focusedOption.getValue();
+        if (value.isBlank()) {
+            event.replyChoiceStrings(List.of("1h", "1d", "1w", "1y", "t:" + new Date().getTime())).queue();
+            return;
+        }
+
+        if (value.matches("[0-9]+"))
+            event.replyChoiceStrings(List.of(value + "h", value + "d", value + "w", value + "y")).queue();
+        else if (value.startsWith("t:"))
+            event.replyChoiceStrings(List.of(value)).queue();
+        else
+            event.replyChoices(Collections.emptyList()).queue();
     }
 
     @Override

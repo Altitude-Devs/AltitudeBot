@@ -41,7 +41,7 @@ public class ReminderScheduler {
         else
             nextReminder = reminders.get(0);
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-        scheduledExecutorService.schedule(new ReminderRun(), 1, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleWithFixedDelay(new ReminderRun(), 0, 1, TimeUnit.MINUTES);
 
     }
 
@@ -86,11 +86,10 @@ public class ReminderScheduler {
         }
 
         private void sendEmbed(Reminder reminder, TextChannel channel) {
-            long discordTimestamp = TimeUtil.getDiscordTimestamp(reminder.creationDate());
             EmbedBuilder embedBuilder = new EmbedBuilder()
                     .setTitle(reminder.title())
                     .setDescription(reminder.description())
-                    .setFooter("Requested <t:" + discordTimestamp + ":R>");
+                    .appendDescription("\n\nRequested <t:" + TimeUnit.MILLISECONDS.toSeconds(reminder.creationDate()) + ":R>");
             Guild guild = reminder.getGuild(jda);
             if (guild == null) {
                 sendEmbed(reminder, channel, embedBuilder);

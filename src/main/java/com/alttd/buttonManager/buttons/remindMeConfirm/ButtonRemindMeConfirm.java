@@ -6,20 +6,22 @@ import com.alttd.database.queries.QueriesReminders.Reminder;
 import com.alttd.reminders.ReminderScheduler;
 import com.alttd.util.Util;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class ButtonRemindMeConfirm extends DiscordButton {
 
-    private static final HashMap<Long, Reminder> unconfirmedReminders = new HashMap<>();
+    private static final HashMap<Long, HookAndReminder> unconfirmedReminders = new HashMap<>();
 
-    public static synchronized void putReminder(long id, Reminder reminder) {
-        unconfirmedReminders.put(id, reminder);
+    public static synchronized void putReminder(long id, InteractionHook defer, Reminder reminder) {
+        unconfirmedReminders.put(id, new HookAndReminder(reminder, defer));
     }
 
-    public static synchronized Reminder removeReminder(long id) {
-        return unconfirmedReminders.get(id);
+    public static synchronized HookAndReminder removeReminder(long id) {
+        return unconfirmedReminders.remove(id);
     }
 
     @Override
@@ -29,12 +31,13 @@ public class ButtonRemindMeConfirm extends DiscordButton {
 
     @Override
     public void execute(ButtonInteractionEvent event) {
-        Reminder reminder = removeReminder(event.getUser().getIdLong());
+        HookAndReminder hookAndReminder = removeReminder(event.getUser().getIdLong());
 
-        if (storeReminder(reminder, event)) {
+        if (storeReminder(hookAndReminder.reminder(), event)) {
             event.replyEmbeds(Util.genericSuccessEmbed("Success", "Your reminder was successfully created!"))
                     .setEphemeral(true).queue();
         }
+        hookAndReminder.interactionHook().editOriginalComponents(List.of()).queue();
     }
 
     private boolean storeReminder(Reminder reminder, ButtonInteractionEvent event) {
