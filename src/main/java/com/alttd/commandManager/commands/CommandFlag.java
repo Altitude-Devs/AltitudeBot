@@ -31,7 +31,8 @@ public class CommandFlag extends DiscordCommand {
     public CommandFlag(JDA jda, CommandManager commandManager) {
         this.commandData = Commands.slash(getName(), "Show flags for a user")
                 .addOption(OptionType.STRING, "user", "The user to show flags for", true)
-                .setDefaultPermissions(DefaultMemberPermissions.ENABLED);
+                .setDefaultPermissions(DefaultMemberPermissions.ENABLED)
+                .setGuildOnly(true);
 
         Util.registerCommand(commandManager, jda, commandData, getName());
     }

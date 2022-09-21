@@ -31,8 +31,9 @@ public class CommandManage extends DiscordCommand {
                                 .addOption(OptionType.STRING, "command", "Name of the command to enable", true, true),
                         new SubcommandData("disable", "Disable a command")
                                 .addOption(OptionType.STRING, "command", "Name of the command to disable", true, true)
-                        );
-        commandData.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
+                        )
+                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
+                .setGuildOnly(true);
         Util.registerSubOptions(subOptionsMap,
                 new SubCommandEnable(commandManager, contextMenuManager, null, this),
                 new SubCommandDisable(commandManager, null, this)

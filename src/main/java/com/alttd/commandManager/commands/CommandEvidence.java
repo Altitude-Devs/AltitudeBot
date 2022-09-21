@@ -8,6 +8,7 @@ import com.alttd.util.Util;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.components.Modal;
@@ -23,7 +24,9 @@ public class CommandEvidence extends DiscordCommand {
     public CommandEvidence(JDA jda, ModalManager modalManager, CommandManager commandManager) {
         this.modalManager = modalManager;
 
-        commandData = Commands.slash(getName(), "Open suggestion form.");
+        commandData = Commands.slash(getName(), "Open suggestion form.")
+                .setDefaultPermissions(DefaultMemberPermissions.DISABLED)
+                .setGuildOnly(true);
         Util.registerCommand(commandManager, jda, commandData, getName());
     }
 

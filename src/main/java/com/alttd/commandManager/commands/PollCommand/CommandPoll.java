@@ -53,8 +53,9 @@ public class CommandPoll extends DiscordCommand {
                                 .addOption(OptionType.STRING, "message_id", "Id of the poll you're closing", true),
                         new SubcommandData("results", "Get the results for a poll")
                                 .addOption(OptionType.CHANNEL, "channel", "Channel this poll is in", true)
-                                .addOption(OptionType.STRING, "message_id", "Id of the poll you want the results for", true));
-        commandData.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
+                                .addOption(OptionType.STRING, "message_id", "Id of the poll you want the results for", true))
+                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
+                .setGuildOnly(true);
         Util.registerSubOptions(subOptionsMap,
                 new SubCommandAdd(null,this),
                 new SubCommandAddButton(null, this),

@@ -26,7 +26,8 @@ public class CommandUpdateCommands extends DiscordCommand {
     public CommandUpdateCommands(JDA jda, CommandManager commandManager) {
         this.commandManager = commandManager;
         this.commandData = Commands.slash(getName(), "Updates all commands for this bot in this guild")
-                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
+                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
+                .setGuildOnly(true);
         Util.registerCommand(commandManager, jda, commandData, getName());
     }
 

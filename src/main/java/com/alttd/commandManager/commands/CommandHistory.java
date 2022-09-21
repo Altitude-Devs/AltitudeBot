@@ -33,7 +33,8 @@ public class CommandHistory extends DiscordCommand {
         this.commandData = Commands.slash(getName(), "Show history for a user")
                 .addOption(OptionType.STRING, "user", "The user to show history for", true)
                 .addOption(OptionType.STRING, "type", "The type of punishment to show", false, true)
-                .setDefaultPermissions(DefaultMemberPermissions.ENABLED);
+                .setDefaultPermissions(DefaultMemberPermissions.ENABLED)
+                .setGuildOnly(true);
 
         Util.registerCommand(commandManager, jda, commandData, getName());
     }

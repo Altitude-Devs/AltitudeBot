@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -30,7 +31,9 @@ public class CommandHelp extends DiscordCommand {
         this.commandManager = commandManager;
 
         commandData = Commands.slash(getName(), "Show info about all commands or a specific command.")
-                .addOption(OptionType.STRING, "command", "Command to get more info about", true , true);
+                .addOption(OptionType.STRING, "command", "Command to get more info about", true , true)
+                .setDefaultPermissions(DefaultMemberPermissions.ENABLED)
+                .setGuildOnly(true);
 
         Util.registerCommand(commandManager, jda, commandData, getName());
     }
