@@ -46,7 +46,8 @@ public class CommandManager extends ListenerAdapter {
                 new CommandFlag(jda, this),
                 new CommandHistory(jda, this),
                 commandSetToggleableRoles,
-                new CommandToggleRole(commandSetToggleableRoles, jda, this));
+                new CommandToggleRole(commandSetToggleableRoles, jda, this),
+                new CommandRemindMe(jda, this, modalManager));
     }
 
     @Override

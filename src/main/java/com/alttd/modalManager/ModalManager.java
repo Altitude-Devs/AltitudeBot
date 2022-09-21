@@ -2,6 +2,7 @@ package com.alttd.modalManager;
 
 import com.alttd.buttonManager.ButtonManager;
 import com.alttd.modalManager.modals.ModalEvidence;
+import com.alttd.modalManager.modals.ModalRemindMe;
 import com.alttd.modalManager.modals.ModalReplySuggestion;
 import com.alttd.modalManager.modals.ModalSuggestion;
 import com.alttd.util.Util;
@@ -25,7 +26,8 @@ public class ModalManager extends ListenerAdapter {
         modals = List.of(
                 new ModalSuggestion(buttonManager),
                 new ModalEvidence(),
-                new ModalReplySuggestion());
+                new ModalReplySuggestion(),
+                new ModalRemindMe(buttonManager));
     }
 
     @Override

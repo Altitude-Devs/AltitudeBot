@@ -99,6 +99,28 @@ public class DatabaseTables {
         }
     }
 
+    private void createReminderTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS new_reminders(" +
+                "id INT NOT NULL AUTO_INCREMENT, " +
+                "title VARCHAR(256) NOT NULL, " +
+                "description VARCHAR(4096) NOT NULL, " +
+                "user_id LONG NOT NULL, " +
+                "guild_id LONG NOT NULL, " +
+                "channel_id LONG NOT NULL, " +
+                "message_id LONG NOT NULL, " +
+                "should_repeat TINYINT(1) NOT NULL, " +
+                "creation_date LONG NOT NULL, " +
+                "remind_date LONG NOT NULL, " +
+                "PRIMARY KEY (id)" +
+                ")";
+        try {
+            connection.prepareStatement(sql).executeUpdate();
+        } catch (SQLException e) {
+            Logger.sql(e);
+            Logger.severe("Unable to create reminders table, shutting down...");
+        }
+    }
+
     public static void createTables(Connection connection) {
         if (instance == null)
             instance = new DatabaseTables(connection);

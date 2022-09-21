@@ -4,6 +4,7 @@ import com.alttd.buttonManager.ButtonManager;
 import com.alttd.commandManager.CommandManager;
 import com.alttd.contextMenuManager.ContextMenuManager;
 import com.alttd.modalManager.ModalManager;
+import com.alttd.reminders.ReminderScheduler;
 import com.alttd.request.RequestManager;
 import com.alttd.util.Logger;
 import net.dv8tion.jda.api.JDA;
@@ -30,6 +31,10 @@ public class JDAListener extends ListenerAdapter {
         ContextMenuManager contextMenuManager = new ContextMenuManager(modalManager);
         CommandManager commandManager = new CommandManager(jda, modalManager, contextMenuManager);
         jda.addEventListener(buttonManager, modalManager, commandManager, contextMenuManager);
+        ReminderScheduler reminderScheduler = ReminderScheduler.getInstance(jda);
+        if (reminderScheduler == null) {
+            Logger.severe("Unable to start reminder scheduler!");
+        }
 //        RequestManager.init();
     }
 
