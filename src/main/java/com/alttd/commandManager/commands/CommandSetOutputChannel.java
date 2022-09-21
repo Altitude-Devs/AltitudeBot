@@ -32,7 +32,8 @@ public class CommandSetOutputChannel extends DiscordCommand {
         commandData = Commands.slash(getName(), "Set up output channels")
                 .addOption(OptionType.STRING, "type", "The type of output channel", true, true)
                 .addOption(OptionType.CHANNEL, "channel", "The channel the specified output should go into", true)
-                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
+                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
+                .setGuildOnly(true);
         Util.registerCommand(commandManager, jda, commandData, getName());
     }
 
