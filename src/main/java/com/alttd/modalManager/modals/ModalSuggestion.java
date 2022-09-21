@@ -108,7 +108,7 @@ public class ModalSuggestion extends DiscordModal {
     @Override
     public Modal getModal() {
         TextInput title = TextInput.create("title", "Title", TextInputStyle.SHORT)
-                .setPlaceholder("You suggestion in one sentence")
+                .setPlaceholder("Your suggestion in one sentence")
                 .setRequiredRange(10, 100)
                 .setRequired(true)
                 .build();
