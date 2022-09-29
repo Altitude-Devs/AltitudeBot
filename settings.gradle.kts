@@ -10,8 +10,6 @@ dependencyResolutionManagement {
         maven("https://repo.spongepowered.org/maven")
         // MySQL
         maven("https://jcenter.bintray.com")
-        //jitpack
-        maven("https://jitpack.io")
     }
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }
