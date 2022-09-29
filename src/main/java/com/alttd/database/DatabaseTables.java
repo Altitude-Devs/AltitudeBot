@@ -65,7 +65,7 @@ public class DatabaseTables {
             connection.prepareStatement(sql).executeUpdate();
         } catch (SQLException e) {
             Logger.sql(e);
-            Logger.severe("Unable to create polls table, shutting down...");
+            Logger.severe("Unable to create commands table, shutting down...");
         }
     }
 
@@ -74,13 +74,50 @@ public class DatabaseTables {
                 "guild BIGINT NOT NULL, " +
                 "output_type VARCHAR(64) NOT NULL, " +
                 "channel BIGINT NOT NULL, " +
+                "channel_type VARCHAR(64) NOT NULL, " +
                 "PRIMARY KEY (guild, output_type, channel)" +
                 ")";
         try {
             connection.prepareStatement(sql).executeUpdate();
         } catch (SQLException e) {
             Logger.sql(e);
-            Logger.severe("Unable to create polls table, shutting down...");
+            Logger.severe("Unable to create output channel table, shutting down...");
+        }
+    }
+
+    private void createToggleableRolesTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS toggleable_roles(" +
+                "guild BIGINT NOT NULL, " +
+                "role BIGINT NOT NULL, " +
+                "PRIMARY KEY (guild, role)" +
+                ")";
+        try {
+            connection.prepareStatement(sql).executeUpdate();
+        } catch (SQLException e) {
+            Logger.sql(e);
+            Logger.severe("Unable to create toggleable roles table, shutting down...");
+        }
+    }
+
+    private void createReminderTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS new_reminders(" +
+                "id INT NOT NULL AUTO_INCREMENT, " +
+                "title VARCHAR(256) NOT NULL, " +
+                "description VARCHAR(4096) NOT NULL, " +
+                "user_id LONG NOT NULL, " +
+                "guild_id LONG NOT NULL, " +
+                "channel_id LONG NOT NULL, " +
+                "message_id LONG NOT NULL, " +
+                "should_repeat TINYINT(1) NOT NULL, " +
+                "creation_date LONG NOT NULL, " +
+                "remind_date LONG NOT NULL, " +
+                "PRIMARY KEY (id)" +
+                ")";
+        try {
+            connection.prepareStatement(sql).executeUpdate();
+        } catch (SQLException e) {
+            Logger.sql(e);
+            Logger.severe("Unable to create reminders table, shutting down...");
         }
     }
 

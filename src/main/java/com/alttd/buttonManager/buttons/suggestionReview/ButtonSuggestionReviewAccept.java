@@ -8,10 +8,15 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.awt.*;
 import java.util.List;
@@ -26,16 +31,6 @@ public class ButtonSuggestionReviewAccept extends DiscordButton {
     @Override
     public void execute(ButtonInteractionEvent event) {
         Message message = event.getMessage();
-        long suggestionChannelId = CommandOutputChannels.getOutputChannel(message.getGuild().getIdLong(), OutputType.SUGGESTION);
-        long modLogChannelId = CommandOutputChannels.getOutputChannel(message.getGuild().getIdLong(), OutputType.MOD_LOG);
-
-        List<MessageEmbed> embeds = message.getEmbeds();
-        if (embeds.size() != 1) {
-            event.replyEmbeds(Util.genericErrorEmbed("Error", "This message contains no embeds, can't be a suggestion"))
-                    .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
-            return;
-        }
-
         Guild guild = event.getGuild();
         if (guild == null) {
             event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to retrieve guild"))
@@ -43,16 +38,9 @@ public class ButtonSuggestionReviewAccept extends DiscordButton {
             return;
         }
 
-        GuildMessageChannel suggestionChannel = guild.getChannelById(GuildMessageChannel.class, suggestionChannelId);
-        if (suggestionChannel == null) {
-            event.replyEmbeds(Util.genericErrorEmbed("Error", "This server does not have a valid suggestion channel"))
-                    .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
-            return;
-        }
-
-        GuildMessageChannel modLogChannel = guild.getChannelById(GuildMessageChannel.class, modLogChannelId);
-        if (modLogChannel == null) {
-            event.replyEmbeds(Util.genericErrorEmbed("Error", "This server does not have a valid suggestion channel"))
+        List<MessageEmbed> embeds = message.getEmbeds();
+        if (embeds.size() != 1) {
+            event.replyEmbeds(Util.genericErrorEmbed("Error", "This message contains no embeds, can't be a suggestion"))
                     .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
             return;
         }
@@ -65,19 +53,84 @@ public class ButtonSuggestionReviewAccept extends DiscordButton {
             return;
         }
 
+        GuildChannel suggestionGuildChannel = CommandOutputChannels.getOutputChannel(message.getGuild(), OutputType.SUGGESTION);
+        GuildChannel modLogGuildChannel = CommandOutputChannels.getOutputChannel(message.getGuild(), OutputType.MOD_LOG);
+
+        TextChannel modLogChannel = validModLogChannel(event, modLogGuildChannel);
+        if (modLogChannel == null)
+            return;
+
+        if (suggestionGuildChannel == null) {
+            event.replyEmbeds(Util.genericErrorEmbed("Error", "This server does not have a valid suggestion channel."))
+                    .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+            return;
+        }
+
+        String mentionMember = reviewMessage.getDescription();
+        if (mentionMember == null) {
+            event.replyEmbeds(Util.genericErrorEmbed("Error", "This message contains no description, can't be a suggestion"))
+                    .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+            return;
+        }
+
         MessageEmbed suggestionMessage = new EmbedBuilder(reviewMessage)
                 .clearFields()
                 .setColor(Color.GRAY)
                 .setTitle(fields.get(0).getName())
                 .setDescription(fields.get(0).getValue())
+                .addField("Suggestion by", mentionMember, false)
                 .build();
+
+        if (suggestionGuildChannel instanceof ForumChannel forumChannel) {
+            sendSuggestionInForum(forumChannel, modLogChannel, fields.get(0), suggestionMessage, mentionMember, event);
+        } else if (suggestionGuildChannel instanceof TextChannel forumChannel) {
+            sendSuggestionEmbed(forumChannel, modLogChannel, suggestionMessage, event);
+        } else {
+            event.replyEmbeds(Util.genericErrorEmbed("Error", suggestionGuildChannel.getType().name() + " is not a valid suggestion channel"))
+                    .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+        }
+    }
+
+    private TextChannel validModLogChannel(ButtonInteractionEvent event, GuildChannel guildChannel) {
+        if (guildChannel == null) {
+            event.replyEmbeds(Util.genericErrorEmbed("Error", "This server does not have a valid mod log channel"))
+                    .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+            return null;
+        }
+
+        if (!(guildChannel instanceof TextChannel channel)) {
+            event.replyEmbeds(Util.genericErrorEmbed("Error", "A mod log channel can't be of type: " + guildChannel.getType().name()))
+                    .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+            return null;
+        }
+        return channel;
+    }
+
+    public void sendSuggestionEmbed(TextChannel suggestionChannel, TextChannel modLog, MessageEmbed suggestionMessage, ButtonInteractionEvent event) {
         suggestionChannel.sendMessageEmbeds(suggestionMessage).queue(success -> {
-            message.delete().queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+            event.getMessage().delete().queue(RestAction.getDefaultSuccess(), Util::handleFailure);
             event.replyEmbeds(Util.genericSuccessEmbed("Success", "The suggestion was accepted and posted in the suggestion channel")).setEphemeral(true).queue();
-            modLogChannel.sendMessageEmbeds(new EmbedBuilder(suggestionMessage).addField("Accepted", event.getUser().getAsMention(), false).setColor(Color.GREEN).build())
-                    .queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+            sendModLog(modLog, suggestionMessage, event);
         }, failure -> event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to send suggestion to the suggestion channel"))
                 .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure));
+    }
+
+    public void sendSuggestionInForum(ForumChannel forumChannel, TextChannel modLog, MessageEmbed.Field field, MessageEmbed suggestionMessage, String mentionMember, ButtonInteractionEvent event) {
+        MessageCreateData messageCreateData = new MessageCreateBuilder().addContent("**Suggestion by: " + mentionMember + "**\n\n" + field.getValue() + "\u200B").build();
+
+        forumChannel.createForumPost(field.getName(), messageCreateData).queue(success -> {
+            event.getMessage().delete().queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+            event.replyEmbeds(Util.genericSuccessEmbed("Success", "The suggestion was accepted and posted in the suggestion channel")).setEphemeral(true).queue();
+            sendModLog(modLog, suggestionMessage, event);
+            success.getMessage().addReaction(Emoji.fromUnicode("\uD83D\uDC4D")).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+            success.getMessage().addReaction(Emoji.fromUnicode("\uD83D\uDC4E")).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+        }, failure -> event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to send suggestion to the suggestion channel"))
+                .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure));
+    }
+
+    public void sendModLog(TextChannel modLog, MessageEmbed suggestionMessage, ButtonInteractionEvent event) {
+        modLog.sendMessageEmbeds(new EmbedBuilder(suggestionMessage).addField("Accepted", event.getUser().getAsMention(), false).setColor(Color.GREEN).build())
+                .queue(RestAction.getDefaultSuccess(), Util::handleFailure);
     }
 
     @Override

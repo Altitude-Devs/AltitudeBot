@@ -22,14 +22,14 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 @SuppressWarnings({"unused", "SameParameterValue"})
-abstract class AbstractConfig {
+public abstract class AbstractConfig {
     private static final Pattern PATH_PATTERN = Pattern.compile("\\.");
     private static final String HEADER = "";
 
     private YamlConfigurationLoader configLoader;
     private ConfigurationNode config;
 
-    AbstractConfig(String filename) {
+    protected AbstractConfig(String filename) {
         init(new File(new File(AltitudeBot.getInstance().getDataFolder()).getParentFile(), filename), filename);
     }
 
@@ -60,7 +60,7 @@ abstract class AbstractConfig {
         }
     }
 
-    void readConfig(Class<?> clazz, Object instance) {
+    protected void readConfig(Class<?> clazz, Object instance) {
         for (Method method : clazz.getDeclaredMethods()) {
             if (Modifier.isPrivate(method.getModifiers())) {
                 if (method.getParameterTypes().length == 0 && method.getReturnType() == Void.TYPE) {
@@ -80,7 +80,7 @@ abstract class AbstractConfig {
         save();
     }
 
-    private void save() {
+    protected void save() {
         try {
             configLoader.save(config);
         } catch (IOException ex) {
@@ -98,6 +98,17 @@ abstract class AbstractConfig {
                 config.node(splitPath(path)).set(def);
             } catch (SerializationException e) {
             }
+        }
+    }
+
+    protected void update(String path, Object def) {
+        if(config.node(splitPath(path)).virtual()) {
+            set(path, def);
+            return;
+        }
+        try {
+            config.node(splitPath(path)).set(def);
+        } catch (SerializationException e) {
         }
     }
 

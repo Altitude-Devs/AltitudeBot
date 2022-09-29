@@ -30,8 +30,8 @@ public class AltitudeBot {
     private void start() {
         Logger.info("Starting bot...");
         initConfigs();
-        ConsoleCommandManager.startConsoleCommands(jda);
         jda = JDABuilder.createDefault(SettingsConfig.TOKEN).build();
+        ConsoleCommandManager.startConsoleCommands(jda);
         DatabaseTables.createTables(Database.getDatabase().getConnection());
 //        try {
 //            jda.getPresence().setPresence(
@@ -41,7 +41,6 @@ public class AltitudeBot {
 //            Logger.exception(e);
 //        }
         initListeners();
-        //TODO init permissionManager
     }
 
     private void initListeners() {

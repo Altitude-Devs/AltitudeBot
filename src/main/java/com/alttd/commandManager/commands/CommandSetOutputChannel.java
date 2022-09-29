@@ -8,6 +8,7 @@ import com.alttd.util.Util;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -71,10 +72,11 @@ public class CommandSetOutputChannel extends DiscordCommand {
             return;
         }
 
-        GuildChannelUnion channel = option.getAsChannel();
-        switch (channel.getType()) {
-            case TEXT, NEWS, GUILD_NEWS_THREAD, GUILD_PUBLIC_THREAD, GUILD_PRIVATE_THREAD -> {
-                boolean success = CommandOutputChannels.setOutputChannel(guild.getIdLong(), outputType, channel.getIdLong());
+        ChannelType channelType = option.getChannelType();
+        switch (channelType) {
+            case TEXT, NEWS, GUILD_NEWS_THREAD, GUILD_PUBLIC_THREAD, GUILD_PRIVATE_THREAD, FORUM -> {
+                GuildChannelUnion channel = option.getAsChannel();
+                boolean success = CommandOutputChannels.setOutputChannel(guild.getIdLong(), outputType, channel.getIdLong(), channelType);
                 if (success)
                     event.replyEmbeds(Util.genericSuccessEmbed("Success", "Set channel " + channel.getAsMention() + " as the output channel for " + outputType.name() + "."))
                             .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
@@ -82,7 +84,7 @@ public class CommandSetOutputChannel extends DiscordCommand {
                    event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to store the new channel output in the database"))
                            .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
             }
-            default -> event.replyEmbeds(Util.genericErrorEmbed("Error", "The channel type " + channel.getType().name() + " is not a valid output channel type"))
+            default -> event.replyEmbeds(Util.genericErrorEmbed("Error", "The channel type " + channelType.name() + " is not a valid output channel type"))
                     .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
         }
 

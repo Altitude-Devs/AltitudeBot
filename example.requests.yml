@@ -1,0 +1,34 @@
+request:
+    guild: '776590138296893480'
+    category: '776590138296893481'
+    channel: '1017787342561476709'
+    message: '1017839462111256667'
+types:
+    bug-report:
+        category: '776590138296893481'
+        channel: '820222354180800525'
+        name: Bug report
+        title: What should the title be?
+        description: Report a new bug.
+        message: Describe the bug.
+    act-request:
+        category: '776590138296893481'
+        channel: '820222354180800525'
+        name: Act request
+        title: What should the title be?
+        description: Make a new act request.
+        message: Describe the act request.
+    admin-act-request:
+        category: '776590138296893481'
+        channel: '820222354180800525'
+        name: Admin act request
+        title: What should the title be?
+        description: Make a new admin act request.
+        message: Describe the admin act request.
+    feature-request:
+        category: '776590138296893481'
+        channel: '820222354180800525'
+        name: Feature request
+        title: What should the title be?
+        description: Make a new feature request.
+        message: Describe the feature request.

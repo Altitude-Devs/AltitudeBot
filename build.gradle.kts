@@ -38,27 +38,23 @@ tasks {
         }
     }
 
-//    create<ConfigureShadowRelocation>("relocateJars") {
-//        target = shadowJar.get()
-//        prefix = "${project.name}.lib"
-//    }
-//
-//    shadowJar {
-//        dependsOn(getByName("relocateJars") as ConfigureShadowRelocation)
-//        archiveFileName.set("${project.name}-${project.version}.jar")
-//        minimize()
-//        configurations = listOf(project.configurations.shadow.get())
-//    }
-//
+    shadowJar {
+        archiveFileName.set(rootProject.name + ".jar")
+    }
+
     build {
         dependsOn(shadowJar)
+    }
+
+    jar {
+        enabled = false
     }
 
 }
 
 dependencies {
 // JDA
-    implementation("net.dv8tion:JDA:5.0.0-alpha.19") {
+    implementation("net.dv8tion:JDA:5.0.0-alpha.20") {
         exclude("opus-java") // exclude audio
     }
     // MySQL
@@ -67,4 +63,8 @@ dependencies {
 
     // Configurate
     implementation("org.spongepowered:configurate-yaml:4.1.2")
+
+
+    compileOnly("org.projectlombok:lombok:1.18.24")
+    annotationProcessor("org.projectlombok:lombok:1.18.24")
 }
