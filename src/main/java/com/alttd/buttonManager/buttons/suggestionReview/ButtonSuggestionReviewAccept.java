@@ -10,8 +10,12 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.forums.ForumPost;
+import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
+import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -20,6 +24,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.awt.*;
 import java.util.List;
+import java.util.Optional;
 
 public class ButtonSuggestionReviewAccept extends DiscordButton {
 
@@ -124,6 +129,16 @@ public class ButtonSuggestionReviewAccept extends DiscordButton {
             sendModLog(modLog, suggestionMessage, event);
             success.getMessage().addReaction(Emoji.fromUnicode("\uD83D\uDC4D")).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
             success.getMessage().addReaction(Emoji.fromUnicode("\uD83D\uDC4E")).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+            forumChannel.getAvailableTags().stream()
+                    .filter(forumTag -> {
+                        EmojiUnion emoji = forumTag.getEmoji();
+                        if (emoji == null)
+                            return false;
+                        return emoji.getAsReactionCode().equals("\uD83D\uDD27");
+                    })
+                    .findAny()
+                    .ifPresent(forumTag -> success.getThreadChannel().getManager().setAppliedTags(ForumTagSnowflake.fromId(forumTag.getIdLong()))
+                            .queue(RestAction.getDefaultSuccess(), Util::handleFailure));
         }, failure -> event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to send suggestion to the suggestion channel"))
                 .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure));
     }
