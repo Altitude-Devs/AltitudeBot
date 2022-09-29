@@ -38,6 +38,6 @@ public class QueriesUserUUID {
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
-        return null;
+        return "user not found";
     }
 }

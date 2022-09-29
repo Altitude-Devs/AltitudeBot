@@ -22,6 +22,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class Util {
@@ -185,5 +186,28 @@ public class Util {
             return null;
         }
         return l;
+    }
+
+    public static String convertTime(long timeInMillis){
+        return convertTime((int) TimeUnit.MILLISECONDS.toMinutes(timeInMillis));
+    }
+
+    private static String convertTime(int timeInMinutes) {
+        int days = (int) TimeUnit.MINUTES.toDays(timeInMinutes);
+        int hours = (int) (TimeUnit.MINUTES.toHours(timeInMinutes) - TimeUnit.DAYS.toHours(days));
+        int minutes = (int) (TimeUnit.MINUTES.toMinutes(timeInMinutes) - TimeUnit.HOURS.toMinutes(hours)
+                - TimeUnit.DAYS.toMinutes(days));
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (days != 0) {
+            stringBuilder.append(days).append(days == 1 ? " day, " : " days, ");
+        }
+        if (hours != 0) {
+            stringBuilder.append(hours).append(hours == 1 ? " hour, " : " hours, ");
+        }
+        stringBuilder.append(minutes).append(minutes == 1 ? " minute, " : " minutes, ");
+
+        return stringBuilder.substring(0, stringBuilder.length() - 2);
     }
 }
