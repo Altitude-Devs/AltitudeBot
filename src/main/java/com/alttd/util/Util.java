@@ -210,4 +210,10 @@ public class Util {
 
         return stringBuilder.substring(0, stringBuilder.length() - 2);
     }
+
+    public static String capitalize(String str) {
+        if (str.length() <= 1)
+            return str.toUpperCase();
+        return str.toUpperCase().charAt(0) + str.toLowerCase().substring(1);
+    }
 }

@@ -6,7 +6,10 @@ import com.alttd.config.MessagesConfig;
 import com.alttd.database.queries.QueriesUserUUID;
 import com.alttd.database.queries.queriesSeen.PlaytimeSeen;
 import com.alttd.database.queries.queriesSeen.SeenQueries;
+import com.alttd.templates.Parser;
+import com.alttd.templates.Template;
 import com.alttd.util.Util;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -17,17 +20,21 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.requests.RestAction;
 
+import java.awt.*;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class CommandSeen extends DiscordCommand {
 
     private final CommandData commandData;
+    private static final List<String> validServers = List.of("lobby", "creative", "fjord", "grotto");
 
     public CommandSeen(JDA jda, CommandManager commandManager) {
         commandData = Commands.slash(getName(), "Check when a player was last online.")
-                .addOption(OptionType.STRING, "playername", "The playername or uuid you want to check.", true, true)
+                .addOption(OptionType.STRING, "playername", "The playername or uuid you want to check.", true, false)
                 .setGuildOnly(true)
                 .setDefaultPermissions(DefaultMemberPermissions.ENABLED);
 
@@ -41,39 +48,36 @@ public class CommandSeen extends DiscordCommand {
 
     @Override
     public void execute(SlashCommandInteractionEvent event) {
-        OptionMapping option = event.getOption("playername");
-        if (option == null) {
+        String playerName = event.getOption("playername", OptionMapping::getAsString);
+        if (playerName == null || playerName.length() < 3 || playerName.length() > 16) {
+            error(event);
             return;
         }
-        String playerName = option.getAsString();
-        UUID uuid;
-        try{
-            uuid = UUID.fromString(playerName);
-            playerName = QueriesUserUUID.getUsernameByUUID(uuid);
-        } catch (IllegalArgumentException exception){
-            uuid = QueriesUserUUID.getUUIDByUsername(playerName);
-        }
 
+        UUID uuid = QueriesUserUUID.getUUIDByUsername(playerName);
         if (uuid == null) {
             error(event);
             return;
         }
 
-        // TODO Determine if a player is online or not? currently not possible?
-        PlaytimeSeen lastSeen = SeenQueries.getLastSeen(uuid);
-        if (lastSeen == null || lastSeen.getLastSeen() == 0) {
+        List<PlaytimeSeen> lastSeen = SeenQueries.getLastSeen(uuid);
+        if (lastSeen == null || lastSeen.isEmpty()) {
             error(event);
             return;
         }
 
-        String SEEN_FORMAT = "Player <gold>%player%</gold> has been %online/offline% for %time% on %server%.</white>";
-        event.replyEmbeds(Util.genericSuccessEmbed("Success",
-                        SEEN_FORMAT
-                                .replaceAll("%player%", playerName)
-//                                .replaceAll("%online/offline%", Config.Messages.SEEN_OFFLINE_FORMAT.getMessage())
-                                .replaceAll("%time%", getPassedTime(lastSeen.getLastSeen()))
-                                .replaceAll("%server%", lastSeen.getServer())
-                ))
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder
+                .setTitle("Seen")
+                .setColor(Color.GREEN)
+                .appendDescription("`" + Util.capitalize(playerName) + "`'s seen information per server:\n\n");
+        for (PlaytimeSeen playtimeSeen : lastSeen) {
+            if (playtimeSeen == null || playtimeSeen.getLastSeen() == 0 || !validServers.contains(playtimeSeen.getServer().toLowerCase()))
+                continue;
+            embedBuilder.appendDescription(Util.capitalize(playtimeSeen.getServer()) + ": " + "<t:" + TimeUnit.MILLISECONDS.toSeconds(playtimeSeen.getLastSeen()) +":R>\n");
+        }
+
+        event.replyEmbeds(embedBuilder.build())
                 .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
     }
 

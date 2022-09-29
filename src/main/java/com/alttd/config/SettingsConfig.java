@@ -1,7 +1,5 @@
 package com.alttd.config;
 
-import net.dv8tion.jda.api.entities.Activity;
-
 public class SettingsConfig extends AbstractConfig {
 
     static SettingsConfig settingsConfig;

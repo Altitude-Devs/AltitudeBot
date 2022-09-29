@@ -5,22 +5,27 @@ import com.alttd.database.Database;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class SeenQueries {
 
-    public static PlaytimeSeen getLastSeen(UUID uuid) {
-
+    public static List<PlaytimeSeen> getLastSeen(UUID uuid) {
+        String sql = "SELECT server_name, last_seen " +
+                "FROM playtime_view " +
+                "WHERE uuid = ? AND last_seen IS NOT NULL " +
+                "ORDER BY last_seen ASC";
         try {
-            PreparedStatement statement = Database.getDatabase().getConnection().prepareStatement("SELECT server_name, last_seen FROM playtime WHERE uuid = ? AND last_seen IS NOT NULL ORDER BY last_seen DESC LIMIT 1");
+            PreparedStatement statement = Database.getDatabase().getConnection().prepareStatement(sql);
             statement.setString(1, uuid.toString());
 
             ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                PlaytimeSeen playtimeSeen = new PlaytimeSeen(uuid, resultSet.getString("server_name"), resultSet.getLong("last_seen"));
-                return playtimeSeen;
+            ArrayList<PlaytimeSeen> playtimeSeenList = new ArrayList<>();
+            while (resultSet.next()) {
+                playtimeSeenList.add(new PlaytimeSeen(uuid, resultSet.getString("server_name"), resultSet.getLong("last_seen")));
             }
+            return playtimeSeenList;
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
