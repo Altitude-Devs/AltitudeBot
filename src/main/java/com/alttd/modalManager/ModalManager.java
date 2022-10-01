@@ -1,10 +1,7 @@
 package com.alttd.modalManager;
 
 import com.alttd.buttonManager.ButtonManager;
-import com.alttd.modalManager.modals.ModalEvidence;
-import com.alttd.modalManager.modals.ModalRemindMe;
-import com.alttd.modalManager.modals.ModalReplySuggestion;
-import com.alttd.modalManager.modals.ModalSuggestion;
+import com.alttd.modalManager.modals.*;
 import com.alttd.util.Util;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -27,7 +24,8 @@ public class ModalManager extends ListenerAdapter {
                 new ModalSuggestion(buttonManager),
                 new ModalEvidence(),
                 new ModalReplySuggestion(),
-                new ModalRemindMe(buttonManager));
+                new ModalRemindMe(buttonManager),
+                new ModalCrateItem());
     }
 
     @Override

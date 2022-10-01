@@ -75,7 +75,7 @@ public class DatabaseTables {
                 "output_type VARCHAR(64) NOT NULL, " +
                 "channel BIGINT NOT NULL, " +
                 "channel_type VARCHAR(64) NOT NULL, " +
-                "PRIMARY KEY (guild, output_type, channel)" +
+                "PRIMARY KEY (guild, output_type)" +
                 ")";
         try {
             connection.prepareStatement(sql).executeUpdate();

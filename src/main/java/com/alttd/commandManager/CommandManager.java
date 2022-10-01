@@ -40,6 +40,7 @@ public class CommandManager extends ListenerAdapter {
                 new CommandHelp(jda, this),
                 new CommandPoll(jda, this),
                 new CommandSuggestion(jda, modalManager, this),
+                new CommandSuggestCrateItem(jda, modalManager, this),
                 new CommandSetOutputChannel(jda, this),
                 new CommandUpdateCommands(jda, this),
                 new CommandEvidence(jda, modalManager, this),
