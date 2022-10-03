@@ -26,11 +26,12 @@ public class JDAListener extends ListenerAdapter {
     @Override
     public void onReady(@NotNull ReadyEvent event) {
         Logger.info("JDA ready to register commands.");
+        ChatListener chatListener = new ChatListener();
         ButtonManager buttonManager = new ButtonManager();
         ModalManager modalManager = new ModalManager(buttonManager);
         ContextMenuManager contextMenuManager = new ContextMenuManager(modalManager);
-        CommandManager commandManager = new CommandManager(jda, modalManager, contextMenuManager);
-        jda.addEventListener(buttonManager, modalManager, commandManager, contextMenuManager);
+        CommandManager commandManager = new CommandManager(jda, modalManager, contextMenuManager, chatListener);
+        jda.addEventListener(buttonManager, modalManager, commandManager, contextMenuManager, chatListener);
         ReminderScheduler reminderScheduler = ReminderScheduler.getInstance(jda);
         if (reminderScheduler == null) {
             Logger.severe("Unable to start reminder scheduler!");

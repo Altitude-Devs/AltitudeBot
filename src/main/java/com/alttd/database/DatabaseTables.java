@@ -121,6 +121,20 @@ public class DatabaseTables {
         }
     }
 
+    private void createLockedChannelsTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS locked_channels(" +
+                "guild_id BIGINT NOT NULL, " +
+                "channel_id BIGINT NOT NULL, " +
+                "PRIMARY KEY (channel_id)" +
+                ")";
+        try {
+            connection.prepareStatement(sql).executeUpdate();
+        } catch (SQLException e) {
+            Logger.sql(e);
+            Logger.severe("Unable to create locked channels table, shutting down...");
+        }
+    }
+
     public static void createTables(Connection connection) {
         if (instance == null)
             instance = new DatabaseTables(connection);
