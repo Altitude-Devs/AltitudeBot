@@ -54,6 +54,8 @@ public class ChatListener extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
+        if (!event.isFromGuild())
+            return;
         long guildId = event.getGuild().getIdLong();
         long channelId = event.getChannel().getIdLong();
         if (containsChannel(guildId, channelId) && event.getMember() != null && !event.getMember().isOwner())
