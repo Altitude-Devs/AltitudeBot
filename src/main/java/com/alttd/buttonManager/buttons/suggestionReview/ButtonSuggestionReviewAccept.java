@@ -3,6 +3,7 @@ package com.alttd.buttonManager.buttons.suggestionReview;
 import com.alttd.buttonManager.DiscordButton;
 import com.alttd.database.queries.commandOutputChannels.CommandOutputChannels;
 import com.alttd.database.queries.commandOutputChannels.OutputType;
+import com.alttd.util.Logger;
 import com.alttd.util.Util;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -137,8 +138,10 @@ public class ButtonSuggestionReviewAccept extends DiscordButton {
                         return emoji.getAsReactionCode().equals("\uD83D\uDD27");
                     })
                     .findAny()
-                    .ifPresent(forumTag -> success.getThreadChannel().getManager().setAppliedTags(ForumTagSnowflake.fromId(forumTag.getIdLong()))
-                            .queue(RestAction.getDefaultSuccess(), Util::handleFailure));
+                    .ifPresentOrElse(forumTag -> success.getThreadChannel().getManager().setAppliedTags(ForumTagSnowflake.fromId(forumTag.getIdLong()))
+                            .queue(RestAction.getDefaultSuccess(), Util::handleFailure), () -> {
+                        Logger.warning("No [Unanswered] reaction found for suggestion");
+                    });
         }, failure -> event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to send suggestion to the suggestion channel"))
                 .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure));
     }
