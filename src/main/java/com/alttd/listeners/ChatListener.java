@@ -54,7 +54,7 @@ public class ChatListener extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
-        if (!event.isFromGuild())
+        if (!event.isFromGuild() || event.getAuthor().isBot() || event.getAuthor().isSystem())
             return;
         long guildId = event.getGuild().getIdLong();
         long channelId = event.getChannel().getIdLong();
