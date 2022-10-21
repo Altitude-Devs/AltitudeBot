@@ -3,7 +3,7 @@ package com.alttd.buttonManager.buttons.remindMeConfirm;
 import com.alttd.buttonManager.DiscordButton;
 import com.alttd.database.queries.QueriesReminders.QueriesReminders;
 import com.alttd.database.queries.QueriesReminders.Reminder;
-import com.alttd.reminders.ReminderScheduler;
+import com.alttd.schedulers.ReminderScheduler;
 import com.alttd.util.Util;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;

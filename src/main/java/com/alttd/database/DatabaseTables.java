@@ -135,6 +135,23 @@ public class DatabaseTables {
         }
     }
 
+    private void createAuctionTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS auctions(" +
+                "message_id BIGINT NOT NULL, " +
+                "channel_id BIGINT NOT NULL, " +
+                "guild_id BIGINT NOT NULL, " +
+                "starting_price INT NOT NULL, " +
+                "expire_time BIGINT NOT NULL, " +
+                "PRIMARY KEY (message_id)" +
+                ")";
+        try {
+            connection.prepareStatement(sql).executeUpdate();
+        } catch (SQLException e) {
+            Logger.sql(e);
+            Logger.severe("Unable to create auction table, shutting down...");
+        }
+    }
+
     public static void createTables(Connection connection) {
         if (instance == null)
             instance = new DatabaseTables(connection);

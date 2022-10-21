@@ -7,6 +7,7 @@ import com.alttd.contextMenuManager.ContextMenuManager;
 import com.alttd.database.Database;
 import com.alttd.listeners.ChatListener;
 import com.alttd.modalManager.ModalManager;
+import com.alttd.selectMenuManager.SelectMenuManager;
 import com.alttd.util.Logger;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -31,7 +32,7 @@ public class CommandManager extends ListenerAdapter {
     private final List<DiscordCommand> commands;
     private final HashMap<String, List<ScopeInfo>> commandList = new HashMap<>();
 
-    public CommandManager(JDA jda, ModalManager modalManager, ContextMenuManager contextMenuManager, ChatListener chatListener) {
+    public CommandManager(JDA jda, ModalManager modalManager, ContextMenuManager contextMenuManager, ChatListener chatListener, SelectMenuManager selectMenuManager) {
         commandList.put("manage", new ArrayList<>(List.of(new ScopeInfo(CommandScope.GLOBAL, 0))));
         loadCommands();
         Logger.info("Loading commands...");
@@ -51,7 +52,8 @@ public class CommandManager extends ListenerAdapter {
                 commandSetToggleableRoles,
                 new CommandToggleRole(commandSetToggleableRoles, jda, this),
                 new CommandRemindMe(jda, this, modalManager),
-                new CommandSoftLock(jda, this, chatListener));
+                new CommandSoftLock(jda, this, chatListener),
+                new CommandAuction(jda, this, selectMenuManager));
     }
 
     @Override

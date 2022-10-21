@@ -5,5 +5,7 @@ public enum OutputType {
     SUGGESTION_REVIEW,
     MOD_LOG,
     EVIDENCE,
+    AUCTION,
+    AUCTION_LOG,
     CRATE_TEAM
 }

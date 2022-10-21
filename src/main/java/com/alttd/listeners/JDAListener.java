@@ -4,8 +4,10 @@ import com.alttd.buttonManager.ButtonManager;
 import com.alttd.commandManager.CommandManager;
 import com.alttd.contextMenuManager.ContextMenuManager;
 import com.alttd.modalManager.ModalManager;
-import com.alttd.reminders.ReminderScheduler;
+import com.alttd.schedulers.AuctionScheduler;
+import com.alttd.schedulers.ReminderScheduler;
 import com.alttd.request.RequestManager;
+import com.alttd.selectMenuManager.SelectMenuManager;
 import com.alttd.util.Logger;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -30,13 +32,21 @@ public class JDAListener extends ListenerAdapter {
         ButtonManager buttonManager = new ButtonManager();
         ModalManager modalManager = new ModalManager(buttonManager);
         ContextMenuManager contextMenuManager = new ContextMenuManager(modalManager);
-        CommandManager commandManager = new CommandManager(jda, modalManager, contextMenuManager, chatListener);
-        jda.addEventListener(buttonManager, modalManager, commandManager, contextMenuManager, chatListener);
-        ReminderScheduler reminderScheduler = ReminderScheduler.getInstance(jda);
-        if (reminderScheduler == null) {
-            Logger.severe("Unable to start reminder scheduler!");
-        }
+        SelectMenuManager selectMenuManager = new SelectMenuManager();
+        CommandManager commandManager = new CommandManager(jda, modalManager, contextMenuManager, chatListener, selectMenuManager);
+        jda.addEventListener(buttonManager, modalManager, commandManager, contextMenuManager, chatListener, selectMenuManager);
+        startSchedulers();
 //        RequestManager.init();
+    }
+
+    private void startSchedulers() {
+        ReminderScheduler reminderScheduler = ReminderScheduler.getInstance(jda);
+        if (reminderScheduler == null)
+            Logger.severe("Unable to start reminder scheduler!");
+
+        AuctionScheduler auctionScheduler = AuctionScheduler.getInstance();
+        if (auctionScheduler == null)
+            Logger.severe("Unable to start auction scheduler!");
     }
 
     @Override

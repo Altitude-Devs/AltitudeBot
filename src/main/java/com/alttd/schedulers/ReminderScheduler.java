@@ -1,4 +1,4 @@
-package com.alttd.reminders;
+package com.alttd.schedulers;
 
 import com.alttd.database.queries.QueriesReminders.QueriesReminders;
 import com.alttd.database.queries.QueriesReminders.Reminder;
@@ -10,7 +10,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.utils.TimeUtil;
 
 import java.util.ArrayList;
 import java.util.Comparator;
