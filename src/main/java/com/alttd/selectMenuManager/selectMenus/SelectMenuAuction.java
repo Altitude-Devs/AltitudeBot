@@ -73,6 +73,12 @@ public class SelectMenuAuction extends DiscordSelectMenu {
         MessageEmbed messageEmbed = getMessageEmbed(event.getMessage().getEmbeds(), event);
         if (messageEmbed == null)
             return;
+        if (messageEmbed.getAuthor() != null && messageEmbed.getAuthor().getName() != null && messageEmbed.getAuthor().getName().equalsIgnoreCase(member.getEffectiveName())) {
+            event.replyEmbeds(Util.genericErrorEmbed("Error", "You own this auction so you can not bid on it."))
+                    .setEphemeral(true).queue();
+            //TODO store auction owner so this can be done better
+            return;
+        }
         BidFieldInfo bidFieldInfo = getPreviousBid(messageEmbed, event);
         if (bidFieldInfo == null)
             return;
