@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 
 import javax.annotation.Nullable;
 import java.awt.*;
+import java.time.Instant;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -108,6 +109,7 @@ public class AuctionScheduler {
             embedBuilder.addField("Winning Bid", "Insta bought by " + instaBuy.getAsMention(), false);
         else if (!fields.isEmpty()) {
             MessageEmbed.Field field = fields.get(0);
+
             if (field.getName() != null && field.getName().equals("Current Bid") && field.getValue() != null) {
                 embedBuilder.addField("Winning Bid", field.getValue(), false);
             } else if (fields.size() == 2) {
@@ -116,6 +118,13 @@ public class AuctionScheduler {
                     embedBuilder.addField("Winning Bid", field.getValue(), false);
             }
         }
+
+        String description = embed.getDescription();
+        if (description != null) {
+            embedBuilder.setDescription(description.substring(0, description.lastIndexOf("Closes")));
+            embedBuilder.appendDescription("Closed <t:" + Instant.now().getEpochSecond() + ":R>");
+        }
+
         if (embedBuilder.getFields().size() != 0)
             embedBuilder.setColor(Color.GREEN);
         else

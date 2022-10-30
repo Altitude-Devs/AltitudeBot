@@ -137,11 +137,14 @@ public class DatabaseTables {
 
     private void createAuctionTable() {
         String sql = "CREATE TABLE IF NOT EXISTS auctions(" +
+                "user_id BIGINT NOT NULL, " +
                 "message_id BIGINT NOT NULL, " +
                 "channel_id BIGINT NOT NULL, " +
                 "guild_id BIGINT NOT NULL, " +
                 "starting_price INT NOT NULL, " +
                 "expire_time BIGINT NOT NULL, " +
+                "minimum_increase INT NOT NULL, " +
+                "insta_buy INT NULL, " +
                 "PRIMARY KEY (message_id)" +
                 ")";
         try {
@@ -149,6 +152,23 @@ public class DatabaseTables {
         } catch (SQLException e) {
             Logger.sql(e);
             Logger.severe("Unable to create auction table, shutting down...");
+        }
+    }
+
+    private void createAuctionActionsTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS auction_actions(" +
+                "message_id BIGINT NOT NULL, " +
+                "action_type VARCHAR(32) NOT NULL, " +
+                "user_id BIGINT NOT NULL, " +
+                "price INT NOT NULL, " +
+                "action_time BIGINT NOT NULL, " +
+                "PRIMARY KEY (message_id, action_time)" +
+                ")";
+        try {
+            connection.prepareStatement(sql).executeUpdate();
+        } catch (SQLException e) {
+            Logger.sql(e);
+            Logger.severe("Unable to create auction action table, shutting down...");
         }
     }
 

@@ -216,4 +216,16 @@ public class Util {
             return str.toUpperCase();
         return str.toUpperCase().charAt(0) + str.toLowerCase().substring(1);
     }
+
+    public static String formatNumber(int price) {
+        String priceString = new StringBuilder(String.valueOf(price)).reverse().toString();
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        while (i + 3 < priceString.length()) {
+            sb.append(priceString, i, i + 3).append(",");
+            i += 3;
+        }
+        sb.append(priceString.substring(i)).reverse();
+        return "" + sb;
+    }
 }

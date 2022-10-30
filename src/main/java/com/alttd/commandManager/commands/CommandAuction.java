@@ -4,11 +4,9 @@ import com.alttd.AltitudeBot;
 import com.alttd.commandManager.CommandManager;
 import com.alttd.commandManager.DiscordCommand;
 import com.alttd.database.queries.QueriesAuctions.Auction;
-import com.alttd.database.queries.QueriesAuctions.QueriesAuction;
 import com.alttd.database.queries.commandOutputChannels.CommandOutputChannels;
 import com.alttd.database.queries.commandOutputChannels.OutputType;
 import com.alttd.schedulers.AuctionScheduler;
-import com.alttd.selectMenuManager.DiscordSelectMenu;
 import com.alttd.selectMenuManager.SelectMenuManager;
 import com.alttd.util.Logger;
 import com.alttd.util.Util;
@@ -28,13 +26,11 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 
 import java.awt.*;
-import java.io.File;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.UUID;
@@ -94,77 +90,69 @@ public class CommandAuction extends DiscordCommand {
         if (messageEmbed == null)
             return;
         ReplyCallbackAction replyCallbackAction = event.deferReply(true);
-        textChannel.sendMessageEmbeds(messageEmbed).queue(success -> {
-            Message.Attachment screenshot = event.getOption("screenshot", OptionMapping::getAsAttachment);
-            if (screenshot != null) {
-                String dataFolder = AltitudeBot.getInstance().getDataFolder();
-                Path parent = Path.of(dataFolder).getParent();
-                Path path = Path.of(parent.toString() + UUID.randomUUID() + "." + screenshot.getFileExtension());
-                screenshot.getProxy().downloadToFile(path.toFile()).whenComplete((file, throwable) ->
-                        success.editMessageAttachments(AttachedFile.fromData(file)).queue(done -> file.delete(), failed -> {
+        textChannel.sendMessageEmbeds(messageEmbed).queue(
+                success -> onSuccessSendAuctionMessage(event, success, replyCallbackAction, minimumIncrease),
+                error -> replyCallbackAction.setEmbeds(Util.genericErrorEmbed("Error", "Unable to send your auction to the auction channel"))
+                .queue());
+    }
+
+    private void onSuccessSendAuctionMessage(SlashCommandInteractionEvent event, Message message, ReplyCallbackAction replyCallbackAction, int minimumIncrease) {
+        Message.Attachment screenshot = event.getOption("screenshot", OptionMapping::getAsAttachment);
+        if (screenshot != null)
+            addScreenshot(screenshot, message);
+
+        Integer startingPrice = event.getOption("starting-price", OptionMapping::getAsInt);
+        if (startingPrice == null) {
+            Logger.severe("Starting price magically became null");
+            replyCallbackAction.setEmbeds(Util.genericSuccessEmbed("Error", "Failed to store auction"))
+                    .queue();
+            return;
+        }
+
+        Auction auction = new Auction(
+                event.getUser().getIdLong(),
+                message,
+                message.getChannel().getIdLong(),
+                message.getGuild().getIdLong(),
+                startingPrice,
+                Instant.now().toEpochMilli() + TimeUnit.DAYS.toMillis(1),
+                minimumIncrease,
+                event.getOption("insta-buy", OptionMapping::getAsInt));
+
+        SelectMenu selectMenu = auction.getSelectMenu(selectMenuManager, false);
+        if (selectMenu == null) {
+            replyCallbackAction.setEmbeds(Util.genericErrorEmbed("Error", "Unable to find select menu for your auction, removing message..."))
+                    .queue();
+            message.delete().queue();
+            return;
+        }
+
+        message.editMessageComponents().setActionRow(selectMenu).queue();
+
+        AuctionScheduler auctionScheduler = AuctionScheduler.getInstance();
+        if (auctionScheduler == null) {
+            replyCallbackAction.setEmbeds(Util.genericSuccessEmbed("Error", "Failed to store auction in scheduler"))
+                    .queue();
+            return;
+        }
+        auctionScheduler.addAuction(auction);
+        replyCallbackAction.setEmbeds(Util.genericSuccessEmbed("Success", "Your auction was created"))
+                .queue();
+    }
+
+    private void addScreenshot(Message.Attachment screenshot, Message message) {
+        String dataFolder = AltitudeBot.getInstance().getDataFolder();
+        Path parent = Path.of(dataFolder).getParent();
+        Path path = Path.of(parent.toString() + UUID.randomUUID() + "." + screenshot.getFileExtension());
+        screenshot.getProxy().downloadToFile(path.toFile()).whenComplete((file, throwable) ->
+                        message.editMessageAttachments(AttachedFile.fromData(file)).queue(done -> file.delete(), failed -> {
                             Util.handleFailure(failed);
                             file.delete();
                         }))
-                        .exceptionally(e -> {
-                            e.printStackTrace();
-                            return null;
-                        });
-            }
-            DiscordSelectMenu discordAuction = selectMenuManager.getDiscordSelectMenuFor("auction");
-            if (discordAuction == null) {
-                replyCallbackAction.setEmbeds(Util.genericErrorEmbed("Error", "Unable to find select menu for your auction, removing message..."))
-                        .queue();
-                success.delete().queue();
-                return;
-            }
-            SelectMenu selectMenu;
-            Integer instaBuy = event.getOption("insta-buy", OptionMapping::getAsInt);
-            int mediumIncrease = minimumIncrease * 5;
-            if (instaBuy != null) {
-                if (mediumIncrease == instaBuy)
-                    mediumIncrease += 1;
-                selectMenu = discordAuction.getSelectMenu(
-                        SelectOption.of("Increase bid by: " + minimumIncrease, "" + minimumIncrease),
-                        SelectOption.of("Increase bid by: " + mediumIncrease, "" + mediumIncrease),
-                        SelectOption.of("Insta Buy: " + instaBuy, "" + instaBuy)
-                );
-            } else {
-                selectMenu = discordAuction.getSelectMenu(
-                        SelectOption.of("Increase bid by: " + minimumIncrease, "" + minimumIncrease),
-                        SelectOption.of("Increase bid by: " + mediumIncrease, "" + mediumIncrease)
-                );
-            }
-
-            if (selectMenu == null) {
-                replyCallbackAction.setEmbeds(Util.genericErrorEmbed("Error", "Unable to add select menu to your auction, removing message..."))
-                        .queue();
-                success.delete().queue();
-                return;
-            }
-            success.editMessageComponents().setActionRow(selectMenu).queue();
-            Integer startingPrice = event.getOption("starting-price", OptionMapping::getAsInt);
-            if (startingPrice == null) {
-                Logger.severe("Starting price magically became null");
-                replyCallbackAction.setEmbeds(Util.genericSuccessEmbed("Error", "Failed to store auction"))
-                        .queue();
-                return;
-            }
-            AuctionScheduler auctionScheduler = AuctionScheduler.getInstance();
-            if (auctionScheduler == null) {
-                replyCallbackAction.setEmbeds(Util.genericSuccessEmbed("Error", "Failed to store auction in scheduler"))
-                        .queue();
-                return;
-            }
-            auctionScheduler.addAuction(new Auction(
-                    success,
-                    success.getChannel().getIdLong(),
-                    success.getGuild().getIdLong(),
-                    startingPrice,
-                    Instant.now().toEpochMilli() + TimeUnit.DAYS.toMillis(1)));
-            replyCallbackAction.setEmbeds(Util.genericSuccessEmbed("Success", "Your auction was created"))
-                    .queue();
-        }, error -> replyCallbackAction.setEmbeds(Util.genericErrorEmbed("Error", "Unable to send your auction to the auction channel"))
-                .queue());
+                .exceptionally(e -> {
+                    e.printStackTrace();
+                    return null;
+                });
     }
 
     private MessageEmbed buildAuctionEmbed(SlashCommandInteractionEvent event, int minimumIncrease) {
@@ -183,18 +171,18 @@ public class CommandAuction extends DiscordCommand {
         Integer amount = event.getOption("amount", OptionMapping::getAsInt);
         if (amount == null)
             return handleBuildEmbedError(event, "Missing required amount option");
-        embedBuilder.appendDescription("\n**Amount**: " + amount);
+        embedBuilder.appendDescription("\n**Amount**: " + Util.formatNumber(amount));
 
         Integer startingPrice = event.getOption("starting-price", OptionMapping::getAsInt);
         if (startingPrice == null)
             return handleBuildEmbedError(event, "Missing required starting price option");
-        embedBuilder.appendDescription("\n**Starting Price**: $" + startingPrice);
+        embedBuilder.appendDescription("\n**Starting Price**: $" + Util.formatNumber(startingPrice));
 
         Integer instaBuy = event.getOption("insta-buy", OptionMapping::getAsInt);
         if (instaBuy != null) {
             if (instaBuy == minimumIncrease)
                 return handleBuildEmbedError(event, "Insta buy can't be the same as minimum increase");
-            embedBuilder.appendDescription("\n**Insta Buy**: $" + instaBuy);
+            embedBuilder.appendDescription("\n**Insta Buy**: $" + Util.formatNumber(instaBuy));
         }
 
 

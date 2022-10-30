@@ -18,7 +18,7 @@ public class SelectMenuManager extends ListenerAdapter {
     private final List<DiscordSelectMenu> buttons;
 
     public SelectMenuManager() {
-        buttons = List.of(new SelectMenuAuction());
+        buttons = List.of(new SelectMenuAuction(this));
     }
 
     @Override
