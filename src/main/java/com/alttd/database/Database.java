@@ -54,6 +54,9 @@ public class Database {
     public Connection getConnection() {
         try {
             instance.openConnection();
+            if (!instance.connection.isValid(50)) {
+                instance.connection.prepareStatement("SHOW TABLES").executeQuery();
+            }
         }
         catch (SQLException e) {
             Logger.sql(e);
