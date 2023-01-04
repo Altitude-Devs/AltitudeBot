@@ -63,13 +63,13 @@ public class CommandManager extends ListenerAdapter {
                 .filter(discordCommand -> discordCommand.getName().equalsIgnoreCase(commandName))
                 .findFirst();
         if (first.isEmpty()) {
-            event.replyEmbeds(new EmbedBuilder()
-                            .setTitle("Invalid command")
-                            .setDescription("We couldn't find a command called [" + commandName + "], please report this issue to a Teri")
-                            .setColor(Color.RED)
-                            .build())
-                    .setEphemeral(true)
-                    .queue();
+//            event.replyEmbeds(new EmbedBuilder()
+//                            .setTitle("Invalid command")
+//                            .setDescription("We couldn't find a command called [" + commandName + "], please report this issue to a Teri")
+//                            .setColor(Color.RED)
+//                            .build())
+//                    .setEphemeral(true)
+//                    .queue();
             return;
         }
         first.get().execute(event);
