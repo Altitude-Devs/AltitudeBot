@@ -35,13 +35,13 @@ public class ModalManager extends ListenerAdapter {
                 .filter(discordModal -> discordModal.getModalId().equalsIgnoreCase(modalId))
                 .findFirst();
         if (first.isEmpty()) {
-            event.replyEmbeds(new EmbedBuilder()
-                            .setTitle("Invalid command")
-                            .setDescription("Unable to process modal with id: [" + modalId + "], please report this issue to a Teri")
-                            .setColor(Color.RED)
-                            .build())
-                    .setEphemeral(true)
-                    .queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+//            event.replyEmbeds(new EmbedBuilder()
+//                            .setTitle("Invalid command")
+//                            .setDescription("Unable to process modal with id: [" + modalId + "], please report this issue to a Teri")
+//                            .setColor(Color.RED)
+//                            .build())
+//                    .setEphemeral(true)
+//                    .queue(RestAction.getDefaultSuccess(), Util::handleFailure);
             return;
         }
         first.get().execute(event);

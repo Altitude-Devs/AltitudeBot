@@ -36,13 +36,13 @@ public class ButtonManager extends ListenerAdapter {
                 .filter(discordModal -> discordModal.getButtonId().equalsIgnoreCase(buttonId))
                 .findFirst();
         if (first.isEmpty()) {
-            event.replyEmbeds(new EmbedBuilder()
-                            .setTitle("Invalid command")
-                            .setDescription("Unable to process button with id: [" + buttonId + "], please report this issue to a Teri")
-                            .setColor(Color.RED)
-                            .build())
-                    .setEphemeral(true)
-                    .queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+//            event.replyEmbeds(new EmbedBuilder()
+//                            .setTitle("Invalid command")
+//                            .setDescription("Unable to process button with id: [" + buttonId + "], please report this issue to a Teri")
+//                            .setColor(Color.RED)
+//                            .build())
+//                    .setEphemeral(true)
+//                    .queue(RestAction.getDefaultSuccess(), Util::handleFailure);
             return;
         }
         first.get().execute(event);
