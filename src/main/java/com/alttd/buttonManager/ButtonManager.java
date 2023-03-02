@@ -1,5 +1,8 @@
 package com.alttd.buttonManager;
 
+import com.alttd.buttonManager.buttons.autoReminder.ButtonAccepted;
+import com.alttd.buttonManager.buttons.autoReminder.ButtonInProgress;
+import com.alttd.buttonManager.buttons.autoReminder.ButtonRejected;
 import com.alttd.buttonManager.buttons.remindMeConfirm.ButtonRemindMeCancel;
 import com.alttd.buttonManager.buttons.remindMeConfirm.ButtonRemindMeConfirm;
 import com.alttd.buttonManager.buttons.suggestionReview.ButtonSuggestionReviewAccept;
@@ -26,7 +29,10 @@ public class ButtonManager extends ListenerAdapter {
                 new ButtonSuggestionReviewAccept(),
                 new ButtonSuggestionReviewDeny(),
                 new ButtonRemindMeCancel(),
-                new ButtonRemindMeConfirm());
+                new ButtonRemindMeConfirm(),
+                new ButtonAccepted(),
+                new ButtonInProgress(),
+                new ButtonRejected());
     }
 
     @Override

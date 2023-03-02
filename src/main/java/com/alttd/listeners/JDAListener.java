@@ -28,13 +28,14 @@ public class JDAListener extends ListenerAdapter {
     @Override
     public void onReady(@NotNull ReadyEvent event) {
         Logger.info("JDA ready to register commands.");
-        ChatListener chatListener = new ChatListener();
+        LockedChannel lockedChannel = new LockedChannel();
         ButtonManager buttonManager = new ButtonManager();
+        AppealRepost appealRepost = new AppealRepost(buttonManager);
         ModalManager modalManager = new ModalManager(buttonManager);
         ContextMenuManager contextMenuManager = new ContextMenuManager(modalManager);
         SelectMenuManager selectMenuManager = new SelectMenuManager();
-        CommandManager commandManager = new CommandManager(jda, modalManager, contextMenuManager, chatListener, selectMenuManager);
-        jda.addEventListener(buttonManager, modalManager, commandManager, contextMenuManager, chatListener, selectMenuManager);
+        CommandManager commandManager = new CommandManager(jda, modalManager, contextMenuManager, lockedChannel, selectMenuManager);
+        jda.addEventListener(buttonManager, modalManager, commandManager, contextMenuManager, lockedChannel, appealRepost, selectMenuManager);
         startSchedulers();
 //        RequestManager.init();
     }

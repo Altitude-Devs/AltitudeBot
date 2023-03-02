@@ -10,11 +10,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 
-public class ChatListener extends ListenerAdapter {
+public class LockedChannel extends ListenerAdapter {
 
     private final HashMap<Long, HashSet<Long>> lockedChannels;
 
-    public ChatListener() {
+    public LockedChannel() {
         HashMap<Long, HashSet<Long>> tmp = QueriesLockedChannels.getLockedChannels();
         lockedChannels = Objects.requireNonNullElseGet(tmp, HashMap::new);
         if (tmp == null)

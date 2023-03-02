@@ -65,13 +65,19 @@ public class ReminderScheduler {
         QueriesReminders.removeReminder(reminder.id());
     }
 
+    public synchronized void removeReminder(long messageId) {
+        reminders.stream()
+                .filter(reminder -> reminder.messageId() == messageId)
+                .findAny()
+                .ifPresent(this::removeReminder);
+    }
+
     private class ReminderRun implements Runnable {
 
         @Override
         public void run() {
             long time = new Date().getTime();
             while (nextReminder != null && time > nextReminder.remindDate()) {
-                //TODO run reminder
                 TextChannel channel = nextReminder.getChannel(jda);
                 if (channel == null || !channel.canTalk()) {
                     Logger.warning("Unable to run reminder: " + nextReminder.id() +
@@ -80,7 +86,23 @@ public class ReminderScheduler {
                     return;
                 }
                 sendEmbed(nextReminder, channel);
-                removeReminder(nextReminder);
+                if (nextReminder.shouldRepeat()) {
+                    Reminder repeatedReminder = new Reminder(
+                            nextReminder.id(),
+                            nextReminder.title(),
+                            nextReminder.description(),
+                            nextReminder.userId(),
+                            nextReminder.guildId(),
+                            nextReminder.channelId(),
+                            nextReminder.messageId(),
+                            nextReminder.shouldRepeat(),
+                            nextReminder.creationDate(),
+                            nextReminder.remindDate() + TimeUnit.DAYS.toMillis(1));
+                    addReminder(repeatedReminder);
+                    QueriesReminders.updateReminderDate(repeatedReminder);
+                }
+                else
+                    removeReminder(nextReminder);
             }
         }
 

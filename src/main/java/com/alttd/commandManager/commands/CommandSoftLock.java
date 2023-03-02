@@ -2,12 +2,11 @@ package com.alttd.commandManager.commands;
 
 import com.alttd.commandManager.CommandManager;
 import com.alttd.commandManager.DiscordCommand;
-import com.alttd.listeners.ChatListener;
+import com.alttd.listeners.LockedChannel;
 import com.alttd.util.Util;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -24,10 +23,10 @@ import java.util.stream.Collectors;
 public class CommandSoftLock extends DiscordCommand {
 
     private final CommandData commandData;
-    private final ChatListener chatListener;
+    private final LockedChannel lockedChannel;
 
-    public CommandSoftLock(JDA jda, CommandManager commandManager, ChatListener chatListener) {
-        this.chatListener = chatListener;
+    public CommandSoftLock(JDA jda, CommandManager commandManager, LockedChannel lockedChannel) {
+        this.lockedChannel = lockedChannel;
         this.commandData = Commands.slash(getName(), "Auto delete all messages in a channel")
                 .addOption(OptionType.STRING, "state", "Set the soft lock \"on\" or \"off\"", true, true)
                 .addOption(OptionType.CHANNEL, "channel", "Channel to change soft lock state for", true)
@@ -73,24 +72,24 @@ public class CommandSoftLock extends DiscordCommand {
         state = state.toLowerCase();
         switch (state) {
             case "on" -> {
-                if (chatListener.containsChannel(guildId, channelId)) {
+                if (lockedChannel.containsChannel(guildId, channelId)) {
                     event.replyEmbeds(Util.genericErrorEmbed("Error", "<#" + channelId + ">" + " is already locked"))
                             .setEphemeral(true).queue();
                     break;
                 }
-                if (!chatListener.lockChannel(guildId, channelId))
+                if (!lockedChannel.lockChannel(guildId, channelId))
                     event.replyEmbeds(Util.genericErrorEmbed("Error", "<#" + channelId + ">" + " could not be locked"))
                             .setEphemeral(true).queue();
                 event.replyEmbeds(Util.genericSuccessEmbed("Success", "Soft locked " + "<#" + channelId + ">" + "!"))
                         .setEphemeral(true).queue();
             }
             case "off" -> {
-                if (!chatListener.containsChannel(guildId, channelId)) {
+                if (!lockedChannel.containsChannel(guildId, channelId)) {
                     event.replyEmbeds(Util.genericErrorEmbed("Error", "<#" + channelId + ">" + " isn't locked"))
                             .setEphemeral(true).queue();
                     break;
                 }
-                if (!chatListener.unlockChannel(guildId, channelId))
+                if (!lockedChannel.unlockChannel(guildId, channelId))
                     event.replyEmbeds(Util.genericErrorEmbed("Error", "<#" + channelId + ">" + " could not be unlocked"))
                             .setEphemeral(true).queue();
                 event.replyEmbeds(Util.genericSuccessEmbed("Success", "Unlocked " + "<#" + channelId + ">"))

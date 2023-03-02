@@ -23,14 +23,14 @@ public class Database {
     }
 
     private void openConnection() throws SQLException {
-        if (connection != null && !connection.isClosed()) {
+        if (connection != null && !connection.isClosed() && connection.isValid(50)) {
             return;
         }
 
         synchronized (this) {
-            if (connection != null && !connection.isClosed()) {
-                return;
-            }
+//            if (connection != null && !connection.isClosed()) {
+//                return;
+//            }
             try {
                 Class.forName("com.mysql.jdbc.Driver");
             } catch (ClassNotFoundException e) {
@@ -54,9 +54,6 @@ public class Database {
     public Connection getConnection() {
         try {
             instance.openConnection();
-            if (!instance.connection.isValid(50)) {
-                instance.connection.prepareStatement("SHOW TABLES").executeQuery();
-            }
         }
         catch (SQLException e) {
             Logger.sql(e);

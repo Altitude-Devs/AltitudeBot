@@ -42,6 +42,28 @@ public class QueriesReminders {
         return -1;
     }
 
+    public static int updateReminderDate(Reminder reminder) {
+        String sql = "UPDATE new_reminders SET remind_date = ? WHERE id = ?";
+        try {
+            PreparedStatement preparedStatement = Database.getDatabase().getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+            preparedStatement.setLong(1, reminder.remindDate());
+            preparedStatement.setInt(2, reminder.id());
+
+            if (preparedStatement.executeUpdate() == 1) {
+                ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1);
+                }
+            }
+
+            return -1;
+        } catch (SQLException e) {
+            Logger.exception(e);
+        }
+        return -1;
+    }
+
     public static boolean removeReminder(int id) {
         String sql = "DELETE FROM new_reminders WHERE id = ?";
         try {

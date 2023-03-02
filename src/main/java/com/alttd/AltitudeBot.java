@@ -9,6 +9,7 @@ import com.alttd.listeners.JDAListener;
 import com.alttd.util.Logger;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -30,7 +31,18 @@ public class AltitudeBot {
     private void start() {
         Logger.info("Starting bot...");
         initConfigs();
-        jda = JDABuilder.createDefault(SettingsConfig.TOKEN).build();
+        jda = JDABuilder.createDefault(SettingsConfig.TOKEN,
+                GatewayIntent.GUILD_MEMBERS,
+                GatewayIntent.GUILD_BANS,
+                GatewayIntent.GUILD_EMOJIS_AND_STICKERS,
+                GatewayIntent.GUILD_WEBHOOKS,
+                GatewayIntent.GUILD_PRESENCES,
+                GatewayIntent.GUILD_MESSAGES,
+                GatewayIntent.GUILD_MESSAGE_REACTIONS,
+                GatewayIntent.GUILD_MESSAGE_TYPING,
+                GatewayIntent.DIRECT_MESSAGES,
+                GatewayIntent.DIRECT_MESSAGE_TYPING,
+                GatewayIntent.MESSAGE_CONTENT).build();
         ConsoleCommandManager.startConsoleCommands(jda);
         DatabaseTables.createTables(Database.getDatabase().getConnection());
 //        try {
