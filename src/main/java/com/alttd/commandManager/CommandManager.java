@@ -51,6 +51,7 @@ public class CommandManager extends ListenerAdapter {
                 new CommandToggleRole(commandSetToggleableRoles, jda, this),
                 new CommandRemindMe(jda, this, modalManager),
                 new CommandSoftLock(jda, this, lockedChannel),
+                new CommandDataSuggestions(jda, this),
                 new CommandAuction(jda, this, selectMenuManager));
     }
 

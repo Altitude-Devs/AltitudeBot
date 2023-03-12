@@ -53,7 +53,7 @@ tasks {
 }
 
 dependencies {
-// JDA
+    // JDA
     implementation("net.dv8tion:JDA:5.0.0-alpha.20") {
         exclude("opus-java") // exclude audio
     }
@@ -64,7 +64,10 @@ dependencies {
     // Configurate
     implementation("org.spongepowered:configurate-yaml:4.1.2")
 
-
+    // Excel
+    implementation("org.apache.poi:poi:5.2.0")
+    implementation("org.apache.poi:poi-ooxml:5.2.0")
+    // Other stuff?
     compileOnly("org.projectlombok:lombok:1.18.24")
     annotationProcessor("org.projectlombok:lombok:1.18.24")
 }
