@@ -3,18 +3,16 @@ package com.alttd.database.queries.QueriesReminders;
 import com.alttd.database.Database;
 import com.alttd.util.Logger;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.io.IOException;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class QueriesReminders {
 
     public static int storeReminder(Reminder reminder) {
         String sql = "INSERT INTO new_reminders " +
-                "(title, description, user_id, guild_id, channel_id, message_id, should_repeat, creation_date, remind_date) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "(title, description, user_id, guild_id, channel_id, message_id, should_repeat, creation_date, remind_date, reminder_type, data) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             PreparedStatement preparedStatement = Database.getDatabase().getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
@@ -27,6 +25,8 @@ public class QueriesReminders {
             preparedStatement.setInt(7, reminder.shouldRepeat() ? 1 : 0);
             preparedStatement.setLong(8, reminder.creationDate());
             preparedStatement.setLong(9, reminder.remindDate());
+            preparedStatement.setInt(10, reminder.reminderType().getId());
+            preparedStatement.setBytes(11, reminder.data());
 
             if (preparedStatement.executeUpdate() == 1) {
                 ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
@@ -42,13 +42,13 @@ public class QueriesReminders {
         return -1;
     }
 
-    public static int updateReminderDate(Reminder reminder) {
+    public static int updateReminderDate(long reminderDate, int reminderId) {
         String sql = "UPDATE new_reminders SET remind_date = ? WHERE id = ?";
         try {
             PreparedStatement preparedStatement = Database.getDatabase().getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-            preparedStatement.setLong(1, reminder.remindDate());
-            preparedStatement.setInt(2, reminder.id());
+            preparedStatement.setLong(1, reminderDate);
+            preparedStatement.setInt(2, reminderId);
 
             if (preparedStatement.executeUpdate() == 1) {
                 ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
@@ -106,7 +106,16 @@ public class QueriesReminders {
         boolean shouldRepeat = resultSet.getInt("should_repeat") == 1;
         long creationDate = resultSet.getLong("creation_date");
         long remindDate = resultSet.getLong("remind_date");
-        return new Reminder(id, title, desc, userId, guildId, channelId, messageId, shouldRepeat, creationDate, remindDate);
+        ReminderType reminderType = ReminderType.getReminder(resultSet.getInt("reminder_type"));
+        byte[] data = null;
+
+        try {
+            data = resultSet.getBlob("data").getBinaryStream().readAllBytes();
+        } catch (IOException e) {
+            Logger.warning("Unable to read data for reminder with id: " + id);
+        }
+
+        return new Reminder(id, title, desc, userId, guildId, channelId, messageId, shouldRepeat, creationDate, remindDate, reminderType, data);
     }
 
 }

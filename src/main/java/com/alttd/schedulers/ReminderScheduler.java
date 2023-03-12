@@ -10,7 +10,12 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -56,20 +61,21 @@ public class ReminderScheduler {
         nextReminder = reminders.get(0);
     }
 
-    public synchronized void removeReminder(Reminder reminder) {
+    public synchronized void removeReminder(Reminder reminder, boolean removeFromDatabase) {
         reminders.remove(reminder);
         if (reminders.size() == 0)
             nextReminder = null;
         else
             nextReminder = reminders.get(0);
-        QueriesReminders.removeReminder(reminder.id());
+        if (removeFromDatabase)
+            QueriesReminders.removeReminder(reminder.id());
     }
 
     public synchronized void removeReminder(long messageId) {
         reminders.stream()
                 .filter(reminder -> reminder.messageId() == messageId)
                 .findAny()
-                .ifPresent(this::removeReminder);
+                .ifPresent(reminder -> removeReminder(reminder, true));
     }
 
     private class ReminderRun implements Runnable {
@@ -95,14 +101,17 @@ public class ReminderScheduler {
                             nextReminder.guildId(),
                             nextReminder.channelId(),
                             nextReminder.messageId(),
-                            nextReminder.shouldRepeat(),
+                            true,
                             nextReminder.creationDate(),
-                            nextReminder.remindDate() + TimeUnit.DAYS.toMillis(1));
+                            nextReminder.remindDate() + TimeUnit.DAYS.toMillis(1),
+                            nextReminder.reminderType(),
+                            nextReminder.data());
+                    removeReminder(nextReminder, false);
                     addReminder(repeatedReminder);
-                    QueriesReminders.updateReminderDate(repeatedReminder);
+                    QueriesReminders.updateReminderDate(nextReminder.remindDate() + TimeUnit.DAYS.toMillis(1), nextReminder.id());
                 }
                 else
-                    removeReminder(nextReminder);
+                    removeReminder(nextReminder, true);
             }
         }
 
@@ -123,7 +132,33 @@ public class ReminderScheduler {
 
         private void sendEmbed(Reminder reminder, TextChannel channel, EmbedBuilder embedBuilder, Member member) {
             embedBuilder.setAuthor(member.getEffectiveName(), null, member.getEffectiveAvatarUrl());
-            channel.sendMessageEmbeds(embedBuilder.build()).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+            switch (reminder.reminderType()) {
+                case NONE, MANUAL -> {
+                    channel.sendMessageEmbeds(embedBuilder.build()).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+                }
+                case APPEAL -> {
+                    if (reminder.data() == null)
+                        break;
+                    InputStream inputStream = new ByteArrayInputStream(reminder.data());
+                    DataInputStream dataInputStream = new DataInputStream(inputStream);
+                    long userId = 0;
+                    try {
+                        userId = dataInputStream.readLong();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        try {
+                            dataInputStream.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    MessageCreateAction messageCreateAction = channel.sendMessageEmbeds(embedBuilder.build());
+                    if (userId != 0)
+                        messageCreateAction = messageCreateAction.mentionUsers(userId);
+                    messageCreateAction.queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+                }
+            }
         }
 
         private void sendEmbed(Reminder reminder, TextChannel channel, EmbedBuilder embedBuilder) {

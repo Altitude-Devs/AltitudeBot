@@ -111,6 +111,8 @@ public class DatabaseTables {
                 "should_repeat TINYINT(1) NOT NULL, " +
                 "creation_date LONG NOT NULL, " +
                 "remind_date LONG NOT NULL, " +
+                "reminder_type INT NOT NULL default (-1), " +
+                "data BLOB NULL default NULL, " +
                 "PRIMARY KEY (id)" +
                 ")";
         try {

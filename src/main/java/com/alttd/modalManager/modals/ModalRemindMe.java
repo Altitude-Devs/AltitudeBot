@@ -3,6 +3,7 @@ package com.alttd.modalManager.modals;
 import com.alttd.buttonManager.ButtonManager;
 import com.alttd.buttonManager.buttons.remindMeConfirm.ButtonRemindMeConfirm;
 import com.alttd.database.queries.QueriesReminders.Reminder;
+import com.alttd.database.queries.QueriesReminders.ReminderType;
 import com.alttd.modalManager.DiscordModal;
 import com.alttd.util.Util;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -73,7 +74,9 @@ public class ModalRemindMe extends DiscordModal {
                 0,
                 false,
                 new Date().getTime(),
-                remindMeData.timestamp);
+                remindMeData.timestamp,
+                ReminderType.MANUAL,
+                null);
 
         Button remindMeConfirm = buttonManager.getButtonFor("remind_me_confirm");
         Button remindMeCancel = buttonManager.getButtonFor("remind_me_cancel");

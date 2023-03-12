@@ -53,17 +53,7 @@ public class ButtonRemindMeConfirm extends DiscordButton {
             return false;
         }
 
-        reminder = new Reminder(
-                id,
-                reminder.title(),
-                reminder.description(),
-                reminder.userId(),
-                reminder.guildId(),
-                reminder.channelId(),
-                reminder.messageId(),
-                reminder.shouldRepeat(),
-                reminder.creationDate(),
-                reminder.remindDate());
+        reminder = Reminder.reCreateReminder(id, reminder);
 
         ReminderScheduler instance = ReminderScheduler.getInstance(event.getJDA());
         if (instance == null) {

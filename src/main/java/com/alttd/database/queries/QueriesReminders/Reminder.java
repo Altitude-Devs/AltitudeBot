@@ -6,7 +6,24 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 public record Reminder (int id, String title, String description, long userId, long guildId, long channelId,
-                        long messageId, boolean shouldRepeat, long creationDate, long remindDate) {
+                        long messageId, boolean shouldRepeat, long creationDate, long remindDate, ReminderType reminderType, byte[] data) {
+
+    public static Reminder reCreateReminder(int id, Reminder reminder) {
+        return new Reminder(
+                id,
+                reminder.title(),
+                reminder.description(),
+                reminder.userId(),
+                reminder.guildId(),
+                reminder.channelId(),
+                reminder.messageId(),
+                reminder.shouldRepeat(),
+                reminder.creationDate(),
+                reminder.remindDate(),
+                reminder.reminderType(),
+                reminder.data());
+    }
+
     public TextChannel getChannel(JDA jda) {
         Guild guildById = getGuild(jda);
         if (guildById == null)
