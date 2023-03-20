@@ -3,7 +3,7 @@ package com.alttd.database.queries.QueriesReminders;
 import com.alttd.util.Logger;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.Channel;
 
 public record Reminder (int id, String title, String description, long userId, long guildId, long channelId,
                         long messageId, boolean shouldRepeat, long creationDate, long remindDate, ReminderType reminderType, byte[] data) {
@@ -24,18 +24,20 @@ public record Reminder (int id, String title, String description, long userId, l
                 reminder.data());
     }
 
-    public TextChannel getChannel(JDA jda) {
+    public Channel getChannel(JDA jda) {
         Guild guildById = getGuild(jda);
         if (guildById == null)
             return null;
 
-        TextChannel textChannelById = guildById.getTextChannelById(this.channelId);
-        if (textChannelById == null) {
+        Channel channelById = guildById.getTextChannelById(this.channelId);
+        if (channelById == null)
+            channelById = guildById.getThreadChannelById(this.channelId);
+        if (channelById == null) {
             Logger.warning("Unable to find text channel for reminder, text channel id: [" + channelId + "]");
             return null;
         }
 
-        return textChannelById;
+        return channelById;
     }
 
     public Guild getGuild(JDA jda) {

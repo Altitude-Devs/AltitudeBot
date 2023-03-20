@@ -99,13 +99,15 @@ public class AppealRepost extends ListenerAdapter {
             Logger.warning("Unable to get a button for appeals");
             return;
         }
-        MessageCreateAction messageCreateAction = message.getChannel().sendMessageEmbeds(embed);
-        if (member != null)
-            messageCreateAction = messageCreateAction.mentionUsers(member.getIdLong());
-        messageCreateAction.queue(res -> {
+        message.getChannel().sendMessageEmbeds(embed).queue(res -> {
                 res.editMessageComponents().setActionRow(reminderAccepted, reminderInProgress, reminderDenied).queue();
                 res.createThreadChannel("Appeal").queue((
-                        threadChannel -> scheduleReminder(res, member, threadChannel)),
+                        threadChannel -> {
+                            scheduleReminder(res, member, threadChannel);
+                            if (member != null) {
+                                threadChannel.sendMessage(member.getAsMention() + " you have a new appeal!").queue();
+                            }
+                        }),
                         failure -> Logger.warning("Unable to create thread channel so won't schedule reminder..."));
         });
         message.delete().queue();

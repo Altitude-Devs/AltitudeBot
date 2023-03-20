@@ -8,7 +8,9 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 
@@ -82,11 +84,11 @@ public class ReminderScheduler {
 
         @Override
         public void run() {
-            long time = new Date().getTime();
+            long time = System.currentTimeMillis();
             while (nextReminder != null && time > nextReminder.remindDate()) {
-                TextChannel channel = nextReminder.getChannel(jda);
-                if (channel == null || !channel.canTalk()) {
-                    Logger.warning("Unable to run reminder: " + nextReminder.id() +
+                Channel channel = nextReminder.getChannel(jda);
+                if (channel == null) {
+                    Logger.warning("Couldn't find channel, unable to run reminder: " + nextReminder.id() +
                             "\ntitle: [" + nextReminder.title() +
                             "]\ndescription: [" + nextReminder.description() + "]");
                     return;
@@ -114,8 +116,7 @@ public class ReminderScheduler {
                     removeReminder(nextReminder, true);
             }
         }
-
-        private void sendEmbed(Reminder reminder, TextChannel channel) {
+        private void sendEmbed(Reminder reminder, Channel channel) {
             EmbedBuilder embedBuilder = new EmbedBuilder()
                     .setTitle(reminder.title())
                     .setDescription(reminder.description())
@@ -130,11 +131,33 @@ public class ReminderScheduler {
                     failed -> sendEmbed(reminder, channel, embedBuilder));
         }
 
-        private void sendEmbed(Reminder reminder, TextChannel channel, EmbedBuilder embedBuilder, Member member) {
+        private MessageCreateAction getCreateAction(Channel channel, EmbedBuilder embedBuilder) {
+            switch (channel.getType()) {
+                case TEXT, NEWS, FORUM -> {
+                    if (channel instanceof TextChannel textChannel) {
+                        return textChannel.sendMessageEmbeds(embedBuilder.build());
+                    }
+                }
+                case GUILD_NEWS_THREAD, GUILD_PUBLIC_THREAD, GUILD_PRIVATE_THREAD -> {
+                    if (channel instanceof ThreadChannel threadChannel) {
+                        return threadChannel.sendMessageEmbeds(embedBuilder.build());
+                    }
+                }
+                default -> {
+                    Logger.warning("Received unexpected channel type " + channel.getType() + " can't send reminder...");
+                }
+            }
+            return null;
+        }
+
+        private void sendEmbed(Reminder reminder, Channel channel, EmbedBuilder embedBuilder, Member member) {
             embedBuilder.setAuthor(member.getEffectiveName(), null, member.getEffectiveAvatarUrl());
             switch (reminder.reminderType()) {
                 case NONE, MANUAL -> {
-                    channel.sendMessageEmbeds(embedBuilder.build()).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+                    MessageCreateAction createAction = getCreateAction(channel, embedBuilder);
+                    if (createAction == null)
+                        return;
+                    createAction.queue(RestAction.getDefaultSuccess(), Util::handleFailure);
                 }
                 case APPEAL -> {
                     if (reminder.data() == null)
@@ -153,17 +176,23 @@ public class ReminderScheduler {
                             e.printStackTrace();
                         }
                     }
-                    MessageCreateAction messageCreateAction = channel.sendMessageEmbeds(embedBuilder.build());
-                    if (userId != 0)
-                        messageCreateAction = messageCreateAction.mentionUsers(userId);
+                    MessageCreateAction messageCreateAction = getCreateAction(channel, embedBuilder);
+                    if (messageCreateAction == null)
+                        return;
+                    if (userId != 0) {
+                        messageCreateAction.addContent("<@" + userId + ">");
+                    }
                     messageCreateAction.queue(RestAction.getDefaultSuccess(), Util::handleFailure);
                 }
             }
         }
 
-        private void sendEmbed(Reminder reminder, TextChannel channel, EmbedBuilder embedBuilder) {
+        private void sendEmbed(Reminder reminder, Channel channel, EmbedBuilder embedBuilder) {
             embedBuilder.setAuthor(reminder.userId() + "");
-            channel.sendMessageEmbeds(embedBuilder.build()).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
+            MessageCreateAction createAction = getCreateAction(channel, embedBuilder);
+            if (createAction == null)
+                return;
+            createAction.queue(RestAction.getDefaultSuccess(), Util::handleFailure);
         }
     }
 }
