@@ -18,7 +18,7 @@ public class LockedChannel extends ListenerAdapter {
         HashMap<Long, HashSet<Long>> tmp = QueriesLockedChannels.getLockedChannels();
         lockedChannels = Objects.requireNonNullElseGet(tmp, HashMap::new);
         if (tmp == null)
-            Logger.severe("Unable to load data from Locked Channels table");
+            Logger.altitudeLogs.error("Unable to load data from Locked Channels table");
     }
 
     public synchronized boolean lockChannel(long guildId, long channelId) {

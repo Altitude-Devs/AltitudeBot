@@ -112,18 +112,18 @@ public class SubCommandEnable extends SubCommand {
             statement.setString(2, "GUILD");
             statement.setLong(3, guildId);
             if (statement.executeUpdate() == 0) {
-                Logger.warning("Unable to enable command: % for guild: %", command.getName(), String.valueOf(guildId));
+                Logger.altitudeLogs.warning("Unable to enable command: " + command.getName() + " for guild: "+ guildId);
                 return false;
             }
         } catch (SQLException exception) {
-            Logger.sql(exception);
+            Logger.altitudeLogs.error(exception);
             return false;
         } finally {
             try {
                 if (statement != null)
                     statement.close();
             } catch (SQLException exception) {
-                Logger.sql(exception);
+                Logger.altitudeLogs.error(exception);
             }
         }
         return true;
@@ -141,18 +141,18 @@ public class SubCommandEnable extends SubCommand {
             statement.setString(2, "GUILD");
             statement.setLong(3, guildId);
             if (statement.executeUpdate() == 0) {
-                Logger.warning("Unable to enable command: % for guild: %", contextMenu.getContextMenuId(), String.valueOf(guildId));
+                Logger.altitudeLogs.warning("Unable to enable command: " + contextMenu.getContextMenuId() + " for guild: " + guildId);
                 return false;
             }
         } catch (SQLException exception) {
-            Logger.sql(exception);
+            Logger.altitudeLogs.error(exception);
             return false;
         } finally {
             try {
                 if (statement != null)
                     statement.close();
             } catch (SQLException exception) {
-                Logger.sql(exception);
+                Logger.altitudeLogs.error(exception);
             }
         }
         return true;
@@ -180,7 +180,7 @@ public class SubCommandEnable extends SubCommand {
                 .filter(name -> name.toLowerCase().startsWith(commandName))
                 .filter(name -> !commandManager.getActiveLocations(name).contains(scopeInfo))
                 .limit(25)
-                .collect(Collectors.toList()));
+                .toList());
 
         event.replyChoiceStrings(collect).queue();
     }

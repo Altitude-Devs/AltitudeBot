@@ -50,7 +50,7 @@ public class QueriesAuctionAction {
                 try {
                     auctionType = AuctionType.valueOf(actionTypeString);
                 } catch (IllegalArgumentException e) {
-                    Logger.warning("Invalid auction type found in database for message: % at time: %", messageId + "", actionTime + "");
+                    Logger.altitudeLogs.warning("Invalid auction type found in database for message: " + messageId + " at time: " + actionTime);
                     continue;
                 }
                 actions.add(new AuctionAction(auctionType, userId, messageId, price, actionTime));

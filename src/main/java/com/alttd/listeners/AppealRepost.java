@@ -31,56 +31,46 @@ public class AppealRepost extends ListenerAdapter {
     private final ButtonManager buttonManager;
 
     public AppealRepost(ButtonManager buttonManager) {
-        Logger.info("Created Appeal Repost -----------------------------------------------------------------------------------------------------------");
+        Logger.altitudeLogs.info("Created Appeal Repost -----------------------------------------------------------------------------------------------------------");
         this.buttonManager = buttonManager;
     }
 
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
-        Logger.info("Message received:");
-        Logger.info(event.getMessage() + "\n\n" + event.getMessage().getContentRaw() + "\n\nembeds: " + event.getMessage().getEmbeds().size());
         if (event.getMember() != null) { //Webhooks aren't members
-            Logger.info("Return 1");
             return;
         }
-        if (event.getGuild().getIdLong() != 514920774923059209L) {
-            Logger.info("Return 2");
+        if (!event.isFromGuild() || event.getGuild().getIdLong() != 514920774923059209L) {
             return;
         }
         if (event.getChannel().getIdLong() != 514922555950235681L) {
-            Logger.info("Return 3 channel was: " + event.getChannel().getId());
             return;
         }
         Message message = event.getMessage();
         List<MessageEmbed> embeds = message.getEmbeds();
         if (embeds.size() == 0) {
-            Logger.info("Return 4");
             return;
         }
         MessageEmbed messageEmbed = embeds.get(0);
         List<MessageEmbed.Field> fields = messageEmbed.getFields();
         if (fields.size() == 0) {
-            Logger.info("Return 5");
             return;
         }
         String name = fields.get(0).getName();
         if (name == null || !name.equals("Punishment info")) {
-            Logger.info("Return 6");
             return;
         }
+        Logger.altitudeLogs.debug("Creating appeal");
         EmbedBuilder embedBuilder = new EmbedBuilder(messageEmbed);
         long userId = QueriesAssignAppeal.getAssignAppeal();
         if (userId == -1){
-            Logger.info("user id was -1");
             assignAndSendAppeal(embedBuilder, message, null);
         } else {
             Guild guild = message.getGuild();
             Member member = guild.getMemberById(userId);
             if (member != null) {
-                Logger.info("member was in cache");
                 assignAndSendAppeal(embedBuilder, message, member);
             } else {
-                Logger.info("member wasn't in cache");
                 guild.retrieveMemberById(userId).queue(result -> assignAndSendAppeal(embedBuilder, message, result));
             }
         }
@@ -96,7 +86,7 @@ public class AppealRepost extends ListenerAdapter {
         Button reminderInProgress = buttonManager.getButtonFor("reminder_in_progress");
         Button reminderDenied = buttonManager.getButtonFor("reminder_denied");
         if (reminderAccepted == null || reminderInProgress == null || reminderDenied == null) {
-            Logger.warning("Unable to get a button for appeals");
+            Logger.altitudeLogs.warning("Unable to get a button for appeals");
             return;
         }
         message.getChannel().sendMessageEmbeds(embed).queue(res -> {
@@ -108,7 +98,7 @@ public class AppealRepost extends ListenerAdapter {
                                 threadChannel.sendMessage(member.getAsMention() + " you have a new appeal!").queue();
                             }
                         }),
-                        failure -> Logger.warning("Unable to create thread channel so won't schedule reminder..."));
+                        failure -> Logger.altitudeLogs.warning("Unable to create thread channel so won't schedule reminder..."));
         });
         message.delete().queue();
 
@@ -144,7 +134,7 @@ public class AppealRepost extends ListenerAdapter {
 
         int id = QueriesReminders.storeReminder(reminder);
         if (id == 0) {
-            Logger.warning("Unable to store reminder for appeal with message id: " + message.getId());
+            Logger.altitudeLogs.warning("Unable to store reminder for appeal with message id: " + message.getId());
             return;
         }
 
@@ -153,7 +143,7 @@ public class AppealRepost extends ListenerAdapter {
         ReminderScheduler instance = ReminderScheduler.getInstance(message.getJDA());
         if (instance == null) {
             QueriesReminders.removeReminder(reminder.id());
-            Logger.warning("Unable to start reminder, removing it from the database...");
+            Logger.altitudeLogs.warning("Unable to start reminder, removing it from the database...");
             return;
         }
 

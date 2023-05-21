@@ -37,7 +37,7 @@ public class QueriesReminders {
 
             return -1;
         } catch (SQLException e) {
-            Logger.exception(e);
+            Logger.altitudeLogs.error(e);
         }
         return -1;
     }
@@ -59,7 +59,7 @@ public class QueriesReminders {
 
             return -1;
         } catch (SQLException e) {
-            Logger.exception(e);
+            Logger.altitudeLogs.error(e);
         }
         return -1;
     }
@@ -73,7 +73,7 @@ public class QueriesReminders {
 
             return preparedStatement.executeUpdate() == 1;
         } catch (SQLException e) {
-            Logger.exception(e);
+            Logger.altitudeLogs.error(e);
         }
         return false;
     }
@@ -90,7 +90,7 @@ public class QueriesReminders {
             }
             return reminders;
         } catch (SQLException e) {
-            Logger.exception(e);
+            Logger.altitudeLogs.error(e);
         }
         return null;
     }
@@ -110,9 +110,11 @@ public class QueriesReminders {
         byte[] data = null;
 
         try {
-            data = resultSet.getBlob("data").getBinaryStream().readAllBytes();
+            Blob blob = resultSet.getBlob("data");
+            if (blob != null)
+                data = blob.getBinaryStream().readAllBytes();
         } catch (IOException e) {
-            Logger.warning("Unable to read data for reminder with id: " + id);
+            Logger.altitudeLogs.warning("Unable to read data for reminder with id: " + id);
         }
 
         return new Reminder(id, title, desc, userId, guildId, channelId, messageId, shouldRepeat, creationDate, remindDate, reminderType, data);

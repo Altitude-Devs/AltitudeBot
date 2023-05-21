@@ -3,8 +3,6 @@ package com.alttd.config;
 import com.alttd.AltitudeBot;
 import com.alttd.util.Logger;
 import io.leangen.geantyref.TypeToken;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.ConfigurationOptions;
 import org.spongepowered.configurate.serialize.SerializationException;
@@ -18,7 +16,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 @SuppressWarnings({"unused", "SameParameterValue"})
@@ -70,7 +67,7 @@ public abstract class AbstractConfig {
                     } catch (InvocationTargetException ex) {
                         throw new RuntimeException(ex.getCause());
                     } catch (Exception ex) {
-                        Logger.severe("Error invoking %.", method.toString());
+                        Logger.altitudeLogs.error("Error invoking " + method);
                         ex.printStackTrace();
                     }
                 }

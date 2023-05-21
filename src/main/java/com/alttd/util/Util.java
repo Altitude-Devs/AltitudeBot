@@ -4,7 +4,6 @@ import com.alttd.commandManager.CommandManager;
 import com.alttd.commandManager.ScopeInfo;
 import com.alttd.commandManager.SubOption;
 import com.alttd.config.MessagesConfig;
-import com.alttd.config.SettingsConfig;
 import com.alttd.templates.Parser;
 import com.alttd.templates.Template;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -34,12 +33,12 @@ public class Util {
                 .collect(Collectors.toList());
     }
 
-    public static void ignoreSuccess(Object o) {
+    public static void ignoreSuccess(Object ignoredO) {
         // IDK I thought this looked nicer in the .queue call
     }
 
     public static void handleFailure(Throwable failure) {
-        Logger.severe(failure.getMessage());
+        Logger.altitudeLogs.error(failure.getMessage());
     }
 
     public static MessageEmbed guildOnlyCommand(String commandName) {
@@ -108,8 +107,7 @@ public class Util {
         for (ScopeInfo info : commandManager.getActiveLocations(commandName)) {
             switch (info.getScope()) {
                 case GLOBAL -> {
-                    if (SettingsConfig.DEBUG)
-                        Logger.info("Loading command [" + commandName + "] on global.");
+                    Logger.altitudeLogs.debug("Loading command [" + commandName + "] on global.");
                     jda.upsertCommand(commandData).queue();
 //                    jda.updateCommands().addCommands(commandData).queue();
                 }
@@ -117,7 +115,7 @@ public class Util {
                     Guild guildById = jda.getGuildById(info.getId());
                     if (guildById == null)
                     {
-                        Logger.warning("Tried to add command % to invalid guild %.", commandName, String.valueOf(info.getId()));
+                        Logger.altitudeLogs.warning("Tried to add command " + commandName + " to invalid guild " + info.getId());
                         continue;
                     }
                     registerCommand(guildById, commandData, commandName);
@@ -127,15 +125,13 @@ public class Util {
     }
 
     public static void registerCommand(Guild guild, CommandData commandData, String commandName) {
-        if (SettingsConfig.DEBUG)
-            Logger.info("Loading command [" + commandName + "] on guild [" + guild.getName() + "].");
+        Logger.altitudeLogs.debug("Loading command [" + commandName + "] on guild [" + guild.getName() + "].");
 //        guild.upsertCommand(commandData).queue();
         guild.upsertCommand(commandData).queue(RestAction.getDefaultSuccess(), Util::handleFailure);
     }
 
     public static void deleteCommand(Guild guild, long id, String commandName) {
-        if (SettingsConfig.DEBUG)
-            Logger.info("Deleting command [" + commandName + "] on guild [" + guild.getName() + "].");
+        Logger.altitudeLogs.debug("Deleting command [" + commandName + "] on guild [" + guild.getName() + "].");
         guild.deleteCommandById(id).queue();
     }
 

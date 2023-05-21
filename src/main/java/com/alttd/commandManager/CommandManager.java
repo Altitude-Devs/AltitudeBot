@@ -33,7 +33,7 @@ public class CommandManager extends ListenerAdapter {
     public CommandManager(JDA jda, ModalManager modalManager, ContextMenuManager contextMenuManager, LockedChannel lockedChannel, SelectMenuManager selectMenuManager) {
         commandList.put("manage", new ArrayList<>(List.of(new ScopeInfo(CommandScope.GLOBAL, 0))));
         loadCommands();
-        Logger.info("Loading commands...");
+        Logger.altitudeLogs.info("Loading commands...");
         CommandSetToggleableRoles commandSetToggleableRoles = new CommandSetToggleableRoles(jda, this);
         commands = List.of(
                 new CommandManage(jda, this, contextMenuManager),
@@ -152,13 +152,13 @@ public class CommandManager extends ListenerAdapter {
                 commandList.put(commandName, scopeInfoList);
             }
         } catch (SQLException exception) {
-            Logger.sql(exception);
+            Logger.altitudeLogs.error(exception);
         } finally {
             try {
                 if (statement != null)
                     statement.close();
             } catch (SQLException exception) {
-                Logger.sql(exception);
+                Logger.altitudeLogs.error(exception);
             }
         }
     }

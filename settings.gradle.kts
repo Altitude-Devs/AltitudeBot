@@ -11,6 +11,11 @@ dependencyResolutionManagement {
         // MySQL
         maven("https://jcenter.bintray.com")
     }
+    repositories {
+        flatDir {
+            dirs("lib")
+        }
+    }
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }
 

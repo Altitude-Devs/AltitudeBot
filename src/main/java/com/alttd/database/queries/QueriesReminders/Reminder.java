@@ -33,7 +33,7 @@ public record Reminder (int id, String title, String description, long userId, l
         if (channelById == null)
             channelById = guildById.getThreadChannelById(this.channelId);
         if (channelById == null) {
-            Logger.warning("Unable to find text channel for reminder, text channel id: [" + channelId + "]");
+            Logger.altitudeLogs.warning("Unable to find text channel for reminder, text channel id: [" + channelId + "]");
             return null;
         }
 
@@ -43,7 +43,7 @@ public record Reminder (int id, String title, String description, long userId, l
     public Guild getGuild(JDA jda) {
         Guild guildById = jda.getGuildById(guildId);
         if (guildById == null) {
-            Logger.warning("Unable to find guild for reminder, guild id: [" + guildId + "]");
+            Logger.altitudeLogs.warning("Unable to find guild for reminder, guild id: [" + guildId + "]");
             return null;
         }
 

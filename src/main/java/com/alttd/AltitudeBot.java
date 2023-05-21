@@ -29,7 +29,7 @@ public class AltitudeBot {
     }
 
     private void start() {
-        Logger.info("Starting bot...");
+        Logger.altitudeLogs.info("Starting bot...");
         initConfigs();
         jda = JDABuilder.createDefault(SettingsConfig.TOKEN,
                 GatewayIntent.GUILD_MEMBERS,
@@ -62,13 +62,14 @@ public class AltitudeBot {
     private void initConfigs() {
         SettingsConfig.reload();
         MessagesConfig.reload();
+        Logger.setDebugActive(SettingsConfig.DEBUG);
     }
 
     public String getDataFolder() {
         try {
             return new File(AltitudeBot.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getPath();
         } catch (URISyntaxException e) {
-            Logger.severe("Unable to retrieve config directory");
+            Logger.altitudeLogs.error("Unable to retrieve config directory");
             e.printStackTrace();
         }
         return (null);

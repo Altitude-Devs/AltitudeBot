@@ -1,6 +1,7 @@
 package com.alttd.buttonManager.buttons.autoReminder;
 
 import com.alttd.buttonManager.DiscordButton;
+import com.alttd.util.Logger;
 import com.alttd.util.Util;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -21,6 +22,7 @@ public class ButtonInProgress extends DiscordButton {
         Message message = event.getMessage();
         if (!ButtonReminderUtil.shouldExecute(message, event))
             return;
+        Logger.altitudeLogs.debug("Marking reminder as in progress");
         MessageEmbed embed = message.getEmbeds().get(0);
         EmbedBuilder embedBuilder = new EmbedBuilder(embed);
         Color color = embed.getColor();

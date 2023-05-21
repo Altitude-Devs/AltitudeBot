@@ -36,7 +36,7 @@ public class ConsoleCommandManager {
                 .filter(consoleCommand -> consoleCommand.getName().equalsIgnoreCase(command))
                 .findFirst();
         if (first.isEmpty()) {
-            Logger.info("Invalid command, see help for more info.");
+            Logger.altitudeLogs.info("Invalid command, see help for more info.");
             return;
         }
         first.get().execute(command, args);
@@ -47,7 +47,7 @@ public class ConsoleCommandManager {
     }
 
     public static void startConsoleCommands(JDA jda) {
-        Logger.info("Starting console commands");
+        Logger.altitudeLogs.info("Starting console commands");
         if (instance == null)
             instance = new ConsoleCommandManager(jda);
     }

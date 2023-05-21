@@ -25,15 +25,15 @@ public class ConsoleActivity extends ConsoleCommand {
         if (args.length == 1) {
             Activity activity = jda.getPresence().getActivity();
             if (activity == null)
-                Logger.info("No activity found.");
+                Logger.altitudeLogs.info("No activity found.");
             else
-                Logger.info("Current activity: Listening to " + activity.getName());
+                Logger.altitudeLogs.info("Current activity: Listening to " + activity.getName());
             return;
         }
         String newActivity = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
         SettingsConfig.setActivity(newActivity);
         jda.getPresence().setActivity(Activity.listening(newActivity));
-        Logger.info("Set activity to: Listening to " + newActivity);
+        Logger.altitudeLogs.info("Set activity to: Listening to " + newActivity);
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.alttd.database.queries;
 
 import com.alttd.database.Database;
 import com.alttd.util.Logger;
-import com.google.protobuf.StringValue;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -65,7 +64,7 @@ public class QueriesAssignAppeal {
         if (nextUserId == -1) {
             nextUserId = selectNextAssignment(0);
             if (nextUserId == -1) {
-                Logger.warning("No one to assign appeals to!");
+                Logger.altitudeLogs.warning("No one to assign appeals to!");
                 return;
             }
         }
@@ -82,7 +81,7 @@ public class QueriesAssignAppeal {
             int res1 = statement1.executeUpdate();
             int res2 = statement2.executeUpdate();
             if (res1 != 1 || res2 != 1) {
-                Logger.warning("Unable to assign next appeal but got no error? results: " + res1 + res2);
+                Logger.altitudeLogs.warning("Unable to assign next appeal but got no error? results: " + res1 + res2);
             }
         } catch (SQLException exception) {
             exception.printStackTrace();
@@ -96,7 +95,7 @@ public class QueriesAssignAppeal {
     private static void resetAssignedAppeal() {
         long userId = selectNextAssignment(0);
         if (userId == -1) {
-            Logger.warning("No one to assign appeals to!");
+            Logger.altitudeLogs.warning("No one to assign appeals to!");
         } else {
             setNextAppeal(userId);
         }

@@ -24,7 +24,7 @@ public class CommandOutputChannels {
 
             return preparedStatement.executeUpdate() == 1;
         } catch (SQLException e) {
-            Logger.exception(e);
+            Logger.altitudeLogs.error(e);
             return false;
         }
     }
@@ -68,7 +68,7 @@ public class CommandOutputChannels {
                 }
             }
         } catch (SQLException e) {
-            Logger.exception(e);
+            Logger.altitudeLogs.error(e);
         }
         return null;
     }

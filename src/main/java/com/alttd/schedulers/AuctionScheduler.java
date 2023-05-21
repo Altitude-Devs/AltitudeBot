@@ -30,7 +30,7 @@ public class AuctionScheduler {
         instance = this;
         auctions = QueriesAuction.getAuctions();
         if (auctions == null) {
-            Logger.severe("Unable to retrieve auctions");
+            Logger.altitudeLogs.error("Unable to retrieve auctions");
             instance = null;
             return;
         }
@@ -41,10 +41,7 @@ public class AuctionScheduler {
 
     private void setNextAuction() {
         Optional<Auction> first = auctions.values().stream().sorted().findFirst();
-        if (first.isEmpty())
-            nextAuction = null;
-        else
-            nextAuction = first.get();
+        nextAuction = first.orElse(null);
     }
 
     public static AuctionScheduler getInstance() {
@@ -55,7 +52,7 @@ public class AuctionScheduler {
 
     public synchronized void addAuction(Auction auction) {
         if (!QueriesAuction.saveAuction(auction))
-            Logger.warning("Unable to save auction %", auction.getMessageId() + "");
+            Logger.altitudeLogs.warning("Unable to save auction " + auction.getMessageId());
         auctions.put(auction.getMessageId(), auction);
         setNextAuction();
     }
@@ -69,7 +66,7 @@ public class AuctionScheduler {
         auctions.remove(auction.getMessageId());
         setNextAuction();
         if (!QueriesAuction.removeAuction(auction))
-            Logger.warning("Unable to remove auction %", auction.getMessageId() + "");
+            Logger.altitudeLogs.warning("Unable to remove auction " + auction.getMessageId());
     }
 
     public Auction getAuction(long messageId) {
@@ -80,17 +77,17 @@ public class AuctionScheduler {
         auction.updateMessage(success -> {
             List<MessageEmbed> embeds = success.getEmbeds();
             if (embeds.isEmpty()) {
-                Logger.warning("Received auction with no embed contents");
+                Logger.altitudeLogs.warning("Received auction with no embed contents");
                 return;
             }
             GuildChannel outputChannel = CommandOutputChannels.getOutputChannel(success.getGuild(), OutputType.AUCTION_LOG);
             if (outputChannel != null) {
                 if (!(outputChannel instanceof  GuildMessageChannel channel)) {
-                    Logger.warning("Error" + outputChannel.getType().name() + " is not a valid crate auction log channel type");
+                    Logger.altitudeLogs.warning("Error" + outputChannel.getType().name() + " is not a valid crate auction log channel type");
                     return;
                 }
                 if (!channel.canTalk()) {
-                    Logger.warning("Error can't talk in auction log channel");
+                    Logger.altitudeLogs.warning("Error can't talk in auction log channel");
                     return;
                 }
                 if (sendEmbed(embeds.get(0), channel, instaBuy))
@@ -129,7 +126,7 @@ public class AuctionScheduler {
             embedBuilder.setColor(Color.GREEN);
         else
             embedBuilder.setColor(Color.RED);
-        textChannel.sendMessageEmbeds(embedBuilder.build()).queue(Util::ignoreSuccess, failure -> Logger.warning("Failed to log auction result"));
+        textChannel.sendMessageEmbeds(embedBuilder.build()).queue(Util::ignoreSuccess, failure -> Logger.altitudeLogs.warning("Failed to log auction result"));
         return true;
     }
     private class AuctionRun implements Runnable {

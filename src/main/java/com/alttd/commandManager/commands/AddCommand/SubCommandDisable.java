@@ -71,7 +71,7 @@ public class SubCommandDisable extends SubCommand {
     private boolean disableCommand(DiscordCommand command, long guildId) {
         if (!commandManager.disableCommand(command.getName(), new ScopeInfo(CommandScope.GUILD, guildId)))
             return false;
-        String sql = "REMOVE FROM commands WHERE command_name = ? AND scope = ? and location_id = ?";
+        String sql = "DELETE FROM commands WHERE command_name = ? AND scope = ? and location_id = ?";
         PreparedStatement statement = null;
 
         try {
@@ -80,18 +80,18 @@ public class SubCommandDisable extends SubCommand {
             statement.setString(2, "GUILD");
             statement.setLong(3, guildId);
             if (!statement.execute()) {
-                Logger.warning("Unable to disable command: % for guild: %", command.getName(), String.valueOf(guildId));
+                Logger.altitudeLogs.warning("Unable to disable command: " + command.getName() + " for guild: " + guildId);
                 return false;
             }
         } catch (SQLException exception) {
-            Logger.sql(exception);
+            Logger.altitudeLogs.error(exception);
             return false;
         } finally {
             try {
                 if (statement != null)
                     statement.close();
             } catch (SQLException exception) {
-                Logger.sql(exception);
+                Logger.altitudeLogs.error(exception);
             }
         }
         return true;

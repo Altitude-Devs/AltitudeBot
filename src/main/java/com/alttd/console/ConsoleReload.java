@@ -13,20 +13,18 @@ public class ConsoleReload extends ConsoleCommand {
     @Override
     public void execute(String command, String[] args) {
         if (args.length != 2) {
-            Logger.info("Invalid argument length: " + getHelpMessage());
+            Logger.altitudeLogs.info("Invalid argument length: " + getHelpMessage());
             return;
         }
         switch (args[1]) {
             case "config" -> {
                 MessagesConfig.reload();
-                Logger.info("Reloaded Messages config.");
+                Logger.altitudeLogs.info("Reloaded Messages config.");
                 SettingsConfig.reload();
-                Logger.info("Reloaded Settings config.");
+                Logger.altitudeLogs.info("Reloaded Settings config.");
             }
-            case "database" -> {
-                Logger.info("NOT IMPLEMENTED YET");
-            }
-            default -> Logger.info("Invalid argument: " + args[1]);
+            case "database" -> Logger.altitudeLogs.info("NOT IMPLEMENTED YET");
+            default -> Logger.altitudeLogs.info("Invalid argument: " + args[1]);
         }
     }
 

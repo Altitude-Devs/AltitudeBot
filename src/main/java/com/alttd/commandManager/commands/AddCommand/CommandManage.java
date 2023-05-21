@@ -56,7 +56,7 @@ public class CommandManage extends DiscordCommand {
         String subcommandName = event.getInteraction().getSubcommandGroup();
         subcommandName = subcommandName == null ? event.getInteraction().getSubcommandName() : subcommandName;
         if (subcommandName == null) {
-            Logger.severe("No subcommand found for %", getName());
+            Logger.altitudeLogs.error("No subcommand found for " + getName());
             return;
         }
 

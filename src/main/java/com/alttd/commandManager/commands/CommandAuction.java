@@ -103,7 +103,7 @@ public class CommandAuction extends DiscordCommand {
 
         Integer startingPrice = event.getOption("starting-price", OptionMapping::getAsInt);
         if (startingPrice == null) {
-            Logger.severe("Starting price magically became null");
+            Logger.altitudeLogs.error("Starting price magically became null");
             replyCallbackAction.setEmbeds(Util.genericSuccessEmbed("Error", "Failed to store auction"))
                     .queue();
             return;

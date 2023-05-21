@@ -24,7 +24,7 @@ public class ConsoleHelp extends ConsoleCommand {
         Template template = Template.of("commands", commandManager.getCommands().stream()
                 .map(ConsoleCommand::getHelpMessage)
                 .collect(Collectors.joining("\n")));
-        Logger.info(Parser.parse("Commands:\n<commands>", template));
+        Logger.altitudeLogs.info(Parser.parse("Commands:\n<commands>", template));
     }
 
     @Override

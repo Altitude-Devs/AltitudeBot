@@ -83,7 +83,7 @@ public class SubCommandAdd extends SubCommand {
     }
 
     private void failedCreatingPoll(Throwable throwable, InteractionHook hook) {
-        Logger.warning(throwable.getMessage());
+        Logger.altitudeLogs.warning(throwable.getMessage());
         hook.editOriginalEmbeds(Util.genericErrorEmbed("Failed to create Poll",
                 "Unable to create poll, please contact an Admin."))
                 .queue();

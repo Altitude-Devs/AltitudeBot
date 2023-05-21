@@ -11,8 +11,6 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.entities.channel.forums.ForumPost;
-import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -25,7 +23,6 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.awt.*;
 import java.util.List;
-import java.util.Optional;
 
 public class ButtonSuggestionReviewAccept extends DiscordButton {
 
@@ -124,6 +121,11 @@ public class ButtonSuggestionReviewAccept extends DiscordButton {
     public void sendSuggestionInForum(ForumChannel forumChannel, TextChannel modLog, MessageEmbed.Field field, MessageEmbed suggestionMessage, String mentionMember, ButtonInteractionEvent event) {
         MessageCreateData messageCreateData = new MessageCreateBuilder().addContent("**Suggestion by: " + mentionMember + "**\n\n" + field.getValue() + "\u200B").build();
 
+        if (field.getName() == null) {
+            Logger.altitudeLogs.error("Encountered empty name field when sending suggestion in forum");
+            return;
+        }
+
         forumChannel.createForumPost(field.getName(), messageCreateData).queue(success -> {
             event.getMessage().delete().queue(RestAction.getDefaultSuccess(), Util::handleFailure);
             event.replyEmbeds(Util.genericSuccessEmbed("Success", "The suggestion was accepted and posted in the suggestion channel")).setEphemeral(true).queue();
@@ -140,7 +142,7 @@ public class ButtonSuggestionReviewAccept extends DiscordButton {
                     .findAny()
                     .ifPresentOrElse(forumTag -> success.getThreadChannel().getManager().setAppliedTags(ForumTagSnowflake.fromId(forumTag.getIdLong()))
                             .queue(RestAction.getDefaultSuccess(), Util::handleFailure), () -> {
-                        Logger.warning("No [Unanswered] reaction found for suggestion");
+                        Logger.altitudeLogs.warning("No [Unanswered] reaction found for suggestion");
                     });
         }, failure -> event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to send suggestion to the suggestion channel"))
                 .setEphemeral(true).queue(RestAction.getDefaultSuccess(), Util::handleFailure));

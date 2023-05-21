@@ -2,11 +2,13 @@ package com.alttd.util;
 
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.utils.FileUpload;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -28,7 +30,7 @@ public class ExcelWriter {
 
     public synchronized void addRow(String... data) {
         if (done) {
-            Logger.warning("Tried to write to finished excel file");
+            Logger.altitudeLogs.warning("Tried to write to finished excel file");
             return;
         }
         Row row = sheet.createRow(currentRow++);

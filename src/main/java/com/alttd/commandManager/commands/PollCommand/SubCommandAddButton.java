@@ -82,7 +82,7 @@ public class SubCommandAddButton extends SubCommand {
     }
 
     private void failedToGetMessage(Throwable throwable, InteractionHook hook) {
-        Logger.warning(throwable.getMessage());
+        Logger.altitudeLogs.warning(throwable.getMessage());
         hook.editOriginalEmbeds(Util.genericErrorEmbed("Failed to get poll message",
                         "Please check if the poll still exists and the message id is correct."))
                 .queue();

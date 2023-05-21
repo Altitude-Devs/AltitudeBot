@@ -11,7 +11,7 @@ public class ConsoleStop extends ConsoleCommand {
 
     @Override
     public void execute(String command, String[] args) {
-        Logger.info("Stopping bot...");
+        Logger.altitudeLogs.info("Stopping bot...");
         AltitudeBot.getInstance().getJDA().cancelRequests();
         System.exit(0);
     }

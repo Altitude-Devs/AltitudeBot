@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +36,7 @@ public class ReminderScheduler {
         this.jda = jda;
         reminders = QueriesReminders.getReminders();
         if (reminders == null) {
-            Logger.severe("Unable to retrieve reminders");
+            Logger.altitudeLogs.error("Unable to retrieve reminders");
             instance = null;
             return;
         }
@@ -58,12 +57,14 @@ public class ReminderScheduler {
     }
 
     public synchronized void addReminder(Reminder reminder) {
+        Logger.altitudeLogs.debug("Adding reminder with messageId: " + reminder.messageId());
         reminders.add(reminder);
         reminders.sort(Comparator.comparingLong(Reminder::remindDate));
         nextReminder = reminders.get(0);
     }
 
     public synchronized void removeReminder(Reminder reminder, boolean removeFromDatabase) {
+        Logger.altitudeLogs.debug("Removing reminder with messageId: " + reminder.messageId());
         reminders.remove(reminder);
         if (reminders.size() == 0)
             nextReminder = null;
@@ -74,6 +75,7 @@ public class ReminderScheduler {
     }
 
     public synchronized void removeReminder(long messageId) {
+        Logger.altitudeLogs.debug("Attempting to remove reminder with messageId: " + messageId);
         reminders.stream()
                 .filter(reminder -> reminder.messageId() == messageId)
                 .findAny()
@@ -88,7 +90,7 @@ public class ReminderScheduler {
             while (nextReminder != null && time > nextReminder.remindDate()) {
                 Channel channel = nextReminder.getChannel(jda);
                 if (channel == null) {
-                    Logger.warning("Couldn't find channel, unable to run reminder: " + nextReminder.id() +
+                    Logger.altitudeLogs.warning("Couldn't find channel, unable to run reminder: " + nextReminder.id() +
                             "\ntitle: [" + nextReminder.title() +
                             "]\ndescription: [" + nextReminder.description() + "]");
                     return;
@@ -143,9 +145,7 @@ public class ReminderScheduler {
                         return threadChannel.sendMessageEmbeds(embedBuilder.build());
                     }
                 }
-                default -> {
-                    Logger.warning("Received unexpected channel type " + channel.getType() + " can't send reminder...");
-                }
+                default -> Logger.altitudeLogs.warning("Received unexpected channel type " + channel.getType() + " can't send reminder...");
             }
             return null;
         }

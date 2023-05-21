@@ -11,27 +11,29 @@ import java.sql.SQLException;
 public class DatabaseTables {
 
     private static DatabaseTables instance = null;
-    private Connection connection;
+    private final Connection connection;
 
-    protected DatabaseTables (Connection connection) {
+    protected DatabaseTables(Connection connection) {
         this.connection = connection;
         init(DatabaseTables.class, this);
     }
 
     private void init(Class<?> clazz, Object instance) {
         for (Method method : clazz.getDeclaredMethods()) {
-            if (Modifier.isPrivate(method.getModifiers())) {
-                if (method.getParameterTypes().length == 0 && method.getReturnType() == Void.TYPE && method.getName().contains("Table")) {
-                    try {
-                        method.setAccessible(true);
-                        method.invoke(instance);
-                    } catch (InvocationTargetException ex) {
-                        throw new RuntimeException(ex.getCause());
-                    } catch (Exception ex) {
-                        Logger.severe("Error invoking %.", method.toString());
-                        ex.printStackTrace();
-                    }
-                }
+            if (!Modifier.isPrivate(method.getModifiers())) {
+                continue;
+            }
+            if (method.getParameterTypes().length != 0 || method.getReturnType() != Void.TYPE || !method.getName().contains("Table")) {
+                continue;
+            }
+            try {
+                method.setAccessible(true);
+                method.invoke(instance);
+            } catch (InvocationTargetException ex) {
+                throw new RuntimeException(ex.getCause());
+            } catch (Exception ex) {
+                Logger.altitudeLogs.error("Error invoking " + method);
+                ex.printStackTrace();
             }
         }
     }
@@ -49,8 +51,8 @@ public class DatabaseTables {
         try {
             connection.prepareStatement(sql).executeUpdate();
         } catch (SQLException e) {
-            Logger.sql(e);
-            Logger.severe("Unable to create polls table, shutting down...");
+            Logger.altitudeLogs.error(e);
+            Logger.altitudeLogs.error("Unable to create polls table, shutting down...");
         }
     }
 
@@ -64,8 +66,8 @@ public class DatabaseTables {
         try {
             connection.prepareStatement(sql).executeUpdate();
         } catch (SQLException e) {
-            Logger.sql(e);
-            Logger.severe("Unable to create commands table, shutting down...");
+            Logger.altitudeLogs.error(e);
+            Logger.altitudeLogs.error("Unable to create commands table, shutting down...");
         }
     }
 
@@ -80,8 +82,8 @@ public class DatabaseTables {
         try {
             connection.prepareStatement(sql).executeUpdate();
         } catch (SQLException e) {
-            Logger.sql(e);
-            Logger.severe("Unable to create output channel table, shutting down...");
+            Logger.altitudeLogs.error(e);
+            Logger.altitudeLogs.error("Unable to create output channel table, shutting down...");
         }
     }
 
@@ -94,8 +96,8 @@ public class DatabaseTables {
         try {
             connection.prepareStatement(sql).executeUpdate();
         } catch (SQLException e) {
-            Logger.sql(e);
-            Logger.severe("Unable to create toggleable roles table, shutting down...");
+            Logger.altitudeLogs.error(e);
+            Logger.altitudeLogs.error("Unable to create toggleable roles table, shutting down...");
         }
     }
 
@@ -118,8 +120,8 @@ public class DatabaseTables {
         try {
             connection.prepareStatement(sql).executeUpdate();
         } catch (SQLException e) {
-            Logger.sql(e);
-            Logger.severe("Unable to create reminders table, shutting down...");
+            Logger.altitudeLogs.error(e);
+            Logger.altitudeLogs.error("Unable to create reminders table, shutting down...");
         }
     }
 
@@ -132,8 +134,8 @@ public class DatabaseTables {
         try {
             connection.prepareStatement(sql).executeUpdate();
         } catch (SQLException e) {
-            Logger.sql(e);
-            Logger.severe("Unable to create locked channels table, shutting down...");
+            Logger.altitudeLogs.error(e);
+            Logger.altitudeLogs.error("Unable to create locked channels table, shutting down...");
         }
     }
 
@@ -152,8 +154,8 @@ public class DatabaseTables {
         try {
             connection.prepareStatement(sql).executeUpdate();
         } catch (SQLException e) {
-            Logger.sql(e);
-            Logger.severe("Unable to create auction table, shutting down...");
+            Logger.altitudeLogs.error(e);
+            Logger.altitudeLogs.error("Unable to create auction table, shutting down...");
         }
     }
 
@@ -169,8 +171,8 @@ public class DatabaseTables {
         try {
             connection.prepareStatement(sql).executeUpdate();
         } catch (SQLException e) {
-            Logger.sql(e);
-            Logger.severe("Unable to create auction action table, shutting down...");
+            Logger.altitudeLogs.error(e);
+            Logger.altitudeLogs.error("Unable to create auction action table, shutting down...");
         }
     }
 

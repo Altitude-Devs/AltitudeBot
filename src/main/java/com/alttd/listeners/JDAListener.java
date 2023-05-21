@@ -27,7 +27,7 @@ public class JDAListener extends ListenerAdapter {
 
     @Override
     public void onReady(@NotNull ReadyEvent event) {
-        Logger.info("JDA ready to register commands.");
+        Logger.altitudeLogs.info("JDA ready to register commands.");
         LockedChannel lockedChannel = new LockedChannel();
         ButtonManager buttonManager = new ButtonManager();
         AppealRepost appealRepost = new AppealRepost(buttonManager);
@@ -43,11 +43,11 @@ public class JDAListener extends ListenerAdapter {
     private void startSchedulers() {
         ReminderScheduler reminderScheduler = ReminderScheduler.getInstance(jda);
         if (reminderScheduler == null)
-            Logger.severe("Unable to start reminder scheduler!");
+            Logger.altitudeLogs.error("Unable to start reminder scheduler!");
 
         AuctionScheduler auctionScheduler = AuctionScheduler.getInstance();
         if (auctionScheduler == null)
-            Logger.severe("Unable to start auction scheduler!");
+            Logger.altitudeLogs.error("Unable to start auction scheduler!");
     }
 
     @Override

@@ -18,7 +18,7 @@ public class Database {
         try {
             instance.openConnection();
         } catch (Exception e) {
-            Logger.exception(e);
+            Logger.altitudeLogs.error(e);
         }
     }
 
@@ -34,7 +34,7 @@ public class Database {
             try {
                 Class.forName("com.mysql.jdbc.Driver");
             } catch (ClassNotFoundException e) {
-                Logger.exception(e);
+                Logger.altitudeLogs.error(e);
             }
             connection = DriverManager.getConnection(
                     "jdbc:" + SettingsConfig.DATABASE_DRIVER
@@ -55,11 +55,8 @@ public class Database {
         try {
             instance.openConnection();
         }
-        catch (SQLException e) {
-            Logger.sql(e);
-        }
         catch (Exception e){
-            Logger.exception(e);
+            Logger.altitudeLogs.error(e);
         }
 
         return instance.connection;
