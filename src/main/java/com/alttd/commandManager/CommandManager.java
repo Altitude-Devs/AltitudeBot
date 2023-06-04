@@ -1,5 +1,6 @@
 package com.alttd.commandManager;
 
+import com.alttd.buttonManager.ButtonManager;
 import com.alttd.commandManager.commands.AddCommand.CommandManage;
 import com.alttd.commandManager.commands.*;
 import com.alttd.commandManager.commands.PollCommand.CommandPoll;
@@ -30,7 +31,7 @@ public class CommandManager extends ListenerAdapter {
     private final List<DiscordCommand> commands;
     private final HashMap<String, List<ScopeInfo>> commandList = new HashMap<>();
 
-    public CommandManager(JDA jda, ModalManager modalManager, ContextMenuManager contextMenuManager, LockedChannel lockedChannel, SelectMenuManager selectMenuManager) {
+    public CommandManager(JDA jda, ModalManager modalManager, ContextMenuManager contextMenuManager, LockedChannel lockedChannel, SelectMenuManager selectMenuManager, ButtonManager buttonManager) {
         commandList.put("manage", new ArrayList<>(List.of(new ScopeInfo(CommandScope.GLOBAL, 0))));
         loadCommands();
         Logger.altitudeLogs.info("Loading commands...");
@@ -38,7 +39,7 @@ public class CommandManager extends ListenerAdapter {
         commands = List.of(
                 new CommandManage(jda, this, contextMenuManager),
                 new CommandHelp(jda, this),
-                new CommandPoll(jda, this),
+                new CommandPoll(jda, this, buttonManager),
                 new CommandSuggestion(jda, modalManager, this),
                 new CommandSuggestCrateItem(jda, modalManager, this),
                 new CommandSetOutputChannel(jda, this),

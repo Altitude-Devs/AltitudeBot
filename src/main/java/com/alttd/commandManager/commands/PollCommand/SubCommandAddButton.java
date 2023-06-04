@@ -1,24 +1,33 @@
 package com.alttd.commandManager.commands.PollCommand;
 
+import com.alttd.buttonManager.ButtonManager;
+import com.alttd.buttonManager.buttons.pollButton.PollButton;
 import com.alttd.commandManager.DiscordCommand;
 import com.alttd.commandManager.SubCommand;
 import com.alttd.commandManager.SubCommandGroup;
+import com.alttd.database.queries.Poll.Poll;
+import com.alttd.database.queries.Poll.PollButtonQueries;
 import com.alttd.templates.Parser;
 import com.alttd.templates.Template;
 import com.alttd.util.Logger;
 import com.alttd.util.OptionMappingParsing;
 import com.alttd.util.Util;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.ItemComponent;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class SubCommandAddButton extends SubCommand {
-    protected SubCommandAddButton(SubCommandGroup parentGroup, DiscordCommand parent) {
+    private final ButtonManager buttonManager;
+    protected SubCommandAddButton(SubCommandGroup parentGroup, DiscordCommand parent, ButtonManager buttonManager) {
         super(parentGroup, parent);
+        this.buttonManager = buttonManager;
     }
 
     @Override
@@ -28,23 +37,9 @@ public class SubCommandAddButton extends SubCommand {
 
     @Override
     public void execute(SlashCommandInteractionEvent event) {
-        GuildMessageChannel channel = OptionMappingParsing.getGuildChannel("channel", event, getName());
-        Member member = event.getMember();
-        if (member == null) {
-            event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to find valid guild member."))
-                    .setEphemeral(true)
-                    .queue();
+        PollChannel pollChannel = PollUtil.getPollHandleErrors(event, getName());
+        if (pollChannel == null)
             return;
-        }
-        if (!Util.validateGuildMessageChannel(event.getInteraction(), channel, ChannelType.TEXT, member))
-            return;
-
-        Long messageId = Util.parseLong(OptionMappingParsing.getString("message_id", event, getName()));
-        if (messageId == null) {
-            event.replyEmbeds(Util.genericErrorEmbed("Error", "Invalid message id")).setEphemeral(true).queue();
-            return;
-        }
-        //TODO verify that message id is in database
 
         Long rowLong = Util.parseLong(OptionMappingParsing.getString("button_row", event, getName()));
         if (rowLong == null) {
@@ -63,6 +58,7 @@ public class SubCommandAddButton extends SubCommand {
                     .queue();
             return;
         }
+
         String buttonName = OptionMappingParsing.getString("button_name", event, getName());
         if (buttonName == null) {
             event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to retrieve button name."))
@@ -70,15 +66,16 @@ public class SubCommandAddButton extends SubCommand {
                     .queue();
             return;
         }
+
         event.deferReply(true).queue(hook ->
-                channel.retrieveMessageById(messageId).queue(
-                        message -> updatePoll(channel, rowId, buttonName, message, hook),
+                pollChannel.textChannel().retrieveMessageById(pollChannel.poll().getPollId()).queue(
+                        message -> updatePoll(rowId, buttonName, message, hook),
                         throwable -> failedToGetMessage(throwable, hook)));
     }
 
     @Override
     public void suggest(CommandAutoCompleteInteractionEvent event) {
-
+        PollUtil.handleSuggestMessageId(event);
     }
 
     private void failedToGetMessage(Throwable throwable, InteractionHook hook) {
@@ -88,11 +85,40 @@ public class SubCommandAddButton extends SubCommand {
                 .queue();
     }
 
-    private void updatePoll(GuildMessageChannel channel, int rowId, String buttonName, Message message,
-                            InteractionHook hook) {
-        //TODO add button, generate id, add a way to remove button, store id in database
-        //Maybe temporarily disable the poll and listen for someone to click the button, then delete that button
-        // and switch back to normal poll mode?
+    private void updatePoll(int rowId, String buttonName, Message message, InteractionHook hook) {
+        String buttonId = message.getId() + buttonName;
+        Poll poll = Poll.getPoll(message.getIdLong());
+        PollButtonQueries.addButton(message.getIdLong(), buttonId, buttonName);
+        List<PollButton> pollButtons = PollButtonQueries.loadButtons(poll, buttonManager);
+        if (pollButtons == null) {
+            hook.editOriginalEmbeds(Util.genericErrorEmbed("Error","Unable to retrieve buttons for this poll")).queue();
+            return;
+        }
+
+        Optional<PollButton> any = pollButtons.stream().filter(button -> button.getButtonId().equals(buttonId)).findAny();
+        if (any.isEmpty()) {
+            hook.editOriginalEmbeds(Util.genericErrorEmbed("Error", "Unable to find newly created button")).queue();
+            return;
+        }
+
+        PollButton pollButton = any.get();
+        List<ActionRow> actionRows = message.getActionRows();
+        if (rowId > 1) {//todo fix if needed in the future
+            hook.editOriginalEmbeds(Util.genericErrorEmbed("Error",
+                            "Polls have only been set up to handle 1 row if you need more than one row update the code."))
+                    .queue();
+            return;
+        }
+
+        List<ItemComponent> components;
+        if (!actionRows.isEmpty()) {
+            components = actionRows.get(0).getComponents();
+        } else
+            components = new ArrayList<>();
+
+        components.add(pollButton.getButton());
+        message.editMessageComponents().setActionRow(components).queue();
+        hook.editOriginalEmbeds(Util.genericSuccessEmbed("Success", "Added a button")).queue();
     }
 
     @Override

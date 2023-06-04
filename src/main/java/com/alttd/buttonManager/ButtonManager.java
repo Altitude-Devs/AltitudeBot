@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,14 +26,22 @@ public class ButtonManager extends ListenerAdapter {
     private final List<DiscordButton> buttons;
 
     public ButtonManager() {
-        buttons = List.of(
-                new ButtonSuggestionReviewAccept(),
-                new ButtonSuggestionReviewDeny(),
-                new ButtonRemindMeCancel(),
-                new ButtonRemindMeConfirm(),
-                new ButtonAccepted(),
-                new ButtonInProgress(),
-                new ButtonRejected());
+        buttons = new ArrayList<>();
+        buttons.add(new ButtonSuggestionReviewAccept());
+        buttons.add(new ButtonSuggestionReviewDeny());
+        buttons.add(new ButtonRemindMeCancel());
+        buttons.add(new ButtonRemindMeConfirm());
+        buttons.add(new ButtonAccepted());
+        buttons.add(new ButtonInProgress());
+        buttons.add(new ButtonRejected());
+    }
+
+    public void addButton(DiscordButton button) {
+        buttons.add(button);
+    }
+
+    public void removeButton(DiscordButton button) {
+
     }
 
     @Override

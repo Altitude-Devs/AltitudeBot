@@ -3,6 +3,7 @@ package com.alttd.commandManager.commands.PollCommand;
 import com.alttd.commandManager.DiscordCommand;
 import com.alttd.commandManager.SubCommand;
 import com.alttd.commandManager.SubCommandGroup;
+import com.alttd.database.queries.Poll.PollQueries;
 import com.alttd.templates.Parser;
 import com.alttd.templates.Template;
 import com.alttd.util.Logger;
@@ -71,10 +72,11 @@ public class SubCommandAdd extends SubCommand {
                 .setTitle(title)
                 .setColor(Color.RED)
                 .build()
-        ).queue(message -> createdPoll(message, hook), throwable -> failedCreatingPoll(throwable, hook));
+        ).queue(message -> createdPoll(message, title, hook), throwable -> failedCreatingPoll(throwable, hook));
     }
 
-    private void createdPoll(Message message, InteractionHook hook) {
+    private void createdPoll(Message message, String title, InteractionHook hook) {
+        PollQueries.addPoll(message.getIdLong(), message.getChannel().getIdLong(), message.getGuild().getIdLong(), title);
         hook.editOriginalEmbeds(Util.genericSuccessEmbed("Created Poll!",
                         Parser.parse("Created a poll with the message id: `<message_id>`. " +
                                         "When you're ready don't forget to open the poll!",

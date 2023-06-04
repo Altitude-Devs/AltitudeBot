@@ -1,5 +1,6 @@
 package com.alttd.commandManager.commands.PollCommand;
 
+import com.alttd.buttonManager.ButtonManager;
 import com.alttd.commandManager.CommandManager;
 import com.alttd.commandManager.DiscordCommand;
 import com.alttd.commandManager.SubOption;
@@ -22,7 +23,7 @@ public class CommandPoll extends DiscordCommand {
     private final HashMap<String, SubOption> subOptionsMap = new HashMap<>();
     private final CommandData commandData;
 
-    public CommandPoll(JDA jda, CommandManager commandManager) {
+    public CommandPoll(JDA jda, CommandManager commandManager, ButtonManager buttonManager) {
         commandData = Commands.slash(getName(), "Create, edit, and manage polls")
                 .addSubcommands(
                         new SubcommandData("add", "Add a new poll to a channel")
@@ -58,11 +59,11 @@ public class CommandPoll extends DiscordCommand {
                 .setGuildOnly(true);
         Util.registerSubOptions(subOptionsMap,
                 new SubCommandAdd(null,this),
-                new SubCommandAddButton(null, this),
-                new SubCommandClose(null,this),
+                new SubCommandAddButton(null, this, buttonManager),
+                new SubCommandClose(null,this, buttonManager),
                 new SubCommandEditDescription(null, this),
                 new SubCommandEditTitle(null, this),
-                new SubCommandOpen(null, this),
+                new SubCommandOpen(null, this, buttonManager),
                 new SubCommandRemoveButton(null, this),
                 new SubCommandResults(null,this));
         Util.registerCommand(commandManager, jda, commandData, getName());
