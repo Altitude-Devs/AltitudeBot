@@ -132,6 +132,6 @@ public class Poll {
     }
 
     public long getTotalVotes() {
-        return buttons.stream().map(PollButton::getVotes).count();
+        return buttons.stream().map(PollButton::getVotes).mapToInt(Integer::intValue).sum();
     }
 }
