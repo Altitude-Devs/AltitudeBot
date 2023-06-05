@@ -43,9 +43,10 @@ public class SubCommandEditDescription extends SubCommand {
                 event.replyEmbeds(Util.genericErrorEmbed("Error", "Description too long")).setEphemeral(true).queue();
             return;
         }
+        String finalDescription = description.replaceAll("/n", "\n");
 
         event.replyEmbeds(Util.genericWaitingEmbed("Waiting...", "Editing poll...")).setEphemeral(true).queue(hook -> {
-            pollChannel.textChannel().retrieveMessageById(pollChannel.poll().getPollId()).queue(message -> updatePoll(message, description, hook),
+            pollChannel.textChannel().retrieveMessageById(pollChannel.poll().getPollId()).queue(message -> updatePoll(message, finalDescription, hook),
                     error -> hook.editOriginalEmbeds(Util.genericErrorEmbed("Error", "Unable to find message with id [" + pollChannel.poll().getPollId() + "].")).queue());
         });
     }
