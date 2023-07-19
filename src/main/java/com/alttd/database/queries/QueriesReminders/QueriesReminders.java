@@ -21,7 +21,7 @@ public class QueriesReminders {
             preparedStatement.setLong(3, reminder.userId());
             preparedStatement.setLong(4, reminder.guildId());
             preparedStatement.setLong(5, reminder.channelId());
-            preparedStatement.setLong(6, 0);
+            preparedStatement.setLong(6, reminder.messageId());
             preparedStatement.setInt(7, reminder.shouldRepeat() ? 1 : 0);
             preparedStatement.setLong(8, reminder.creationDate());
             preparedStatement.setLong(9, reminder.remindDate());
@@ -64,18 +64,17 @@ public class QueriesReminders {
         return -1;
     }
 
-    public static boolean removeReminder(int id) {
-        String sql = "DELETE FROM new_reminders WHERE id = ?";
+    public static void removeReminder(Reminder reminder) {
+        String sql = "DELETE FROM new_reminders WHERE message_id = ?";
         try {
             PreparedStatement preparedStatement = Database.getDatabase().getConnection().prepareStatement(sql);
 
-            preparedStatement.setInt(1, id);
+            preparedStatement.setLong(1, reminder.messageId());
 
-            return preparedStatement.executeUpdate() == 1;
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             Logger.altitudeLogs.error(e);
         }
-        return false;
     }
 
     public static ArrayList<Reminder> getReminders() {

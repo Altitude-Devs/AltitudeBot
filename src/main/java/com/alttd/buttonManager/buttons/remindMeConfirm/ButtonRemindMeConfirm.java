@@ -57,7 +57,7 @@ public class ButtonRemindMeConfirm extends DiscordButton {
 
         ReminderScheduler instance = ReminderScheduler.getInstance(event.getJDA());
         if (instance == null) {
-            QueriesReminders.removeReminder(reminder.id());
+            QueriesReminders.removeReminder(reminder);
             event.replyEmbeds(Util.genericErrorEmbed("Error", "Unable to start reminder, removing it from the database..."))
                     .setEphemeral(true).queue();
             return false;

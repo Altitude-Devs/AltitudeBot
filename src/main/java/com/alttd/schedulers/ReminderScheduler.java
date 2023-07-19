@@ -58,6 +58,9 @@ public class ReminderScheduler {
 
     public synchronized void addReminder(Reminder reminder) {
         Logger.altitudeLogs.debug("Adding reminder with messageId: " + reminder.messageId());
+        if (reminder.messageId() == 0) {
+            Logger.altitudeLogs.debug("Found reminder with messageId 0, dumping reminder\n" + reminder);
+        }
         reminders.add(reminder);
         reminders.sort(Comparator.comparingLong(Reminder::remindDate));
         nextReminder = reminders.get(0);
@@ -66,12 +69,13 @@ public class ReminderScheduler {
     public synchronized void removeReminder(Reminder reminder, boolean removeFromDatabase) {
         Logger.altitudeLogs.debug("Removing reminder with messageId: " + reminder.messageId());
         reminders.remove(reminder);
+        reminders.sort(Comparator.comparingLong(Reminder::remindDate));
         if (reminders.size() == 0)
             nextReminder = null;
         else
             nextReminder = reminders.get(0);
         if (removeFromDatabase)
-            QueriesReminders.removeReminder(reminder.id());
+            QueriesReminders.removeReminder(reminder);
     }
 
     public synchronized void removeReminder(long messageId) {

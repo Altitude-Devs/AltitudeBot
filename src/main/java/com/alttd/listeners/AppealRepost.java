@@ -141,7 +141,7 @@ public class AppealRepost extends ListenerAdapter {
 
         ReminderScheduler instance = ReminderScheduler.getInstance(message.getJDA());
         if (instance == null) {
-            QueriesReminders.removeReminder(reminder.id());
+            QueriesReminders.removeReminder(reminder);
             Logger.altitudeLogs.warning("Unable to start reminder, removing it from the database...");
             return;
         }

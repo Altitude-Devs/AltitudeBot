@@ -5,6 +5,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.Channel;
 
+import java.util.Arrays;
+
 public record Reminder (int id, String title, String description, long userId, long guildId, long channelId,
                         long messageId, boolean shouldRepeat, long creationDate, long remindDate, ReminderType reminderType, byte[] data) {
 
@@ -48,5 +50,23 @@ public record Reminder (int id, String title, String description, long userId, l
         }
 
         return guildById;
+    }
+
+    @Override
+    public String toString() {
+        return "Reminder{" +
+                "\nid=[" + id + "]" +
+                "\ntitle=[" + title  + "]" +
+                "\ndescription=[" + description + "]" +
+                "\nuserId=[" + userId + "]" +
+                "\nguildId=[" + guildId + "]" +
+                "\nchannelId=[" + channelId + "]" +
+                "\nmessageId=[" + messageId + "]" +
+                "\nshouldRepeat=[" + shouldRepeat + "]" +
+                "\ncreationDate=[" + creationDate + "]" +
+                "\nremindDate=[" + remindDate + "]" +
+                "\nreminderType=[" + reminderType + "]" +
+                "\ndata=[" + Arrays.toString(data) + "]" +
+                '}';
     }
 }
