@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 public class CommandSeen extends DiscordCommand {
 
     private final CommandData commandData;
-    private static final List<String> validServers = List.of("lobby", "creative", "fjord", "grotto");
+    private static final List<String> validServers = List.of("lobby", "creative", "grove");
 
     public CommandSeen(JDA jda, CommandManager commandManager) {
         commandData = Commands.slash(getName(), "Check when a player was last online.")
