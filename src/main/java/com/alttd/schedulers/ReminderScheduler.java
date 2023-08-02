@@ -154,6 +154,23 @@ public class ReminderScheduler {
             return null;
         }
 
+        private MessageCreateAction getCreateAction(Channel channel, String text) {
+            switch (channel.getType()) {
+                case TEXT, NEWS, FORUM -> {
+                    if (channel instanceof TextChannel textChannel) {
+                        return textChannel.sendMessage(text);
+                    }
+                }
+                case GUILD_NEWS_THREAD, GUILD_PUBLIC_THREAD, GUILD_PRIVATE_THREAD -> {
+                    if (channel instanceof ThreadChannel threadChannel) {
+                        return threadChannel.sendMessage(text);
+                    }
+                }
+                default -> Logger.altitudeLogs.warning("Received unexpected channel type " + channel.getType() + " can't send reminder...");
+            }
+            return null;
+        }
+
         private void sendEmbed(Reminder reminder, Channel channel, EmbedBuilder embedBuilder, Member member) {
             embedBuilder.setAuthor(member.getEffectiveName(), null, member.getEffectiveAvatarUrl());
             switch (reminder.reminderType()) {
@@ -180,11 +197,11 @@ public class ReminderScheduler {
                             e.printStackTrace();
                         }
                     }
-                    MessageCreateAction messageCreateAction = getCreateAction(channel, embedBuilder);
+                    MessageCreateAction messageCreateAction = getCreateAction(channel, "<@" + userId + ">");
                     if (messageCreateAction == null)
                         return;
                     if (userId != 0) {
-                        messageCreateAction.addContent("<@" + userId + ">");
+                        messageCreateAction.addEmbeds(embedBuilder.build());
                     }
                     messageCreateAction.queue(RestAction.getDefaultSuccess(), Util::handleFailure);
                 }
