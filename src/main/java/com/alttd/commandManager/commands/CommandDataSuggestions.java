@@ -48,12 +48,7 @@ public class CommandDataSuggestions extends DiscordCommand {
         ExcelWriter excelWriter = new ExcelWriter();
         long waitSeconds = 0;
         for (ThreadChannel activeSuggestion : activeSuggestions) {
-            activeSuggestion.getHistoryFromBeginning(1).queueAfter(waitSeconds, TimeUnit.SECONDS, hist -> {
-                List<Message> retrievedHistory = hist.getRetrievedHistory();
-                if (retrievedHistory.size() != 1) {
-                    return;
-                }
-                Message message = retrievedHistory.get(0);
+            activeSuggestion.retrieveParentMessage().queueAfter(waitSeconds, TimeUnit.SECONDS, message -> {
                 MessageReaction thumbsUp = message.getReaction(Emoji.fromUnicode("\uD83D\uDC4D"));
                 MessageReaction thumbsDown = message.getReaction(Emoji.fromUnicode("\uD83D\uDC4E"));
                 excelWriter.addRow(
