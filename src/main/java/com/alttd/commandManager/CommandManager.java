@@ -54,7 +54,8 @@ public class CommandManager extends ListenerAdapter {
                 new CommandRemindMe(jda, this, modalManager),
                 new CommandSoftLock(jda, this, lockedChannel),
                 new CommandDataSuggestions(jda, this),
-                new CommandAuction(jda, this, selectMenuManager));
+                new CommandAuction(jda, this, selectMenuManager),
+                new CommandBal());
     }
 
     @Override

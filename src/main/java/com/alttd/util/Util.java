@@ -18,6 +18,8 @@ import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -214,14 +216,26 @@ public class Util {
     }
 
     public static String formatNumber(int price) {
-        String priceString = new StringBuilder(String.valueOf(price)).reverse().toString();
+        return formatIntegerPart(String.valueOf(price));
+    }
+
+    public static String formatNumber(double price) {
+        NumberFormat numberFormat = new DecimalFormat("0.00");
+        String priceString = numberFormat.format(price);
+        String[] parts = priceString.split("\\.");
+        String formattedIntegerPart = formatIntegerPart(parts[0]);
+        return formattedIntegerPart + "." + parts[1];
+    }
+
+    private static String formatIntegerPart(String integerPart) {
+        String reversedIntegerPart = new StringBuilder(integerPart).reverse().toString();
         StringBuilder sb = new StringBuilder();
         int i = 0;
-        while (i + 3 < priceString.length()) {
-            sb.append(priceString, i, i + 3).append(",");
+        while (i + 3 < reversedIntegerPart.length()) {
+            sb.append(reversedIntegerPart, i, i + 3).append(",");
             i += 3;
         }
-        sb.append(priceString.substring(i)).reverse();
-        return "" + sb;
+        sb.append(reversedIntegerPart.substring(i));
+        return sb.reverse().toString();
     }
 }
