@@ -10,9 +10,10 @@ import com.alttd.util.Util;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 
 import java.time.Instant;
@@ -34,7 +35,7 @@ public class SelectMenuAuction extends DiscordSelectMenu {
     }
 
     @Override
-    public void execute(SelectMenuInteractionEvent event) {
+    public void execute(StringSelectInteractionEvent event) {
         Member member = event.getMember();
         if (member == null) {
             event.replyEmbeds(Util.genericErrorEmbed("Error", "This can only be used in a guild"))
@@ -136,7 +137,7 @@ public class SelectMenuAuction extends DiscordSelectMenu {
                 error -> replyCallbackAction.setEmbeds(Util.genericErrorEmbed("Error", "Unable to finish your bid")).queue());
     }
 
-    private MessageEmbed getMessageEmbed(List<MessageEmbed> embeds, SelectMenuInteractionEvent event) {
+    private MessageEmbed getMessageEmbed(List<MessageEmbed> embeds, StringSelectInteractionEvent event) {
         if (embeds.isEmpty()) {
             event.replyEmbeds(Util.genericErrorEmbed("Error", "Input came from message with no embeds"))
                     .setEphemeral(true).queue();
@@ -147,7 +148,7 @@ public class SelectMenuAuction extends DiscordSelectMenu {
 
     @Override
     public SelectMenu getSelectMenu(List<SelectOption> selectOptions) {
-        SelectMenu.Builder builder = SelectMenu.create(getSelectMenuId());
+        StringSelectMenu.Builder builder = StringSelectMenu.create(getSelectMenuId());
         if (selectOptions != null)
             builder.addOptions(selectOptions);
         return builder.build();

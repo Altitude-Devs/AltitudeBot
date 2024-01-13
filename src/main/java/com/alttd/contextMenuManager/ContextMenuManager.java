@@ -8,8 +8,9 @@ import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionE
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.RestAction;
+import org.jetbrains.annotations.NonNls;
 
-import javax.annotation.Nonnull;
+
 import java.awt.*;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +38,7 @@ public class ContextMenuManager extends ListenerAdapter {
     }
 
     @Override
-    public void onUserContextInteraction(@Nonnull UserContextInteractionEvent event) {
+    public void onUserContextInteraction(@NonNls UserContextInteractionEvent event) {
         String name = event.getInteraction().getName();
         Optional<DiscordContextMenu> first = contextMenus.stream()
                 .filter(discordModal -> discordModal.getContextMenuId().equalsIgnoreCase(name))
@@ -56,7 +57,7 @@ public class ContextMenuManager extends ListenerAdapter {
     }
 
     @Override
-    public void onMessageContextInteraction(@Nonnull MessageContextInteractionEvent event) {
+    public void onMessageContextInteraction(@NonNls MessageContextInteractionEvent event) {
         String name = event.getInteraction().getName();
         Optional<DiscordContextMenu> first = contextMenus.stream()
                 .filter(discordModal -> discordModal.getContextMenuId().equalsIgnoreCase(name))

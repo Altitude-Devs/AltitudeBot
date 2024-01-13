@@ -1,15 +1,12 @@
 package com.alttd.selectMenuManager;
 
 import com.alttd.selectMenuManager.selectMenus.SelectMenuAuction;
-import com.alttd.util.Util;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericSelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +19,7 @@ public class SelectMenuManager extends ListenerAdapter {
     }
 
     @Override
-    public void onSelectMenuInteraction(@NotNull SelectMenuInteractionEvent event) {
+    public void onGenericSelectMenuInteraction(@NotNull GenericSelectMenuInteractionEvent event) {
         String selectMenuId = event.getSelectMenu().getId();
         Optional<DiscordSelectMenu> first = buttons.stream()
                 .filter(discordModal -> discordModal.getSelectMenuId().equalsIgnoreCase(selectMenuId))
@@ -37,16 +34,15 @@ public class SelectMenuManager extends ListenerAdapter {
 //                    .queue(RestAction.getDefaultSuccess(), Util::handleFailure);
             return;
         }
-        first.get().execute(event);
+        if (event instanceof StringSelectInteractionEvent stringSelectInteractionEvent)
+            first.get().execute(stringSelectInteractionEvent);
     }
 
     public @Nullable DiscordSelectMenu getDiscordSelectMenuFor(String buttonId) {
         Optional<DiscordSelectMenu> first = buttons.stream()
                 .filter(discordSelectMenu -> discordSelectMenu.getSelectMenuId().equalsIgnoreCase(buttonId))
                 .findFirst();
-        if (first.isEmpty())
-            return null;
-        return first.get();
+        return first.orElse(null);
     }
 
 }

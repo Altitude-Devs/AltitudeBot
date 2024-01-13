@@ -4,8 +4,9 @@ import com.alttd.database.queries.QueriesLockedChannels;
 import com.alttd.util.Logger;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NonNls;
 
-import javax.annotation.Nonnull;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
@@ -53,7 +54,7 @@ public class LockedChannel extends ListenerAdapter {
     }
 
     @Override
-    public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
+    public void onMessageReceived(@NonNls MessageReceivedEvent event) {
         if (!event.isFromGuild() || event.getAuthor().isBot() || event.getAuthor().isSystem())
             return;
         long guildId = event.getGuild().getIdLong();

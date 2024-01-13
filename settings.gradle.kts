@@ -10,7 +10,7 @@ dependencyResolutionManagement {
         maven("https://repo.spongepowered.org/maven")
         // MySQL
         maven("https://jcenter.bintray.com")
-        maven("https://dev.alttd.com/releases")
+        maven("https://repo.destro.xyz/snapshots")
     }
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }

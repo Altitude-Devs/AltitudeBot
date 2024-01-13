@@ -1,7 +1,7 @@
 package com.alttd.modalManager;
 
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.Modal;
+import net.dv8tion.jda.api.interactions.modals.Modal;
 
 public abstract class DiscordModal {
 

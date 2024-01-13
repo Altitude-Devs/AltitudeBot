@@ -7,8 +7,10 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericSelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
 import java.awt.*;
 
@@ -20,9 +22,9 @@ public class RequestManager {
             sendRequestMessage();
     }
 
-    public static Pair<EmbedBuilder, SelectMenu.Builder> getRequestEmbed() {
+    public static Pair<EmbedBuilder, StringSelectMenu.Builder> getRequestEmbed() {
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        SelectMenu.Builder selectMenuBuilder = SelectMenu.create("request:create");
+        StringSelectMenu.Builder selectMenuBuilder = StringSelectMenu.create("request:create");
         embedBuilder.setDescription("Select an option below to open a request!\n")
                 .setTitle("Create a new request.")
                 .setColor(new Color(41, 43, 47));
@@ -37,7 +39,7 @@ public class RequestManager {
 
     public static void sendRequestMessage() {
         TextChannel channel = AltitudeBot.getInstance().getJDA().getGuildById(RequestConfig.REQUEST_GUILD_ID).getTextChannelById(RequestConfig.REQUEST_CHANNEL);
-        Pair<EmbedBuilder, SelectMenu.Builder> pair = getRequestEmbed();
+        Pair<EmbedBuilder, StringSelectMenu.Builder> pair = getRequestEmbed();
         channel.sendMessageEmbeds(pair.getValue0().build()).setActionRow(
                 pair.getValue1().build()
         ).queue(m -> RequestConfig.setRequestMessage(m.getId()));
@@ -45,7 +47,7 @@ public class RequestManager {
 
     public static void updateRequestMessage() {
         TextChannel channel = AltitudeBot.getInstance().getJDA().getGuildById(RequestConfig.REQUEST_GUILD_ID).getTextChannelById(RequestConfig.REQUEST_CHANNEL);
-        Pair<EmbedBuilder, SelectMenu.Builder> pair = getRequestEmbed();
+        Pair<EmbedBuilder, StringSelectMenu.Builder> pair = getRequestEmbed();
         channel.editMessageEmbedsById(RequestConfig.REQUEST_MESSAGE, pair.getValue0().build())
                 .setActionRow(
                         pair.getValue1().build()
@@ -56,7 +58,7 @@ public class RequestManager {
         return RequestConfig.requests.stream().filter(request -> request.getId().equalsIgnoreCase(id)).findFirst().orElse(null);
     }
 
-    public static void onSelectMenuInteraction(SelectMenuInteractionEvent event) {
+    public static void onGenericSelectMenuInteraction(StringSelectInteractionEvent event) {
         String[] actions = event.getComponentId().split(":");
         if (actions[1].equals("create")) {
             String[] selection = event.getSelectedOptions().get(0).getValue().split(":");

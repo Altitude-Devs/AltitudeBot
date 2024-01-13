@@ -12,10 +12,11 @@ import com.alttd.request.RequestManager;
 import com.alttd.selectMenuManager.SelectMenuManager;
 import com.alttd.util.Logger;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericSelectMenuInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -58,10 +59,10 @@ public class JDAListener extends ListenerAdapter {
     }
 
     @Override
-    public void onSelectMenuInteraction(@NotNull SelectMenuInteractionEvent event) {
+    public void onGenericSelectMenuInteraction(@NotNull GenericSelectMenuInteractionEvent event) {
         String s = event.getComponentId();
-        if (s.startsWith("request:")) {
-            RequestManager.onSelectMenuInteraction(event);
+        if (s.startsWith("request:") && event instanceof StringSelectInteractionEvent stringSelectInteractionEvent) {
+            RequestManager.onGenericSelectMenuInteraction(stringSelectInteractionEvent);
         }
     }
 
