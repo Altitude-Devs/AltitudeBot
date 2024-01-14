@@ -59,10 +59,10 @@ public class JDAListener extends ListenerAdapter {
     }
 
     @Override
-    public void onGenericSelectMenuInteraction(@NotNull GenericSelectMenuInteractionEvent event) {
+    public void onStringSelectInteraction(@NotNull StringSelectInteractionEvent event) {
         String s = event.getComponentId();
-        if (s.startsWith("request:") && event instanceof StringSelectInteractionEvent stringSelectInteractionEvent) {
-            RequestManager.onGenericSelectMenuInteraction(stringSelectInteractionEvent);
+        if (s.startsWith("request:")) {
+            RequestManager.onStringSelectInteraction(event);
         }
     }
 

@@ -7,9 +7,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.GenericSelectMenuInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
 import java.awt.*;
@@ -58,7 +56,7 @@ public class RequestManager {
         return RequestConfig.requests.stream().filter(request -> request.getId().equalsIgnoreCase(id)).findFirst().orElse(null);
     }
 
-    public static void onGenericSelectMenuInteraction(StringSelectInteractionEvent event) {
+    public static void onStringSelectInteraction(StringSelectInteractionEvent event) {
         String[] actions = event.getComponentId().split(":");
         if (actions[1].equals("create")) {
             String[] selection = event.getSelectedOptions().get(0).getValue().split(":");

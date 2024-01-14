@@ -120,7 +120,7 @@ public class SelectMenuAuction extends DiscordSelectMenu {
         embedBuilder.addField("Current Bid", "$" + Util.formatNumber(currentBid) + " by " + event.getMember().getAsMention(), false);
         ReplyCallbackAction replyCallbackAction = event.deferReply(true);
 
-        event.getMessage().editMessageEmbeds(embedBuilder.build()).queue(
+        event.deferEdit().queue(edit -> edit.editOriginalEmbeds(embedBuilder.build()).queue(
                 success -> {
                     if (auction.updateExpiry())
                         auctionScheduler.updateAuction(auction);
@@ -134,7 +134,8 @@ public class SelectMenuAuction extends DiscordSelectMenu {
                             .queue();
                     success.editMessageComponents().setActionRow(auction.getSelectMenu(selectMenuManager, true)).queue();
                 },
-                error -> replyCallbackAction.setEmbeds(Util.genericErrorEmbed("Error", "Unable to finish your bid")).queue());
+                error -> replyCallbackAction.setEmbeds(Util.genericErrorEmbed("Error", "Unable to finish your bid")).queue())
+        );
     }
 
     private MessageEmbed getMessageEmbed(List<MessageEmbed> embeds, StringSelectInteractionEvent event) {

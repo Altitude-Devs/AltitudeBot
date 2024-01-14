@@ -19,7 +19,7 @@ public class SelectMenuManager extends ListenerAdapter {
     }
 
     @Override
-    public void onGenericSelectMenuInteraction(@NotNull GenericSelectMenuInteractionEvent event) {
+    public void onStringSelectInteraction(@NotNull StringSelectInteractionEvent event) {
         String selectMenuId = event.getSelectMenu().getId();
         Optional<DiscordSelectMenu> first = buttons.stream()
                 .filter(discordModal -> discordModal.getSelectMenuId().equalsIgnoreCase(selectMenuId))
@@ -34,8 +34,7 @@ public class SelectMenuManager extends ListenerAdapter {
 //                    .queue(RestAction.getDefaultSuccess(), Util::handleFailure);
             return;
         }
-        if (event instanceof StringSelectInteractionEvent stringSelectInteractionEvent)
-            first.get().execute(stringSelectInteractionEvent);
+        first.get().execute(event);
     }
 
     public @Nullable DiscordSelectMenu getDiscordSelectMenuFor(String buttonId) {
