@@ -1,5 +1,5 @@
-.gradle/
 .idea/
+.gradle
 run
 build
 run.sh
