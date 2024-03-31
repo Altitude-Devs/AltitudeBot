@@ -3,6 +3,7 @@ plugins {
     id("java")
     id("com.github.johnrengelman.shadow") version "7.1.0"
     id("maven-publish")
+    id("org.springframework.boot") version("2.7.8")
 }
 
 group = "com.alttd"
@@ -34,12 +35,16 @@ tasks {
 
     withType<Jar> {
         manifest {
-            attributes["Main-Class"] = "${rootProject.group}.${project.name}"
+//            attributes["Main-Class"] = "BOOT-INF/classes/${rootProject.group}.${project.name}"
+            attributes["Main-Class"] = "org.springframework.boot.loader.JarLauncher"
         }
     }
 
     shadowJar {
         archiveFileName.set(rootProject.name + ".jar")
+        manifest {
+            attributes["Main-Class"] = "org.springframework.boot.loader.JarLauncher"
+        }
     }
 
     build {
@@ -70,4 +75,7 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.24")
     implementation("com.alttd:AltitudeLogs:1.0")
+    implementation("org.springframework.boot:spring-boot-starter-web:3.2.1")
+    implementation("org.springframework.boot:spring-boot-starter-validation:3.2.1")
+    implementation("com.google.code.gson:gson:2.8.9")
 }

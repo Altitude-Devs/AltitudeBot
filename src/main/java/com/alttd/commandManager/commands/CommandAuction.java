@@ -142,8 +142,7 @@ public class CommandAuction extends DiscordCommand {
 
     private void addScreenshot(Message.Attachment screenshot, Message message) {
         String dataFolder = AltitudeBot.getInstance().getDataFolder();
-        Path parent = Path.of(dataFolder).getParent();
-        Path path = Path.of(parent.toString() + UUID.randomUUID() + "." + screenshot.getFileExtension());
+        Path path = Path.of(dataFolder + UUID.randomUUID() + "." + screenshot.getFileExtension());
         screenshot.getProxy().downloadToFile(path.toFile()).whenComplete((file, throwable) ->
                         message.editMessageAttachments(AttachedFile.fromData(file)).queue(done -> file.delete(), failed -> {
                             Util.handleFailure(failed);

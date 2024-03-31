@@ -1,5 +1,6 @@
 package com.alttd.listeners;
 
+import com.alttd.AltitudeBot;
 import com.alttd.buttonManager.ButtonManager;
 import com.alttd.commandManager.CommandManager;
 import com.alttd.contextMenuManager.ContextMenuManager;
@@ -19,6 +20,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericSelectMenuInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.boot.SpringApplication;
 
 import java.util.Timer;
 import java.util.concurrent.TimeUnit;
@@ -26,9 +28,11 @@ import java.util.concurrent.TimeUnit;
 public class JDAListener extends ListenerAdapter {
 
     private final JDA jda;
+    private final String[] args;
 
-    public JDAListener(JDA jda) {
+    public JDAListener(JDA jda, String[] args) {
         this.jda = jda;
+        this.args = args;
     }
 
     @Override
@@ -46,6 +50,8 @@ public class JDAListener extends ListenerAdapter {
         new Timer().scheduleAtFixedRate(new PollTimerTask(jda, Logger.altitudeLogs), TimeUnit.MINUTES.toMillis(1), TimeUnit.MINUTES.toMillis(5));
         startSchedulers();
 //        RequestManager.init();
+//        Logger.altitudeLogs.info("Starting spring application");
+//        SpringApplication.run(AltitudeBot.class, args);
     }
 
     private void startSchedulers() {

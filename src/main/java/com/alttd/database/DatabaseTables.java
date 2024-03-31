@@ -176,6 +176,21 @@ public class DatabaseTables {
         }
     }
 
+    private void createSettingsTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS settings(" +
+                "name VARCHAR(32) NOT NULL, " +
+                "value VARCHAR(64) NOT NULL, " +
+                "type VARCHAR(16) NOT NULL, " +
+                "PRIMARY KEY (name)" +
+                ")";
+        try {
+            connection.prepareStatement(sql).executeUpdate();
+        } catch (SQLException e) {
+            Logger.altitudeLogs.error(e);
+            Logger.altitudeLogs.error("Unable to create auction settings table, shutting down...");
+        }
+    }
+
     public static void createTables(Connection connection) {
         if (instance == null)
             instance = new DatabaseTables(connection);

@@ -13,7 +13,7 @@ public class Logger {
         Logger.altitudeLogs = new AltitudeLogs().setTimeFormat("[HH:mm:ss] ");
         try {
             Logger.altitudeLogs
-                    .setLogPath(new File(AltitudeBot.getInstance().getDataFolder()).getParent() + File.separator +  "logs")
+                    .setLogPath(new File(AltitudeBot.getInstance().getDataFolder()) + File.separator +  "logs")
                     .setLogName("debug.log", LogLevel.DEBUG)
                     .setLogName("info.log", LogLevel.INFO)
                     .setLogName("warning.log", LogLevel.WARNING)

@@ -27,7 +27,7 @@ public abstract class AbstractConfig {
     private ConfigurationNode config;
 
     protected AbstractConfig(String filename) {
-        init(new File(new File(AltitudeBot.getInstance().getDataFolder()).getParentFile(), filename), filename);
+        init(new File(new File(AltitudeBot.getInstance().getDataFolder()), filename), filename);
     }
 
     private void init(File file, String filename) {
