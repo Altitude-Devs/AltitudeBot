@@ -7,6 +7,7 @@ import com.alttd.database.Database;
 import com.alttd.database.DatabaseTables;
 import com.alttd.listeners.JDAListener;
 import com.alttd.util.Logger;
+import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -17,11 +18,8 @@ import java.net.URISyntaxException;
 public class AltitudeBot {
 
     private JDA jda;
+    @Getter
     private static AltitudeBot instance;
-
-    public static AltitudeBot getInstance() {
-        return instance;
-    }
 
     public static void main(String[] args) {
         instance = new AltitudeBot();
@@ -33,7 +31,7 @@ public class AltitudeBot {
         initConfigs();
         jda = JDABuilder.createDefault(SettingsConfig.TOKEN,
                 GatewayIntent.GUILD_MEMBERS,
-                GatewayIntent.GUILD_BANS,
+                GatewayIntent.GUILD_MODERATION,
                 GatewayIntent.GUILD_EMOJIS_AND_STICKERS,
                 GatewayIntent.GUILD_WEBHOOKS,
                 GatewayIntent.GUILD_PRESENCES,
@@ -70,7 +68,7 @@ public class AltitudeBot {
             return new File(AltitudeBot.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getPath();
         } catch (URISyntaxException e) {
             Logger.altitudeLogs.error("Unable to retrieve config directory");
-            e.printStackTrace();
+            Logger.altitudeLogs.error(e);
         }
         return (null);
     }

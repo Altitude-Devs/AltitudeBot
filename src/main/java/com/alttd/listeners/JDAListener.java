@@ -36,12 +36,13 @@ public class JDAListener extends ListenerAdapter {
         Logger.altitudeLogs.info("JDA ready to register commands.");
         LockedChannel lockedChannel = new LockedChannel();
         ButtonManager buttonManager = new ButtonManager();
+        TagAdded tagAdded = new TagAdded();
         AppealRepost appealRepost = new AppealRepost(buttonManager);
         ModalManager modalManager = new ModalManager(buttonManager);
         ContextMenuManager contextMenuManager = new ContextMenuManager(modalManager);
         SelectMenuManager selectMenuManager = new SelectMenuManager();
         CommandManager commandManager = new CommandManager(jda, modalManager, contextMenuManager, lockedChannel, selectMenuManager, buttonManager);
-        jda.addEventListener(buttonManager, modalManager, commandManager, contextMenuManager, lockedChannel, appealRepost, selectMenuManager);
+        jda.addEventListener(buttonManager, tagAdded, modalManager, commandManager, contextMenuManager, lockedChannel, appealRepost, selectMenuManager);
         PollQueries.loadPolls(buttonManager);
         new Timer().scheduleAtFixedRate(new PollTimerTask(jda, Logger.altitudeLogs), TimeUnit.MINUTES.toMillis(1), TimeUnit.MINUTES.toMillis(5));
         startSchedulers();
