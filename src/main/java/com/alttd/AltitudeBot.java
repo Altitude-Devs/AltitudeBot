@@ -28,6 +28,7 @@ public class AltitudeBot {
     private static AltitudeBot instance;
     private static String path;
 
+
     public static void main(String[] args) {
         if (args.length == 0) { //TODO change scripts so it works with this
             System.out.println("Please give the location for the configs as an arg");
@@ -49,7 +50,7 @@ public class AltitudeBot {
         initConfigs();
         jda = JDABuilder.createDefault(SettingsConfig.TOKEN,
                 GatewayIntent.GUILD_MEMBERS,
-                GatewayIntent.GUILD_BANS,
+                GatewayIntent.GUILD_MODERATION,
                 GatewayIntent.GUILD_EMOJIS_AND_STICKERS,
                 GatewayIntent.GUILD_WEBHOOKS,
                 GatewayIntent.GUILD_PRESENCES,
@@ -92,7 +93,7 @@ public class AltitudeBot {
             return file.getPath();
         } catch (URISyntaxException e) {
             Logger.altitudeLogs.error("Unable to retrieve config directory");
-            e.printStackTrace();
+            Logger.altitudeLogs.error(e);
         }
         return (null);
     }

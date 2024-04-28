@@ -1,5 +1,6 @@
 package com.alttd.contextMenuManager;
 
+import com.alttd.contextMenuManager.contextMenus.ContextMenuForwardToKanboard;
 import com.alttd.contextMenuManager.contextMenus.ContextMenuRespondSuggestion;
 import com.alttd.modalManager.ModalManager;
 import com.alttd.util.Util;
@@ -21,7 +22,8 @@ public class ContextMenuManager extends ListenerAdapter {
 
     public ContextMenuManager(ModalManager modalManager) {
         contextMenus = List.of(
-                new ContextMenuRespondSuggestion(modalManager)
+                new ContextMenuRespondSuggestion(modalManager),
+                new ContextMenuForwardToKanboard()
         );
     }
 

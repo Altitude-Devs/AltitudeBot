@@ -16,10 +16,12 @@ public class SettingsConfig extends AbstractConfig {
 
     // SETTINGS
     public static String TOKEN = "token";
+    public static String KANBOARD_TOKEN = "kanboard-token";
     public static boolean DEBUG = false;
 
     private void loadSettings() {
         TOKEN = settingsConfig.getString("settings.token", TOKEN);
+        KANBOARD_TOKEN = settingsConfig.getString("settings.kanboard-token", KANBOARD_TOKEN);
         DEBUG = settingsConfig.getBoolean("settings.debug", DEBUG);
     }
 
